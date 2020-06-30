@@ -4,9 +4,11 @@ import params
 class Firm:
     """ Produce and market vehicles
     """
-    def __init__(self):
+    def __init__(self, sim):
         # Margin of cost
         self.a = None
+        # Budget
+        self.B0 = sim.seed.random.randint()
 
 
 class Vehicle:

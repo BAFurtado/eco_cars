@@ -16,6 +16,9 @@ class Simulation:
         self.t = 0
         self.running = False
 
+    def create_agentes(self):
+        pass
+
     def controller(self):
         while self.running:
             self.run()
