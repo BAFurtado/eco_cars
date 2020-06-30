@@ -1,9 +1,12 @@
+import params
 
 
 class Firm:
     """ Produce and market vehicles
     """
-    pass
+    def __init__(self):
+        # Margin of cost
+        self.a = None
 
 
 class Vehicle:
@@ -24,6 +27,21 @@ class Vehicle:
         self.EC = None
         # Quality
         self.QL = None
+        self.price = None
+
+    def distance_run(self):
+        return self.EE * self.EC
+
+    def running_cost(self, pe):
+        return pe/self.EE
+
+    def emissions(self, em):
+        return em/self.EE
+
+    def calculate_price(self, a, IVA):
+        self.price = (1 + IVA) * (1 + a) * self.PC - 1
+
+
 
 
 
