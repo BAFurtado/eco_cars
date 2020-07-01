@@ -18,6 +18,14 @@ Dk = 100
 # Taxes
 IVA = None
 
+# Costs of adoption of new technology
+Cost_adoption = 0
+
+# ROI
+p_lambda = 1
+min_rd = .05
+alpha1 = 1
+
 # External limits parameters
 PC_min = None
 EE_max = None

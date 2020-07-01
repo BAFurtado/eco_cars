@@ -8,47 +8,74 @@ class Firm:
         # Margin of cost
         self.a = None
         # Budget
-        self.B0 = sim.seed.random.randint()
+        self.budget = sim.seed.random.randint()
         # Firm configuration decisions:
         self.portfolio = 'combustion'
         self.profit = 0
-        # Costs of adoption of new technology
-        self.Cad = 0
         # Investments in R&D
         self.investments = 0
-        self.sold_cars = 0
+        self.sold_cars = dict()
         # Assign a vehicle for this firm to sell
-        self.cars = Vehicle()
+        self.cars = dict()
+        self.roi = dict()
 
     def update_budget(self):
-        self.B0 = self.profit - self.Cad - self.investments
+        self.budget += self.profit - params.Cost_adoption - self.investments
 
     def calculate_profit(self):
         # TODO: check when to verify whether to go bankrupt
-        if self.B0 < 0:
+        if self.budget < 0:
             # Firm is bankrupt, trigger new company
             pass
         # Make new budget
         # update self.profit
-        self.profit = self.sold_cars * self.cars.sales_price - params.Fixed_Costs
-        pass
+        for car in self.cars:
+            self.profit += self.sold_cars[car] * self.cars[car].sales_price - params.Fixed_Costs
 
     def change_portfolio(self, info):
         # Determine costs of new_technology_adoption
-        prob_adoption = (info['green_share'] + params.epsilon) ** (1 - params.omega)
-        pass
+        # TODO: Check where does ee_max and pc_min come from
+        ee_max = 1
+        pc_min = 1
+        # TODO: Generalize for more than one car
+        prob_adoption = ((self.car.EE/ee_max + pc_min/self.car.cost_production) ** params.omega)/2 * \
+                        (info['green_share'] + info['epsilon']) ** (1 - params.omega)
+        # Choose company to imitate green technology, prob. proportional to firm size
+        # New car production will fall somewhere between current Vehicle EC, QL, cost_production
 
-    def invest_rd(self):
+        # abandon current technology depends on magnitude of ROI and how long it has been adopted
+        # TODO: set a time marker for portfolio change
+
+    def invest_rd(self, sim):
         # 1. Check available money
         # 2. Update self.investments
-        pass
+        # This random factor is characterized as mu in the model description
+        mu = sim.seed.random.random()
+        mu = min(mu, params.min_rd)
+        self.investments = mu * self.budget
 
-    def sales(self):
+    def invest_into_vehicle(self, sim):
+        # May improve PC (cost_production), EE, EC, QL
+        # eta = 1 if just one car, 1/2 if gas and green
+        eta = 1 if len(self.cars) == 1 else .5
+
+        # If 'electric' possible candidates are cost_production, EC, QL else cost_production, EE, QL
+        # choose characteristic randomly
+        # for the chosen_one,
+        # TODO: this has to work for more than one car
+        rdm = sim.seed.random.random()
+        if rdm < 1 ** -(-params.alpha1 * self.investments):
+            pass
+
+    def sales(self, car):
         # Register number of sold_cars and prices_sold
         # TODO: Remember to reset every new turn
         # Check if there is more than one car
-        self.sold_cars += 1
-        pass
+        self.sold_cars[car] += 1
+
+    def calculate_roi(self, car):
+        # ROI is dependent on each vehicle
+        self.roi[car] = params.p_lambda * car.cost_production * self.sold_cars / self.investments
 
 
 class Vehicle:
@@ -61,7 +88,7 @@ class Vehicle:
     def __init__(self):
         # Type: 'combustion' or 'electric'
         self.type = None
-        # Price (cost of production)
+        # Price (cost of production : PC)
         self.cost_production = None
         # Energy: distance per unit of energy (engine power per km)
         self.EE = None
@@ -71,7 +98,7 @@ class Vehicle:
         self.QL = None
         self.sales_price = None
 
-    def distance_run(self):
+    def autonomy(self):
         return self.EE * self.EC
 
     def running_cost(self, pe):
@@ -80,5 +107,5 @@ class Vehicle:
     def emissions(self, em):
         return em/self.EE
 
-    def calculate_price(self, a, IVA):
-        self.sales_price = (1 + IVA) * (1 + a) * self.cost_production - 1
+    def calculate_price(self, a, iva):
+        self.sales_price = (1 + iva) * (1 + a) * self.cost_production - 1
