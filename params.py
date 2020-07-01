@@ -24,6 +24,7 @@ EE_max = None
 EC_max = None
 QL_max = None
 
+Fixed_Costs = 0
 
 # Station availability for each type of energy
 # Global

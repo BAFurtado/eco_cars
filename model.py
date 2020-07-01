@@ -15,8 +15,10 @@ class Simulation:
         self.seed = random.Random(0)
         self.t = 0
         self.running = False
+        self.firms = dict()
+        self.current_data = dict()
 
-    def create_agentes(self):
+    def create_agents(self):
         pass
 
     def controller(self):
@@ -26,6 +28,21 @@ class Simulation:
             if self.t == params.t_f:
                 self.running = False
 
+    def info(self):
+        # Calculate green_share of firms
+        green_share = sum([1 for firm in self.firms.values() if firm.portfolio == 'green']) / len(self.firms)
+        epsilon = 1 if green_share > 0 else 0
+        self.current_data['green_share'] = green_share
+        self.current_data['epsilon'] = epsilon
+
     def run(self):
-        pass
+        """
+        Demand:
+        1. Consumers decided whether to buy
+        2. Consumers check cars availability
+        3. Consumers select, given constraints
+        4. Criteria
+        5. Choose car
+
+        """
 
