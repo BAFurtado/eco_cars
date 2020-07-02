@@ -6,49 +6,43 @@ T = 40
 num_firms = 8
 num_consumers = 2000
 
-# Initial cost per unit of energy
-pe_combustion = None
-pe_electric = None
-# Emissions
-em_combustion = 1
-em_electric = 1
+# Vehicles characteristics ---------------------------------------------
+production_cost = {'green': 27356, 'gas': 16950, 'min': 10000}
+energy_economy = {'green': 66.2, 'gas': 15.9, 'max': 66.2}
+energy_capacity = {'green': 2.35, 'gas': 60, 'max': 60}
+quality_level = {'green': .5, 'gas': 5, 'max': 1}
+emission = {'green': 1, 'gas': 23.06}
+price_energy = {'green': 1.12, 'gas': 1.6}
+stations = {'green': 2, 'gas': 1}
+iva = .196
 
-# Distance of consumers
-Dk = 100
-
-# Taxes
-IVA = None
-
+# Firms characteristics ---------------------------------------------
+budget_max_limit = 500000
+fixed_costs = 25000
+mu_max = .1
+rd_min = 50000
+alpha1 = 1e-5
+alpha2 = .5
+# epsilon is calculated when there is at least one firm that is green. Otherwise it is .1 -- check model.info()
+omega = .5
 # Costs of adoption of new technology
-Cost_adoption = 0
-
+cost_adoption = 10000
 # ROI
-p_lambda = 1
-min_rd = .05
-alpha1 = 1
+p_lambda = .1
 
-# External limits parameters
-PC_min = None
-EE_max = None
-EC_max = None
-QL_max = None
-
-Fixed_Costs = 0
-
-# Station availability for each type of energy
-# Global
-# electric_cars participation in the market
-market_share_electric = 0
-W_electric = 1 + market_share_electric
-W_combustion = 2
+# Consumers characteristics ---------------------------------------------
+# Distance of consumers
+prob_adoption = .25
+distance = {'mu': 11755, 'sigma': 2500}
+p_max = {'mu': 29000, 'sigma': 5000}
+dk = {'23': {'min': 0, 'max': 99},
+      '22': {'min': 100, 'max': 249},
+      '55': {'min': 250, 'max': 953}}
+br = {'min': 0, 'max': 1}
 
 # Constraints
 # t == 0:
-# PC_min < PCij = 'combustion' < PCij = 'electric' - cost production
+# PC_min < PCij = 'gas' < PCij = 'green' - cost production
 
-
-
-
-
-
+# Policy characteristics ---------------------------------------------
 

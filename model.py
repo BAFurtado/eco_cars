@@ -26,7 +26,7 @@ class Simulation:
         for i in range(params.num_firms):
             self.firms[i] = Firm(i, self)
         for j in range(params.num_consumers):
-            self.consumers[i + j] = Consumer(i + j, self)
+            self.consumers[i + j + 1] = Consumer(i + j + 1, self)
 
     def controller(self):
         while self.running:
@@ -39,7 +39,7 @@ class Simulation:
         # TODO: Probably, it will be here that global characteristics of the market are calculated
         # Calculate green_share of firms
         green_share = sum([1 for firm in self.firms.values() if firm.portfolio == 'green']) / len(self.firms)
-        epsilon = 1 if green_share > 0 else 0
+        epsilon = .1 if green_share > 0 else 0
         self.current_data['green_share'] = green_share
         self.current_data['epsilon'] = epsilon
 
