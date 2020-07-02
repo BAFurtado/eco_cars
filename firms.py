@@ -7,6 +7,7 @@ class Firm:
     def __init__(self, id, sim):
         self.id = id
         # Margin of cost
+        # TODO: Check if this "a" is the same of params.p_lambda
         self.a = None
         # Budget
         self.budget = sim.seed.randint(0, params.budget_max_limit)
@@ -35,11 +36,9 @@ class Firm:
 
     def change_portfolio(self, info):
         # Determine costs of new_technology_adoption
-        # TODO: Check where does ee_max and pc_min come from
-        ee_max = 1
-        pc_min = 1
         # TODO: Generalize for more than one car
-        prob_adoption = ((self.car.EE/ee_max + pc_min/self.car.production_cost) ** params.omega)/2 * \
+        prob_adoption = ((self.car.EE/params.energy_economy['max'] + params.production_cost['min']
+                          /self.car.production_cost) ** params.omega)/2 * \
                         (info['green_share'] + info['epsilon']) ** (1 - params.omega)
         # Choose company to imitate green technology, prob. proportional to firm size
         # New car production will fall somewhere between current Vehicle EC, QL, production_cost
