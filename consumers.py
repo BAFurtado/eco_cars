@@ -5,7 +5,8 @@ class Consumer:
     """ Purchase and use vehicles
     """
 
-    def __init__(self, sim):
+    def __init__(self, id, sim):
+        self.id = id
         # TODO: set min, max of purchase_capacity
         self.purchase_capacity = sim.seed.randint(100, 200)
         self.price_max = None

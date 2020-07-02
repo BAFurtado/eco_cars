@@ -4,11 +4,12 @@ import params
 class Firm:
     """ Produce and market vehicles
     """
-    def __init__(self, sim):
+    def __init__(self, id, sim):
+        self.id = id
         # Margin of cost
         self.a = None
         # Budget
-        self.budget = sim.seed.random.randint()
+        self.budget = sim.seed.randint(0, 100)
         # Firm configuration decisions:
         self.portfolio = 'combustion'
         self.profit = 0
@@ -50,7 +51,7 @@ class Firm:
         # 1. Check available money
         # 2. Update self.investments
         # This random factor is characterized as mu in the model description
-        mu = sim.seed.random.random()
+        mu = sim.seed.random()
         mu = min(mu, params.min_rd)
         self.investments = mu * self.budget
 
@@ -63,9 +64,16 @@ class Firm:
         # choose characteristic randomly
         # for the chosen_one,
         # TODO: this has to work for more than one car
-        rdm = sim.seed.random.random()
+        rdm = sim.seed.random()
         if rdm < 1 ** -(-params.alpha1 * self.investments):
-            pass
+            # Success
+            # Choose a random car to invest into?
+            car = sim.seed.choice(self.cars)
+            # TODO: make correct decision on the line below
+            # TODO: remember PC is min, the rest max (bring these values from sim)
+            tech_to_improve = sim.seed.choice('EC_max', 'PC_min', 'EE_max', 'QL_max')
+            delta = params.alpha2 * rdm * (tech_to_improve - car) # TODO: add correct characteristic
+            # TODO: delta is then added to chosen characteristic
 
     def sales(self, car):
         # Register number of sold_cars and prices_sold

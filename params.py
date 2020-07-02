@@ -2,8 +2,9 @@
 """
 
 # Initiating time parameter
-t = 0
-t_f = 40
+T = 40
+num_firms = 8
+num_consumers = 2000
 
 # Initial cost per unit of energy
 pe_combustion = None
