@@ -1,5 +1,6 @@
 import params
-
+from cars import Vehicle
+from collections import defaultdict
 
 class Firm:
     """ Produce and market vehicles
@@ -12,41 +13,63 @@ class Firm:
         # Budget
         self.budget = sim.seed.randint(0, params.budget_max_limit)
         # Firm configuration decisions:
-        self.portfolio = 'combustion'
+        self.portfolio = 'gas'
         self.profit = 0
         # Investments in R&D
         self.investments = 0
-        self.sold_cars = dict()
+        self.sold_cars = defaultdict(int)
         # Assign a vehicle for this firm to sell
         self.cars = dict()
-        self.roi = dict()
         self.market_share = None
         self.sim = sim
+        self.create_gas_car()
+
+    def create_gas_car(self):
+        self.cars['gas'] = Vehicle(firm=self)
 
     def update_budget(self):
         self.budget += self.profit - params.cost_adoption - self.investments
 
-    def calculate_profit(self):
-        # TODO: check when to verify whether to go bankrupt
-        if self.budget < 0:
-            # Firm is bankrupt, trigger new company
-            pass
-        # Make new budget
-        # update self.profit
+    def bankrupt(self):
+        return True if self.budget < 0 else False
+
+    def update_profit(self):
+        self.profit = 0
         for car in self.cars:
             self.profit += self.sold_cars[car] * self.cars[car].sales_price - params.fixed_costs
 
-    def change_portfolio(self, info):
-        # Determine costs of new_technology_adoption
-        # TODO: Generalize for more than one car
-        prob_adoption = ((self.car.EE/params.energy_economy['max'] + params.production_cost['min']
-                          /self.car.production_cost) ** params.omega)/2 * \
-                        (info['green_share'] + info['epsilon']) ** (1 - params.omega)
-        # Choose company to imitate green technology, prob. proportional to firm size
-        # New car production will fall somewhere between current Vehicle EC, QL, production_cost
+    def change_portfolio(self):
+        if self.budget > params.cost_adoption:
+            # Determine costs of adopting green technology
+            # Choosing parameters of cost before calculating probability
+            greens = [firm for firm in self.sim.firms.values() if firm.portfolio == 'green']
+            imitation_parameters = None, None, None
+            if not greens:
+                # Be the first firm
+                pc, ec, ql = (params.production_cost['green'], params.energy_capacity['green'],
+                              params.quality_level['green'])
+            else:
+                # Choose company to imitate green technology, prob. proportional to firm size
+                firm_to_imitate = self.sim.seed.choices(greens, weights=lambda x: x.market_share)
+                car = firm_to_imitate.cars['green']
+                # New car production will fall somewhere between current Vehicle EC, QL, production_cost
+                pc, ec, ql = (self.sim.seed.uniform(self.cars['gas'].production_cost, car.production_cost),
+                              self.sim.seed.uniform(self.cars['gas'].energy_capacity, car.energy_capacity),
+                              self.sim.seed.uniform(self.cars['gas'].quality_level, car.quality_level))
+            # TODO: Check energy_economy is always 1
+            prob_adoption = ((params.energy_economy['green'] / params.energy_economy['max']
+                              + params.production_cost['min'] / pc) ** params.omega) / 2 * \
+                            (self.sim.current_data['green_share'] + self.sim.current_data['epsilon']) ** \
+                            (1 - params.omega)
 
-        # abandon current technology depends on magnitude of ROI and how long it has been adopted
-        # TODO: set a time marker for portfolio change
+            if prob_adoption > self.sim.seed.random():
+                # Adopt Green
+                self.cars['green'] = Vehicle(_type='green',
+                                             production_cost=pc,
+                                             ec=ec,
+                                             ee=params.energy_economy['green'],
+                                             ql=ql,
+                                             firm=self)
 
     def invest_rd(self, sim):
         # 1. Check available money
@@ -83,7 +106,7 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        self.roi[car] = params.p_lambda * car.production_cost * self.sold_cars / self.investments
+        return params.p_lambda * car.production_cost * self.sold_cars / self.investments
 
     def update_market_share(self, num_cars_this_model):
         return len(self.sold_cars / num_cars_this_model)

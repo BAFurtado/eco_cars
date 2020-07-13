@@ -21,7 +21,7 @@ class Consumer:
         # Conditions to enter the market
         # 1. Condition, car price less than my reserve price and can go the distance
         my_market = [car for firm in sim.firms.values() for car in firm.cars.values()
-                     if car.price < self.price_max and car.autonomy() > self.distance]
+                     if car.sales_price < self.price_max and car.autonomy() > self.distance]
         if not my_market:
             return
 
@@ -33,5 +33,4 @@ class Consumer:
 
     def driving(self):
         # Return emissions
-        # TODO: determine how to calculate distance. Import em
-        return self.distance * self.my_car.emissions()
+        return self.distance * self.my_car.emissions() if self.my_car else 0

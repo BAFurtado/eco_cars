@@ -1,8 +1,8 @@
 ## CO2 reduction policies in the automotive sector: Green cars in Brazil
 
-Gerlane
+Gerlane Goncalves de Andrade
 
-Andrea 
+Andrea Ugolini
 
 Bernardo Alves Furtado
 

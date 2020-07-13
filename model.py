@@ -17,12 +17,13 @@ class Simulation:
     def __init__(self):
         self.seed = random.Random(0)
         self.t = 0
-        self.running = False
+        self.running = True
         self.firms = dict()
         self.consumers = dict()
         self.current_data = dict()
         self.create_agents()
         self.num_cars = defaultdict(int)
+        self.emissions = 0
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -36,6 +37,7 @@ class Simulation:
             self.t += 1
             if self.t == params.T:
                 self.running = False
+        print(f'Emissions for this run was {self.emissions:,.2f}')
 
     def update_current_data(self):
         # TODO: Probably, it will be here that global characteristics of the market are calculated
@@ -61,6 +63,11 @@ class Simulation:
 
     def run(self):
         """
+        Offer:
+        1. Calculate profit
+        2. Calculate new budget. If bankrupt, create new firm
+        3. Check for new portfolio
+        4. Investments
         Demand:
         1. Consumers decided whether to buy
         2. Consumers check cars availability
@@ -68,23 +75,35 @@ class Simulation:
         4. Criteria
         5. Choose car
         6. Update market share
-        Offer:
-        1. Calculate profit
-        2. Calculate new budget. If bankrupt, create new firm
-        3. Check for new portfolio
-        4. Investments
-
         """
-        self.demand()
-        self.offer()
 
-    def demand(self):
-        for each in self.consumers.values():
-            each.purchase(self)
-        self.update_current_data()
+        self.offer()
+        self.demand()
+        self.driving()
 
     def offer(self):
-        pass
+        landfill = list()
+        for firm in self.firms.values():
+            firm.update_profit()
+            firm.update_budget()
+            if firm.bankrupt():
+                landfill.append(firm.id)
+                continue
+            if self.t > 9:
+                firm.change_portfolio()
+        # TODO: implement abandoning current technology depends on magnitude of ROI and how long it has been adopted
+        # TODO: currently all firms going bankrupt. Implement investments. Check consumers are buying cars.
+        # for i in landfill:
+        #     del self.firms[i]
+
+    def demand(self):
+        for consumer in self.consumers.values():
+            consumer.purchase(self)
+        self.update_current_data()
+
+    def driving(self):
+        for each in self.consumers.values():
+            self.emissions += each.driving()
 
 
 def main():

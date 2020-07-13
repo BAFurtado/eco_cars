@@ -8,20 +8,25 @@ class Vehicle:
 
         CO2 emission reduction is the goal
         """
-    def __init__(self):
+    def __init__(self, _type='gas',
+                 production_cost=params.production_cost['gas'],
+                 ee=params.energy_economy['gas'],
+                 ec=params.energy_capacity['gas'],
+                 ql=params.quality_level['gas'],
+                 firm=None):
         # Type: 'combustion' or 'electric'
-        self.type = 'gas'
+        self.type = _type
         # Price (production_cost)
-        self.production_cost = params.production_cost[self.type]
+        self.production_cost = production_cost
         # Energy: distance per unit of energy (engine power per km)
-        self.EE = params.energy_economy[self.type]
+        self.EE = ee
         # Energy capacity: quantity of units able to carry
-        self.EC = params.energy_capacity[self.type]
+        self.EC = ec
         # Quality
-        self.QL = params.quality_level[self.type]
+        self.QL = ql
+        self.firm = firm
         self.sales_price = None
-        self.firm = None
-        self.sim = None
+        self.calculate_price()
 
     def autonomy(self):
         return self.EE * self.EC
@@ -32,8 +37,8 @@ class Vehicle:
     def emissions(self):
         return params.emission[self.type]/self.EE
 
-    def calculate_price(self, a):
-        self.sales_price = (1 + params.iva) * (1 + a) * self.production_cost - 1
+    def calculate_price(self):
+        self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * self.production_cost - 1
 
     def criteria_selection(self, emotion):
         criteria = {'price_accessibility': 1/self.sales_price,
