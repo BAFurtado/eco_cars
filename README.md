@@ -2,9 +2,9 @@
 
 Gerlane
 
-Andrea
+Andrea 
 
-Bernardo
+Bernardo Alves Furtado
 
 #### Objetivo
 

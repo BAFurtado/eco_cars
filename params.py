@@ -10,7 +10,7 @@ num_consumers = 2000
 production_cost = {'green': 27356, 'gas': 16950, 'min': 10000}
 energy_economy = {'green': 66.2, 'gas': 15.9, 'max': 66.2}
 energy_capacity = {'green': 2.35, 'gas': 60, 'max': 60}
-quality_level = {'green': .5, 'gas': 5, 'max': 1}
+quality_level = {'green': .5, 'gas': .5, 'max': 1}
 emission = {'green': 1, 'gas': 23.06}
 price_energy = {'green': 1.12, 'gas': 1.6}
 stations = {'green': 2, 'gas': 1}
@@ -39,10 +39,6 @@ dk = {'23': {'min': 0, 'max': 99},
       '22': {'min': 100, 'max': 249},
       '55': {'min': 250, 'max': 953}}
 br = {'min': 0, 'max': 1}
-
-# Constraints
-# t == 0:
-# PC_min < PCij = 'gas' < PCij = 'green' - cost production
 
 # Policy characteristics ---------------------------------------------
 

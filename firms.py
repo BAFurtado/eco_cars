@@ -20,6 +20,8 @@ class Firm:
         # Assign a vehicle for this firm to sell
         self.cars = dict()
         self.roi = dict()
+        self.market_share = None
+        self.sim = sim
 
     def update_budget(self):
         self.budget += self.profit - params.cost_adoption - self.investments
@@ -75,44 +77,13 @@ class Firm:
             # TODO: delta is then added to chosen characteristic
 
     def sales(self, car):
-        # Register number of sold_cars and prices_sold
+        # Register number of sold_cars
         # TODO: Remember to reset every new turn
-        # Check if there is more than one car
         self.sold_cars[car] += 1
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
         self.roi[car] = params.p_lambda * car.production_cost * self.sold_cars / self.investments
 
-
-class Vehicle:
-    """ Type
-        1. Combustion: 'gas'
-        2. Electric: 'green'
-
-        CO2 emission reduction is the goal
-        """
-    def __init__(self):
-        # Type: 'combustion' or 'electric'
-        self.type = 'gas'
-        # Price (production_cost)
-        self.production_cost = params.production_cost[self.type]
-        # Energy: distance per unit of energy (engine power per km)
-        self.EE = params.energy_economy[self.type]
-        # Energy capacity: quantity of units able to carry
-        self.EC = params.energy_capacity[self.type]
-        # Quality
-        self.QL = params.quality_level[self.type]
-        self.sales_price = None
-
-    def autonomy(self):
-        return self.EE * self.EC
-
-    def running_cost(self):
-        return params.price_energy[self.type]/self.EE
-
-    def emissions(self):
-        return params.emission[self.type]/self.EE
-
-    def calculate_price(self, a):
-        self.sales_price = (1 + params.iva) * (1 + a) * self.production_cost - 1
+    def update_market_share(self, num_cars_this_model):
+        return len(self.sold_cars / num_cars_this_model)

@@ -2,6 +2,7 @@ import random
 import params
 from firms import Firm
 from consumers import Consumer
+from collections import defaultdict
 
 # Sequence
 """
@@ -21,6 +22,7 @@ class Simulation:
         self.consumers = dict()
         self.current_data = dict()
         self.create_agents()
+        self.num_cars = defaultdict(int)
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -35,13 +37,16 @@ class Simulation:
             if self.t == params.T:
                 self.running = False
 
-    def info(self):
+    def update_current_data(self):
         # TODO: Probably, it will be here that global characteristics of the market are calculated
         # Calculate green_share of firms
         green_share = sum([1 for firm in self.firms.values() if firm.portfolio == 'green']) / len(self.firms)
         epsilon = .1 if green_share > 0 else 0
         self.current_data['green_share'] = green_share
         self.current_data['epsilon'] = epsilon
+
+    def update_car_info(self, car):
+        self.num_cars.get(car.type, 0) + 1
 
     def new_firm(self):
         # 1. Pick an existing firm
@@ -62,6 +67,7 @@ class Simulation:
         3. Consumers select, given constraints
         4. Criteria
         5. Choose car
+        6. Update market share
         Offer:
         1. Calculate profit
         2. Calculate new budget. If bankrupt, create new firm
@@ -69,6 +75,16 @@ class Simulation:
         4. Investments
 
         """
+        self.demand()
+        self.offer()
+
+    def demand(self):
+        for each in self.consumers.values():
+            each.purchase(self)
+        self.update_current_data()
+
+    def offer(self):
+        pass
 
 
 def main():

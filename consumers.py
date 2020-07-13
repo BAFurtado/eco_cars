@@ -8,17 +8,28 @@ class Consumer:
     def __init__(self, id, sim):
         self.id = id
         self.price_max = sim.seed.normalvariate(params.p_max['mu'], params.p_max['sigma'])
+        # Value that represents consumer emotion (Br)
+        self.emotion = sim.seed.random()
         self.my_car = None
         self.distance = sim.seed.normalvariate(params.distance['mu'], params.distance['sigma'])
 
-    def purchase(self, cars, dk):
+    def purchase(self, sim):
         # Probability to buy a new car: params.prob_adoption
+        choice = sim.seed.random() > params.prob_adoption
+        if not choice:
+            return
         # Conditions to enter the market
-        my_market = [car for car in cars if (car.price < min(self.price_max, self.price_max)) and
-                     (car.EC > dk)]
-        # TODO: Select two random characteristics c1 c2 from table2 (p.10)
-        # TODO: Sort by utility which is c1 x c2
-        self.my_car = None
+        # 1. Condition, car price less than my reserve price and can go the distance
+        my_market = [car for firm in sim.firms.values() for car in firm.cars.values()
+                     if car.price < self.price_max and car.autonomy() > self.distance]
+        if not my_market:
+            return
+
+        my_market.sort(key=lambda c: c.criteria_selection(self.emotion), reverse=True)
+
+        self.my_car = my_market[0]
+        self.my_car.firm.sales(self.my_car)
+        sim.update_car_info(self.my_car)
 
     def driving(self):
         # Return emissions
