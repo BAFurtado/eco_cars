@@ -83,22 +83,26 @@ class Simulation:
 
     def offer(self):
         landfill = list()
-        for firm in self.firms.values():
-            firm.update_profit()
-            firm.update_budget()
-            if firm.bankrupt():
-                landfill.append(firm.id)
+        keys = list(self.firms)
+        self.seed.shuffle(keys)
+        for key in keys:
+            self.firms[key].update_profit()
+            self.firms[key].update_budget()
+            if self.firms[key].bankrupt():
+                landfill.append(key)
                 continue
             if self.t > 9:
-                firm.change_portfolio()
+                self.firms[key].change_portfolio()
         # TODO: implement abandoning current technology depends on magnitude of ROI and how long it has been adopted
         # TODO: currently all firms going bankrupt. Implement investments. Check consumers are buying cars.
         # for i in landfill:
         #     del self.firms[i]
 
     def demand(self):
-        for consumer in self.consumers.values():
-            consumer.purchase(self)
+        keys = list(self.consumers)
+        self.seed.shuffle(keys)
+        for key in keys:
+            self.consumers[key].purchase(self)
         self.update_current_data()
 
     def driving(self):

@@ -15,7 +15,7 @@ class Consumer:
 
     def purchase(self, sim):
         # Probability to buy a new car: params.prob_adoption
-        choice = sim.seed.random() > params.prob_adoption
+        choice = sim.seed.random() < params.prob_adoption
         if not choice:
             return
         # Conditions to enter the market

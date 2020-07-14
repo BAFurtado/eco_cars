@@ -2,6 +2,7 @@ import params
 from cars import Vehicle
 from collections import defaultdict
 
+
 class Firm:
     """ Produce and market vehicles
     """
