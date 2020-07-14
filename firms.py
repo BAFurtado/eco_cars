@@ -8,28 +8,26 @@ class Firm:
     """
     def __init__(self, id, sim):
         self.id = id
-        # Margin of cost
-        # TODO: Check if this "a" is the same of params.p_lambda
-        self.a = None
         # Budget
         self.budget = sim.seed.randint(0, params.budget_max_limit)
         # Firm configuration decisions:
         self.portfolio = 'gas'
         self.profit = 0
         # Investments in R&D
-        self.investments = 0
+        self.investments = defaultdict(int)
         self.sold_cars = defaultdict(int)
         # Assign a vehicle for this firm to sell
         self.cars = dict()
         self.market_share = None
         self.sim = sim
         self.create_gas_car()
+        self.green_adoption_marker = 0
 
     def create_gas_car(self):
         self.cars['gas'] = Vehicle(firm=self)
 
     def update_budget(self):
-        self.budget += self.profit - params.cost_adoption - self.investments
+        self.budget += self.profit - sum(self.investments.values())
 
     def bankrupt(self):
         return True if self.budget < 0 else False
@@ -65,40 +63,68 @@ class Firm:
 
             if prob_adoption > self.sim.seed.random():
                 # Adopt Green
+                self.budget -= params.cost_adoption
                 self.cars['green'] = Vehicle(_type='green',
                                              production_cost=pc,
                                              ec=ec,
                                              ee=params.energy_economy['green'],
                                              ql=ql,
                                              firm=self)
+                self.green_adoption_marker = self.sim.t
 
-    def invest_rd(self, sim):
+    def abandon_portfolio(self):
+        if len(self.cars) == 1:
+            return
+        if self.sim.t - self.green_adoption_marker < 10:
+            return
+        # TODO: Check. You can only abandon the 'gas' portfolio and only once, right?
+        for car in self.cars.values():
+            roi = self.calculate_roi(car)
+            if self.sim.seed.random() < roi:
+                print(f'Abandoning a portfolio: firm {self.id}')
+                del self.cars[car.type]
+                return
+
+    def invest_rd(self):
         # 1. Check available money
+        if self.budget <= 0:
+            return
         # 2. Update self.investments
         # This random factor is characterized as mu in the model description
-        mu = sim.seed.uniform(0, params.mu_max)
+        mu = self.sim.seed.uniform(0, params.mu_max)
         mu = min(mu * self.budget, params.rd_min)
-        self.investments = mu * self.budget
+        investments = mu * self.budget
+        for key in self.investments.keys():
+            # eta = 1 if just one car, 1/2 if gas and green
+            self.investments[key] += investments * 1 if len(self.investments) == 1 else .5
+        # Actually invest into vehicle
+        self.invest_into_vehicle()
 
-    def invest_into_vehicle(self, sim):
+    def invest_into_vehicle(self):
         # May improve PC (production_cost), EE, EC, QL
-        # eta = 1 if just one car, 1/2 if gas and green
-        eta = 1 if len(self.cars) == 1 else .5
-
-        # If 'electric' possible candidates are production_cost, EC, QL else production_cost, EE, QL
-        # choose characteristic randomly
-        # for the chosen_one,
-        # TODO: this has to work for more than one car
-        rdm = sim.seed.random()
-        if rdm < 1 ** -(-params.alpha1 * self.investments):
-            # Success
-            # Choose a random car to invest into?
-            car = sim.seed.choice(self.cars)
-            # TODO: make correct decision on the line below
-            # TODO: remember PC is min, the rest max (bring these values from sim)
-            tech_to_improve = sim.seed.choice('EC_max', 'PC_min', 'EE_max', 'QL_max')
-            delta = params.alpha2 * rdm * (tech_to_improve - car) # TODO: add correct characteristic
-            # TODO: delta is then added to chosen characteristic
+        # Choose which one randomly depending on current technology
+        # 1. PC 2. EE or EC 3. QL
+        choice = self.sim.seed.choice([1, 2, 3])
+        for tech in self.cars.keys():
+            rdm = self.sim.seed.random()
+            if rdm < 1 ** -(-params.alpha1 * self.investments[tech]):
+                # Success. Investment to occur!
+                # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
+                if choice == 1:
+                    delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
+                    self.cars[tech].production_cost -= delta
+                elif choice == 3:
+                    delta = params.alpha2 * rdm * (params.quality_level['max'] - self.cars[tech].QL)
+                    self.cars[tech].QL += delta
+                else:
+                    if tech == 'gas':
+                        # EE
+                        delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
+                        self.cars[tech].EE += delta
+                    else:
+                        # EC
+                        delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
+                        self.cars[tech].EC += delta
 
     def sales(self, car):
         # Register number of sold_cars
@@ -107,7 +133,4 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        return params.p_lambda * car.production_cost * self.sold_cars / self.investments
-
-    def update_market_share(self, num_cars_this_model):
-        return len(self.sold_cars / num_cars_this_model)
+        return params.p_lambda * car.production_cost * self.sold_cars[car.type] / self.investments[car.type]

@@ -83,6 +83,7 @@ class Simulation:
 
     def offer(self):
         landfill = list()
+        # Randomize order of firms at each turn
         keys = list(self.firms)
         self.seed.shuffle(keys)
         for key in keys:
@@ -92,13 +93,19 @@ class Simulation:
                 landfill.append(key)
                 continue
             if self.t > 9:
+                # If portfolio is changed, costs of adoption apply
                 self.firms[key].change_portfolio()
-        # TODO: implement abandoning current technology depends on magnitude of ROI and how long it has been adopted
-        # TODO: currently all firms going bankrupt. Implement investments. Check consumers are buying cars.
+            self.firms[key].abandon_portfolio()
+            self.firms[key].invest_rd()
+
+        # TODO: currently all firms going bankrupt. Implement investments. Consumers not buying any cars because Dk?
         # for i in landfill:
+        #     print(f'Firm {i} has gone bankrupt')
         #     del self.firms[i]
+        #     self.new_firm()
 
     def demand(self):
+        # Randomize order of firms at each turn
         keys = list(self.consumers)
         self.seed.shuffle(keys)
         for key in keys:
