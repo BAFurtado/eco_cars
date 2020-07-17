@@ -1,6 +1,9 @@
 """ Exogenous inputs
 """
 
+import colorama as cor
+
+
 # Initiating time parameter
 T = 40
 num_firms = 8

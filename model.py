@@ -1,4 +1,5 @@
 import random
+import time
 from collections import defaultdict
 
 import params
@@ -41,9 +42,12 @@ class Simulation:
         while self.running:
             self.run()
             self.t += 1
+            # time.sleep(2)
+            # print(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for 2 seconds')
             if self.t == params.T:
                 self.running = False
-        print(f'Emissions for this run was {self.emissions:,.2f}')
+
+        print(params.cor.Fore.RED + f'Emissions for this run was {self.emissions:,.2f}')
 
     def update_current_data(self):
         # Calculate green_share of firms
@@ -104,7 +108,7 @@ class Simulation:
         5. Choose car
         6. Update market share
         """
-
+        # TODO: Check proper order of commands and firm balancing
         self.offer()
         self.demand()
         self.driving()
@@ -119,6 +123,8 @@ class Simulation:
         # TODO: Check. Market share is based on sales
         for key in keys:
             self.total_sales[key] += self.firms[key].update_profit()
+        print(params.cor.Fore.GREEN + f'Total revenue at time {self.t} is {sum(self.total_sales.values()):,.2f}')
+        print(params.cor.Fore.LIGHTGREEN_EX + f'Maximum market share at time {self.t} is {max(f.market_share for f in self.firms.values()):.4f}')
 
         for key in keys:
             self.firms[key].update_market_share(sum(self.total_sales.values()))
@@ -131,10 +137,14 @@ class Simulation:
                 self.firms[key].change_portfolio()
             self.firms[key].abandon_portfolio()
             self.firms[key].invest_rd()
+            self.firms[key].profit = 0
+            for car in self.firms[key].cars.keys():
+                self.firms[key].sold_cars[car] = 0
 
-        # TODO: currently all firms going bankrupt. Consumers not buying any cars because of Dk
+        if landfill:
+            print(params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '
+                                                    f'has(ve) gone bankrupt at time {self.t}')
         for i in landfill:
-            print(f'Firm {i} has gone bankrupt')
             self.new_firm()
             del self.firms[i]
 
@@ -145,7 +155,6 @@ class Simulation:
         self.seed.shuffle(keys)
         for key in keys:
             self.consumers[key].purchase(self)
-
 
     def driving(self):
         for each in self.consumers.values():

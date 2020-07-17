@@ -36,7 +36,7 @@ class Consumer:
         my_market.sort(key=lambda c: c.criteria_selection(self.emotion), reverse=True)
 
         self.my_car = my_market[0]
-        self.my_car.firm.sales(self.my_car)
+        self.my_car.firm.sales(self.my_car.type)
         sim.update_car_info(self.my_car)
 
     def driving(self):

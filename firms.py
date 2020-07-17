@@ -1,6 +1,7 @@
 import params
 from cars import Vehicle
 from collections import defaultdict
+from math import e
 
 
 class Firm:
@@ -29,8 +30,6 @@ class Firm:
 
     def update_budget(self):
         self.budget += self.profit - sum(self.investments.values())
-        self.investments = defaultdict(int)
-        self.profit = 0
 
     def update_market_share(self, total):
         self.market_share = self.profit / total
@@ -42,7 +41,6 @@ class Firm:
         # Sales income is accounted for at update profit, followed by update budget iteration
         for car in self.cars:
             self.profit += self.sold_cars[car] * self.cars[car].sales_price - params.fixed_costs
-            self.sold_cars[car] = 0
         return self.profit
 
     def change_portfolio(self):
@@ -88,7 +86,7 @@ class Firm:
         for car in self.cars.values():
             roi = self.calculate_roi(car)
             if self.sim.seed.random() < roi:
-                print(f'Abandoning a portfolio: firm {self.id}')
+                print(params.cor.Fore.LIGHTRED_EX + f'Abandoning a portfolio: firm {self.id}')
                 del self.cars[car.type]
                 return
 
@@ -99,9 +97,8 @@ class Firm:
         # 2. Update self.investments
         # This random factor is characterized as mu in the model description
         mu = self.sim.seed.uniform(0, params.mu_max)
-        mu = min(mu * self.budget, params.rd_min)
-        investments = mu * self.budget
-        for key in self.investments.keys():
+        investments = max(mu * self.budget, params.rd_min)
+        for key in self.cars.keys():
             # eta = 1 if just one car, 1/2 if gas and green
             self.investments[key] += investments * 1 if len(self.investments) == 1 else investments * .5
         # Actually invest into vehicle
@@ -114,10 +111,13 @@ class Firm:
         choice = self.sim.seed.choice([1, 2, 3])
         for tech in self.cars.keys():
             rdm = self.sim.seed.random()
-            if rdm < 1 ** -(-params.alpha1 * self.investments[tech]):
+            if rdm < 1 - e ** (-params.alpha1 * self.investments[tech]):
                 # Success. Investment to occur!
-                print(f'Advertise material. We, at firm {self.id}, have made an investment of '
-                      f'{sum(self.investments.values())}')
+                print(params.cor.Fore.LIGHTCYAN_EX + f'Advertise material. We, at firm {self.id}, '
+                                                     f'have made an investment '
+                                                     f'of {sum(self.investments.values()):,.2f}')
+                # Spend investments
+                self.investments = defaultdict(int)
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
                 if choice == 1:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
