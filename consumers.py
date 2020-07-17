@@ -5,8 +5,8 @@ class Consumer:
     """ Purchase and use vehicles
     """
 
-    def __init__(self, id, sim):
-        self.id = id
+    def __init__(self, _id, sim):
+        self.id = _id
         self.price_max = sim.seed.normalvariate(params.p_max['mu'], params.p_max['sigma'])
         # Value that represents consumer emotion (Br)
         self.emotion = sim.seed.random()

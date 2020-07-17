@@ -6,8 +6,8 @@ from collections import defaultdict
 class Firm:
     """ Produce and market vehicles
     """
-    def __init__(self, id, sim):
-        self.id = id
+    def __init__(self, _id, sim):
+        self.id = _id
         # Budget
         self.budget = sim.seed.randint(0, params.budget_max_limit)
         # Firm configuration decisions:
@@ -96,7 +96,7 @@ class Firm:
         investments = mu * self.budget
         for key in self.investments.keys():
             # eta = 1 if just one car, 1/2 if gas and green
-            self.investments[key] += investments * 1 if len(self.investments) == 1 else .5
+            self.investments[key] += investments * 1 if len(self.investments) == 1 else investments * .5
         # Actually invest into vehicle
         self.invest_into_vehicle()
 
@@ -109,6 +109,7 @@ class Firm:
             rdm = self.sim.seed.random()
             if rdm < 1 ** -(-params.alpha1 * self.investments[tech]):
                 # Success. Investment to occur!
+                print(f'Advertise material. We, at firm {self.id} have made an investment!')
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
                 if choice == 1:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
