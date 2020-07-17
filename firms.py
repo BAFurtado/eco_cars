@@ -6,7 +6,7 @@ from collections import defaultdict
 class Firm:
     """ Produce and market vehicles
     """
-    def __init__(self, _id, sim):
+    def __init__(self, _id, sim, gas=True):
         self.id = _id
         # Budget
         self.budget = sim.seed.randint(0, params.budget_max_limit)
@@ -18,9 +18,10 @@ class Firm:
         self.sold_cars = defaultdict(int)
         # Assign a vehicle for this firm to sell
         self.cars = dict()
-        self.market_share = None
+        self.market_share = 0
         self.sim = sim
-        self.create_gas_car()
+        if gas:
+            self.create_gas_car()
         self.green_adoption_marker = 0
 
     def create_gas_car(self):
@@ -28,6 +29,8 @@ class Firm:
 
     def update_budget(self):
         self.budget += self.profit - sum(self.investments.values())
+        self.investments = defaultdict(int)
+        self.profit = 0
 
     def update_market_share(self, total):
         self.market_share = self.profit / total
@@ -37,7 +40,6 @@ class Firm:
 
     def update_profit(self):
         # Sales income is accounted for at update profit, followed by update budget iteration
-        self.profit = 0
         for car in self.cars:
             self.profit += self.sold_cars[car] * self.cars[car].sales_price - params.fixed_costs
             self.sold_cars[car] = 0
@@ -115,7 +117,7 @@ class Firm:
             rdm = self.sim.seed.random()
             if rdm < 1 ** -(-params.alpha1 * self.investments[tech]):
                 # Success. Investment to occur!
-                print(f'Advertise material. We, at firm {self.id}, have made an investment!')
+                print(f'Advertise material. We, at firm {self.id}, have made an investment of {sum(self.investments)}')
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
                 if choice == 1:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
