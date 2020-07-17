@@ -24,6 +24,7 @@ class Simulation:
         self.create_agents()
         self.num_cars = defaultdict(int)
         self.emissions = 0
+        self.total_sales = defaultdict(float)
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -46,12 +47,16 @@ class Simulation:
         epsilon = .1 if green_share > 0 else 0
         self.current_data['green_share'] = green_share
         self.current_data['epsilon'] = epsilon
+        # Market share
+        # TODO: Check. Market share is based on sales
+        total = sum([])
 
     def update_car_info(self, car):
         self.num_cars.get(car.type, 0) + 1
 
     def new_firm(self):
-        # 1. Pick an existing firm
+        # 1. Pick an existing firm, proportional to market share
+        key = self.seed.choices()
         # 2. if original company has both technologies, just 1/3 chance both are going to be replicated
         # Choose random values between initial values and current values of the company to imitate
         # Budget is random
@@ -86,8 +91,13 @@ class Simulation:
         # Randomize order of firms at each turn
         keys = list(self.firms)
         self.seed.shuffle(keys)
+
+        self.total_sales = defaultdict(float)
         for key in keys:
-            self.firms[key].update_profit()
+            self.total_sales[key] += self.firms[key].update_profit()
+
+        for key in keys:
+            self.firms[key].update_market_share(sum(self.total_sales.values()))
             self.firms[key].update_budget()
             if self.firms[key].bankrupt():
                 landfill.append(key)

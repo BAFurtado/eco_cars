@@ -29,13 +29,19 @@ class Firm:
     def update_budget(self):
         self.budget += self.profit - sum(self.investments.values())
 
+    def update_market_share(self, total):
+        self.market_share = self.profit / total
+
     def bankrupt(self):
         return True if self.budget < 0 else False
 
     def update_profit(self):
+        # Sales income is accounted for at update profit, followed by update budget iteration
         self.profit = 0
         for car in self.cars:
             self.profit += self.sold_cars[car] * self.cars[car].sales_price - params.fixed_costs
+            self.sold_cars[car] = 0
+        return self.profit
 
     def change_portfolio(self):
         if self.budget > params.cost_adoption:
@@ -109,7 +115,7 @@ class Firm:
             rdm = self.sim.seed.random()
             if rdm < 1 ** -(-params.alpha1 * self.investments[tech]):
                 # Success. Investment to occur!
-                print(f'Advertise material. We, at firm {self.id} have made an investment!')
+                print(f'Advertise material. We, at firm {self.id}, have made an investment!')
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
                 if choice == 1:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
@@ -129,7 +135,6 @@ class Firm:
 
     def sales(self, car):
         # Register number of sold_cars
-        # TODO: Remember to reset every new turn
         self.sold_cars[car] += 1
 
     def calculate_roi(self, car):
