@@ -46,7 +46,6 @@ class Simulation:
         print(f'Emissions for this run was {self.emissions:,.2f}')
 
     def update_current_data(self):
-        # TODO: Probably, it will be here that global characteristics of the market are calculated
         # Calculate green_share of firms
         green_share = sum([1 for firm in self.firms.values() if firm.portfolio == 'green']) / len(self.firms)
         epsilon = .1 if green_share > 0 else 0
@@ -83,6 +82,8 @@ class Simulation:
                           self.seed.uniform(params.energy_capacity[i], firm_to_imitate.cars[i].EC),
                           self.seed.uniform(params.energy_economy[i], firm_to_imitate.cars[i].EE))
             new_firm.cars[i] = Vehicle(firm=new_firm, _type=i, production_cost=pc, ec=ec, ee=ee)
+            if i == 'green':
+                new_firm.green_adoption_marker = self.t
 
     def apply_policies(self):
         # TODO: Check item 3.5
@@ -131,19 +132,20 @@ class Simulation:
             self.firms[key].abandon_portfolio()
             self.firms[key].invest_rd()
 
-        # TODO: currently all firms going bankrupt. Implement investments. Consumers not buying any cars because Dk?
+        # TODO: currently all firms going bankrupt. Consumers not buying any cars because of Dk
         for i in landfill:
             print(f'Firm {i} has gone bankrupt')
             self.new_firm()
             del self.firms[i]
 
     def demand(self):
+        self.update_current_data()
         # Randomize order of firms at each turn
         keys = list(self.consumers)
         self.seed.shuffle(keys)
         for key in keys:
             self.consumers[key].purchase(self)
-        self.update_current_data()
+
 
     def driving(self):
         for each in self.consumers.values():

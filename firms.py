@@ -85,7 +85,6 @@ class Firm:
             return
         if self.sim.t - self.green_adoption_marker < 10:
             return
-        # TODO: Check. You can only abandon the 'gas' portfolio and only once, right?
         for car in self.cars.values():
             roi = self.calculate_roi(car)
             if self.sim.seed.random() < roi:
@@ -117,7 +116,8 @@ class Firm:
             rdm = self.sim.seed.random()
             if rdm < 1 ** -(-params.alpha1 * self.investments[tech]):
                 # Success. Investment to occur!
-                print(f'Advertise material. We, at firm {self.id}, have made an investment of {sum(self.investments)}')
+                print(f'Advertise material. We, at firm {self.id}, have made an investment of '
+                      f'{sum(self.investments.values())}')
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
                 if choice == 1:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)

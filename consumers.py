@@ -20,8 +20,16 @@ class Consumer:
             return
         # Conditions to enter the market
         # 1. Condition, car price less than my reserve price and can go the distance
+        # Dk: minimum distance parameter
+        choice = sim.seed.random()
+        if choice < .23:
+            dk = sim.seed.uniform(params.dk['23']['min'], params.dk['23']['max'])
+        elif choice < .45:
+            dk = sim.seed.uniform(params.dk['22']['min'], params.dk['22']['max'])
+        else:
+            dk = sim.seed.uniform(params.dk['55']['min'], params.dk['55']['max'])
         my_market = [car for firm in sim.firms.values() for car in firm.cars.values()
-                     if car.sales_price < self.price_max and car.autonomy() > self.distance]
+                     if car.sales_price < self.price_max and car.autonomy() > dk]
         if not my_market:
             return
 

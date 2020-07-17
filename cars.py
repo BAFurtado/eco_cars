@@ -41,16 +41,20 @@ class Vehicle:
         self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * self.production_cost - 1
 
     def criteria_selection(self, emotion):
+        try:
+            ms1 = self.firm.sold_cars[self.type] / self.firm.sim.num_cars[self.type]
+            ms2 = self.firm.sim.current_data['epsilon']
+        except ZeroDivisionError:
+            ms1 = self.firm.sim.current_data['epsilon']
+            ms2 = 0
         criteria = {'price_accessibility': 1/self.sales_price,
-                    # TODO: Check that Det is really car.autonomy()
-                    'use_accessibility': 1/self.autonomy(),
+                    'use_accessibility': 1/params.price_energy[self.type],
                     'stations': params.stations[self.type],
-                    'market_share': max(self.firm.sold_cars[self.type] / self.firm.sim.num_cars[self.type],
-                                        self.firm.sim.current_data['epsilon']),
+                    'market_share': max(ms1, ms2),
                     'energy_capacity': self.EC,
                     'car_cleanness': 1/self.EC,
                     'quality': self.QL,
                     'emotion': emotion}
 
-        criteria1, criteria2 = self.firm.sim.seed.choices(criteria, k=2)
+        criteria1, criteria2 = self.firm.sim.seed.choices(list(criteria.keys()), k=2)
         return criteria[criteria1] * criteria[criteria2]
