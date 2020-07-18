@@ -69,6 +69,7 @@ class Firm:
 
             if prob_adoption > self.sim.seed.random():
                 # Adopt Green
+                print(params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted a new green portfolio')
                 self.budget -= params.cost_adoption
                 self.cars['green'] = Vehicle(_type='green',
                                              production_cost=pc,
@@ -122,18 +123,22 @@ class Firm:
                 if choice == 1:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
                     self.cars[tech].production_cost -= delta
+                    print(params.cor.Fore.LIGHTCYAN_EX + f'Production cost reduced by {delta:,.4f}')
                 elif choice == 3:
                     delta = params.alpha2 * rdm * (params.quality_level['max'] - self.cars[tech].QL)
                     self.cars[tech].QL += delta
+                    print(params.cor.Fore.LIGHTCYAN_EX + f'Quality increased by {delta:,.4f}')
                 else:
                     if tech == 'gas':
                         # EE
                         delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
                         self.cars[tech].EE += delta
+                        print(params.cor.Fore.LIGHTCYAN_EX + f'Energy economy increased by {delta:,.4f}')
                     else:
                         # EC
                         delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
                         self.cars[tech].EC += delta
+                        print(params.cor.Fore.LIGHTCYAN_EX + f'Energy capacity increased by {delta:,.4f}')
 
     def sales(self, car):
         # Register number of sold_cars
