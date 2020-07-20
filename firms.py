@@ -47,10 +47,10 @@ class Firm:
         if self.budget > params.cost_adoption:
             # TODO: Check values are of current 'gas' technology: both for EE and production_cost
             prob_adoption = ((self.cars['gas'].EE / params.energy_economy['max']
-                              + params.production_cost['min'] / self.cars['gas'].production_cost) ** params.omega) / 2 * \
-                            (self.sim.current_data['green_share'] + self.sim.current_data['epsilon']) ** \
+                              + params.production_cost['min'] / self.cars['gas'].production_cost) / 2) ** params.omega \
+                            * (self.sim.current_data['green_share'] + self.sim.current_data['epsilon']) ** \
                             (1 - params.omega)
-
+            print(params.cor.Fore.LIGHTRED_EX + f'Prob. adoption of green portfolio: {prob_adoption:.4f}')
             if prob_adoption > self.sim.seed.random():
                 # Determine costs of adopting green technology
                 # Choosing parameters of cost before calculating probability

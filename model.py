@@ -52,7 +52,7 @@ class Simulation:
     def update_current_data(self):
         # Calculate green_share of firms
         green_share = sum([1 for firm in self.firms.values() if firm.portfolio == 'green']) / len(self.firms)
-        epsilon = .1 if green_share > 0 else 0
+        epsilon = .1 if green_share >= 0 else 0
         self.current_data['green_share'] = green_share
         self.current_data['epsilon'] = epsilon
 
