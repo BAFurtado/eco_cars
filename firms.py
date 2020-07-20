@@ -45,31 +45,31 @@ class Firm:
 
     def change_portfolio(self):
         if self.budget > params.cost_adoption:
-            # Determine costs of adopting green technology
-            # Choosing parameters of cost before calculating probability
-            greens = [firm for firm in self.sim.firms.values() if firm.portfolio == 'green']
-            imitation_parameters = None, None, None
-            if not greens:
-                # Be the first firm
-                pc, ec, ql = (params.production_cost['green'], params.energy_capacity['green'],
-                              params.quality_level['green'])
-            else:
-                # Choose company to imitate green technology, prob. proportional to firm size
-                firm_to_imitate = self.sim.seed.choices(greens, weights=lambda x: x.market_share)
-                car = firm_to_imitate.cars['green']
-                # New car production will fall somewhere between current Vehicle EC, QL, production_cost
-                pc, ec, ql = (self.sim.seed.uniform(self.cars['gas'].production_cost, car.production_cost),
-                              self.sim.seed.uniform(self.cars['gas'].energy_capacity, car.energy_capacity),
-                              self.sim.seed.uniform(self.cars['gas'].quality_level, car.quality_level))
-            # TODO: Check energy_economy is always 1
-            prob_adoption = ((params.energy_economy['green'] / params.energy_economy['max']
-                              + params.production_cost['min'] / pc) ** params.omega) / 2 * \
+            # TODO: Check values are of current 'gas' technology: both for EE and production_cost
+            prob_adoption = ((self.cars['gas'].EE / params.energy_economy['max']
+                              + params.production_cost['min'] / self.cars['gas'].production_cost) ** params.omega) / 2 * \
                             (self.sim.current_data['green_share'] + self.sim.current_data['epsilon']) ** \
                             (1 - params.omega)
 
             if prob_adoption > self.sim.seed.random():
+                # Determine costs of adopting green technology
+                # Choosing parameters of cost before calculating probability
+                greens = [firm for firm in self.sim.firms.values() if firm.portfolio == 'green']
+                imitation_parameters = None, None, None
+                if not greens:
+                    # Be the first firm
+                    pc, ec, ql = (params.production_cost['green'], params.energy_capacity['green'],
+                                  params.quality_level['green'])
+                else:
+                    # Choose company to imitate green technology, prob. proportional to firm size
+                    firm_to_imitate = self.sim.seed.choices(greens, weights=lambda x: x.market_share)
+                    car = firm_to_imitate.cars['green']
+                    # New car production will fall somewhere between current Vehicle EC, QL, production_cost
+                    pc, ec, ql = (self.sim.seed.uniform(self.cars['gas'].production_cost, car.production_cost),
+                                  self.sim.seed.uniform(self.cars['gas'].energy_capacity, car.energy_capacity),
+                                  self.sim.seed.uniform(self.cars['gas'].quality_level, car.quality_level))
                 # Adopt Green
-                print(params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted a new green portfolio')
+                print(params.cor.Fore.RED + f'Great news. Firm {self.id} has adopted a new green portfolio')
                 self.budget -= params.cost_adoption
                 self.cars['green'] = Vehicle(_type='green',
                                              production_cost=pc,
@@ -120,25 +120,27 @@ class Firm:
                 # Spend investments
                 self.investments = defaultdict(int)
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
-                if choice == 1:
+                if choice == 1 and self.cars[tech].production_cost > params.production_cost['min']:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
-                    self.cars[tech].production_cost -= delta
-                    print(params.cor.Fore.LIGHTCYAN_EX + f'Production cost reduced by {delta:,.4f}')
-                elif choice == 3:
+                    self.cars[tech].production_cost += delta
+                    print(params.cor.Fore.LIGHTCYAN_EX + f'Production cost reduced by {delta:,.2f}')
+                elif choice == 3 and self.cars[tech].QL < params.quality_level['max']:
                     delta = params.alpha2 * rdm * (params.quality_level['max'] - self.cars[tech].QL)
                     self.cars[tech].QL += delta
-                    print(params.cor.Fore.LIGHTCYAN_EX + f'Quality increased by {delta:,.4f}')
+                    print(params.cor.Fore.LIGHTCYAN_EX + f'Quality increased by {delta:,.2f}')
                 else:
                     if tech == 'gas':
                         # EE
-                        delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
-                        self.cars[tech].EE += delta
-                        print(params.cor.Fore.LIGHTCYAN_EX + f'Energy economy increased by {delta:,.4f}')
+                        if self.cars[tech].EE < params.energy_economy['max']:
+                            delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
+                            self.cars[tech].EE += delta
+                            print(params.cor.Fore.LIGHTCYAN_EX + f'Energy economy increased by {delta:,.2f}')
                     else:
                         # EC
-                        delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
-                        self.cars[tech].EC += delta
-                        print(params.cor.Fore.LIGHTCYAN_EX + f'Energy capacity increased by {delta:,.4f}')
+                        if self.cars[tech].EC < params.energy_capacity['max']:
+                            delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
+                            self.cars[tech].EC += delta
+                            print(params.cor.Fore.GREEN + f'Energy capacity increased by {delta:,.4f}')
 
     def sales(self, car):
         # Register number of sold_cars
