@@ -30,7 +30,7 @@ class Simulation:
         self.green_stations = dict()
         self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
         self.emissions = 0
-        self.report = pd.DataFrame(columns=['t', 'green_market_share', 'new_firm', 'emissions', 'emissions_index'])
+        self.report = pd.DataFrame(columns=['green_market_share', 'new_firm', 'emissions', 'emissions_index'])
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -57,7 +57,7 @@ class Simulation:
 
     def new_firm(self):
         # 1. Pick an existing firm, proportional to market share
-        weights = [f.current_market_share for f in self.firms.values()]
+        weights = [f.market_share['total'][self.t] for f in self.firms.values()]
         key = self.seed.choices(list(self.firms.values()), weights=weights)
         firm_to_imitate = self.firms[key[0].id]
         # 2. if original company has both technologies, just 1/3 chance both are going to be replicated
@@ -75,6 +75,7 @@ class Simulation:
         # Create new firm, without a car at first, then follow decision on techs
         # Budget is random
         new_firm = self.firms[self.ids] = Firm(self.ids, self, gas=False)
+        self.report.loc[self.t, 'new_firm'] += 1
         self.ids += 1
         # Add portfolio
         for i in techs:
@@ -89,11 +90,16 @@ class Simulation:
     # TODO: implement this
     def update_green_stations(self):
         # Update green market share
-        green_cars = sum([firm.sold_cars['green'][self.t] for firm in self.firms.values() if 'green' in firm.cars])
-        total_cars = self.num_cars['gas'][self.t] + self.num_cars['green'][self.t]
-        self.green_market_share[self.t] = green_cars/total_cars
-        # Update green stations
-        self.green_stations[self.t] = 1 + max(self.green_market_share.values())
+        if self.t < 9:
+            self.green_market_share[self.t] = 0
+            self.green_stations[self.t] = 1
+        else:
+            green_cars = sum([firm.sold_cars['green'][self.t - 1] for firm in self.firms.values() if 'green' in firm.cars])
+            total_cars = self.num_cars['gas'][self.t - 1] + self.num_cars['green'][self.t - 1]
+            self.green_market_share[self.t] = green_cars/total_cars if total_cars > 0 else 0
+            # Update green stations
+            self.green_stations[self.t] = 1 + max(self.green_market_share.values())
+        self.report.loc[self.t, 'green_market_share'] = self.green_market_share[self.t]
 
     def apply_policies(self):
         # TODO: Check item 3.5
@@ -114,9 +120,9 @@ class Simulation:
         5. Choose car
         6. Update market share
         """
-        self.demand()
-        self.apply_policies()
         self.offer()
+        self.apply_policies()
+        self.demand()
         self.driving()
 
     def offer(self):

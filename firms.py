@@ -1,7 +1,6 @@
 from collections import defaultdict
 from math import e
 
-import pandas as pd
 import params
 from cars import Vehicle
 
@@ -20,7 +19,7 @@ class Firm:
         self.sold_cars = {'gas': defaultdict(int), 'green': defaultdict(int)}
         # Assign a vehicle for this firm to sell
         self.cars = dict()
-        self.market_share = {'gas': defaultdict(float), 'green': defaultdict(float)}
+        self.market_share = {'gas': defaultdict(float), 'green': defaultdict(float), 'total': defaultdict(float)}
         self.current_market_share = 0
         self.sim = sim
         if gas:
@@ -37,20 +36,30 @@ class Firm:
         self.budget -= params.fixed_costs
 
     def update_market_share(self):
-        for tech in self.market_share:
-            if tech in self.cars:
-                self.market_share[tech][self.sim.t] = self.sold_cars[tech][self.sim.t] / \
-                                                      self.sim.num_cars[tech][self.sim.t]
+        if self.sim.t == 0:
+            self.market_share['gas'][0] = 0
+            self.market_share['total'][0] = 0
+            return
+        for tech in ['gas', 'green']:
+            if tech in self.cars and self.sim.num_cars[tech][self.sim.t - 1] > 0:
+                self.market_share[tech][self.sim.t] = self.sold_cars[tech][self.sim.t - 1] / \
+                                                      self.sim.num_cars[tech][self.sim.t - 1]
             else:
                 self.market_share[tech][self.sim.t] = 0
+        self.market_share['total'][self.sim.t] = (self.market_share['gas'][self.sim.t] +
+                                                  self.market_share['green'][self.sim.t]) / \
+                                                 (self.sim.num_cars['gas'][self.sim.t - 1] +
+                                                  self.sim.num_cars['green'][self.sim.t - 1])
 
     def bankrupt(self):
         return True if self.budget < 0 else False
 
     def update_profit(self):
         # Sales income is accounted for at update profit, followed by update budget iteration
+        if self.sim.t == 0:
+            self.profit['gas'][0] = 0
         for tech in self.cars:
-            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t] * self.cars[tech].sales_price
+            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * self.cars[tech].sales_price
 
     def change_portfolio(self):
         if len(self.cars) == 2:
@@ -76,12 +85,14 @@ class Firm:
                                   params.quality_level['green'])
                 else:
                     # Choose company to imitate green technology, prob. proportional to firm size
-                    firm_to_imitate = self.sim.seed.choices(greens, weights=lambda x: x.market_share['green'][self.sim.t])
+                    weights = [f.market_share['green'][self.sim.t] for f in greens]
+                    choices = self.sim.seed.choices(greens, weights=weights)
+                    firm_to_imitate = choices[0]
                     car = firm_to_imitate.cars['green']
                     # New car production will fall somewhere between current Vehicle EC, QL, production_cost
                     pc, ec, ql = (self.sim.seed.uniform(self.cars['gas'].production_cost, car.production_cost),
-                                  self.sim.seed.uniform(self.cars['gas'].energy_capacity, car.energy_capacity),
-                                  self.sim.seed.uniform(self.cars['gas'].quality_level, car.quality_level))
+                                  self.sim.seed.uniform(self.cars['gas'].EC, car.EC),
+                                  self.sim.seed.uniform(self.cars['gas'].QL, car.QL))
                 # Adopt Green
                 print(params.cor.Fore.RED + f'Great news. Firm {self.id} has adopted a new green portfolio')
                 self.budget -= params.cost_adoption
