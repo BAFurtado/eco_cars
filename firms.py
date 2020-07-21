@@ -1,6 +1,7 @@
 from collections import defaultdict
 from math import e
 
+import pandas as pd
 import params
 from cars import Vehicle
 
@@ -14,13 +15,14 @@ class Firm:
         self.budget = sim.seed.randint(0, params.budget_max_limit)
         # Firm configuration decisions:
         self.portfolio = 'gas'
-        self.profit = 0
+        self.profit = {'gas': defaultdict(float), 'green': defaultdict(float)}
         # Investments in R&D
-        self.investments = defaultdict(int)
-        self.sold_cars = defaultdict(int)
+        self.investments = {'gas': defaultdict(float), 'green': defaultdict(float)}
+        self.sold_cars = {'gas': defaultdict(int), 'green': defaultdict(int)}
         # Assign a vehicle for this firm to sell
         self.cars = dict()
-        self.market_share = 0
+        self.market_share = {'gas': defaultdict(float), 'green': defaultdict(float)}
+        self.current_market_share = 0
         self.sim = sim
         if gas:
             self.create_gas_car()
@@ -30,20 +32,24 @@ class Firm:
         self.cars['gas'] = Vehicle(firm=self)
 
     def update_budget(self):
-        # Investments are deduced immediately when done and retained cumulatively to calculate ROI
-        self.budget += self.profit
+        # Investments are deduced immediately when done
+        for tech in self.cars:
+            self.budget += self.profit[tech][self.sim.t]
 
-    def update_market_share(self, total):
-        self.market_share = self.profit / total
+    def update_market_share(self):
+        for tech in self.market_share:
+            if self.sim.total_sales[tech][self.sim.t] > 0:
+                self.market_share[tech][self.sim.t] = self.profit[tech][self.sim.t] / \
+                                                  self.sim.total_sales[tech][self.sim.t]
 
     def bankrupt(self):
         return True if self.budget < 0 else False
 
-    def update_profit(self):
+    def update_profit(self, tech):
         # Sales income is accounted for at update profit, followed by update budget iteration
-        for car in self.cars:
-            self.profit += self.sold_cars[car] * self.cars[car].sales_price - params.fixed_costs
-        return self.profit
+        self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t] * self.cars[tech].sales_price \
+                                         - params.fixed_costs
+        return self.profit[tech][self.sim.t]
 
     def change_portfolio(self):
         if len(self.cars) == 2:
@@ -106,10 +112,10 @@ class Firm:
         for tech in self.cars.keys():
             rdm = self.sim.seed.random()
             # eta = 1 if just one car, 1/2 if gas and green
-            to_invest_now = investments * 1 if len(self.investments) == 1 else investments * .5
+            to_invest_now = investments * 1 if len(self.cars) == 1 else investments * .5
             if rdm < 1 - e ** (-params.alpha1 * to_invest_now):
                 # Success. Investment to occur!
-                self.investments[tech] += to_invest_now
+                self.investments[tech][self.sim.t] += to_invest_now
                 self.budget -= to_invest_now
                 print(params.cor.Fore.LIGHTCYAN_EX + f'Advertise material. We, at firm {self.id}, '
                                                      f'have made an investment on {tech} '
@@ -138,9 +144,9 @@ class Firm:
                             self.cars[tech].EC += delta
                             print(params.cor.Fore.GREEN + f'Energy capacity increased by {delta:,.4f}')
 
-    def sales(self, car):
+    def sales(self, car_type):
         # Register number of sold_cars
-        self.sold_cars[car] += 1
+        self.sold_cars[car_type][self.sim.t] += 1
 
     def abandon_portfolio(self):
         if len(self.cars) == 1:
@@ -156,4 +162,5 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        return params.p_lambda * car.production_cost * self.sold_cars[car.type] / self.investments[car.type]
+        return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t] / \
+               self.investments[car.type][self.sim.t - 1]

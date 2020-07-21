@@ -42,7 +42,7 @@ class Vehicle:
 
     def criteria_selection(self, emotion):
         try:
-            ms1 = self.firm.sold_cars[self.type] / self.firm.sim.num_cars[self.type]
+            ms1 = self.firm.sold_cars[self.type][self.firm.sim.t] / self.firm.sim.num_cars[self.type][self.firm.sim.t]
             ms2 = self.firm.sim.current_data['epsilon']
         except ZeroDivisionError:
             ms1 = self.firm.sim.current_data['epsilon']

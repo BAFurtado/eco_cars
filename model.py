@@ -27,9 +27,9 @@ class Simulation:
         self.consumers = dict()
         self.current_data = dict()
         self.create_agents()
-        self.num_cars = defaultdict(int)
+        self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
         self.emissions = 0
-        self.total_sales = defaultdict(float)
+        self.total_sales = {'green': defaultdict(float), 'gas': defaultdict(float)}
         self.report = pd.DataFrame(columns=['t', 'green_market_share', 'new_firm', 'emissions', 'emissions_index'])
 
     def create_agents(self):
@@ -44,8 +44,8 @@ class Simulation:
         while self.running:
             self.run()
             self.t += 1
-            # time.sleep(2)
-            # print(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for 2 seconds')
+            # time.sleep(3)
+            # print(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for 3 seconds')
             if self.t == params.T:
                 self.running = False
         print(params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
@@ -58,11 +58,12 @@ class Simulation:
         self.current_data['epsilon'] = epsilon
 
     def update_car_info(self, car):
-        self.num_cars.get(car.type, 0) + 1
+        self.num_cars[car.type][self.t] += 1
 
     def new_firm(self):
         # 1. Pick an existing firm, proportional to market share
-        key = self.seed.choices(list(self.firms.values()), weights=[f.market_share for f in self.firms.values()])
+        weights = [f.current_market_share for f in self.firms.values()]
+        key = self.seed.choices(list(self.firms.values()), weights=weights)
         firm_to_imitate = self.firms[key[0].id]
         # 2. if original company has both technologies, just 1/3 chance both are going to be replicated
         choice = self.seed.random()
@@ -89,6 +90,12 @@ class Simulation:
             new_firm.cars[i] = Vehicle(firm=new_firm, _type=i, production_cost=pc, ec=ec, ee=ee)
             if i == 'green':
                 new_firm.green_adoption_marker = self.t
+
+    def current_market_share(self):
+        total_sales = self.total_sales['green'][self.t] + self.total_sales['gas'][self.t]
+        for key in self.firms:
+            self.firms[key].current_market_share = self.firms[key].profit['green'][self.t] + \
+                                                   self.firms[key].profit['gas'][self.t] / total_sales
 
     def apply_policies(self):
         # TODO: Check item 3.5
@@ -120,15 +127,14 @@ class Simulation:
         keys = list(self.firms)
         self.seed.shuffle(keys)
 
-        self.total_sales = defaultdict(float)
         # TODO: Check. Market share is based on sales
-        for key in keys:
-            self.total_sales[key] += self.firms[key].update_profit()
-        print(params.cor.Fore.GREEN + f'Total revenue at time {self.t} is {sum(self.total_sales.values()):,.2f}')
-        print(params.cor.Fore.LIGHTRED_EX + f'Maximum market share at time {self.t} is {max(f.market_share for f in self.firms.values()):.4f}')
+        for tech in ['gas', 'green']:
+            for key in keys:
+                if tech in self.firms[key].cars:
+                    self.total_sales[tech][self.t] += self.firms[key].update_profit(tech)
 
         for key in keys:
-            self.firms[key].update_market_share(sum(self.total_sales.values()))
+            self.firms[key].update_market_share()
             self.firms[key].update_budget()
             if self.firms[key].bankrupt():
                 landfill.append(key)
@@ -138,9 +144,8 @@ class Simulation:
                 self.firms[key].change_portfolio()
             self.firms[key].abandon_portfolio()
             self.firms[key].invest_rd()
-            self.firms[key].profit = 0
-            for car in self.firms[key].cars.keys():
-                self.firms[key].sold_cars[car] = 0
+
+        self.current_market_share()
 
         if landfill:
             print(params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '
