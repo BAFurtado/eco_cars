@@ -29,7 +29,6 @@ class Simulation:
         self.create_agents()
         self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
         self.emissions = 0
-        self.total_sales = {'green': defaultdict(float), 'gas': defaultdict(float)}
         self.report = pd.DataFrame(columns=['t', 'green_market_share', 'new_firm', 'emissions', 'emissions_index'])
 
     def create_agents(self):
@@ -44,10 +43,12 @@ class Simulation:
         while self.running:
             self.run()
             self.t += 1
-            # time.sleep(3)
-            # print(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for 3 seconds')
             if self.t == params.T:
                 self.running = False
+                break
+            sleep = 5
+            time.sleep(sleep)
+            print(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for {sleep} seconds')
         print(params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
 
     def update_current_data(self):
@@ -57,8 +58,8 @@ class Simulation:
         self.current_data['green_share'] = green_share
         self.current_data['epsilon'] = epsilon
 
-    def update_car_info(self, car):
-        self.num_cars[car.type][self.t] += 1
+    def update_car_info(self, car_type):
+        self.num_cars[car_type][self.t] += 1
 
     def new_firm(self):
         # 1. Pick an existing firm, proportional to market share
@@ -91,11 +92,9 @@ class Simulation:
             if i == 'green':
                 new_firm.green_adoption_marker = self.t
 
-    def current_market_share(self):
-        total_sales = self.total_sales['green'][self.t] + self.total_sales['gas'][self.t]
-        for key in self.firms:
-            self.firms[key].current_market_share = self.firms[key].profit['green'][self.t] + \
-                                                   self.firms[key].profit['gas'][self.t] / total_sales
+    # TODO: implement this
+    def update_green_stations(self):
+        pass
 
     def apply_policies(self):
         # TODO: Check item 3.5
@@ -127,13 +126,8 @@ class Simulation:
         keys = list(self.firms)
         self.seed.shuffle(keys)
 
-        # TODO: Check. Market share is based on sales
-        for tech in ['gas', 'green']:
-            for key in keys:
-                if tech in self.firms[key].cars:
-                    self.total_sales[tech][self.t] += self.firms[key].update_profit(tech)
-
         for key in keys:
+            self.firms[key].update_profit()
             self.firms[key].update_market_share()
             self.firms[key].update_budget()
             if self.firms[key].bankrupt():
@@ -144,8 +138,6 @@ class Simulation:
                 self.firms[key].change_portfolio()
             self.firms[key].abandon_portfolio()
             self.firms[key].invest_rd()
-
-        self.current_market_share()
 
         if landfill:
             print(params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '

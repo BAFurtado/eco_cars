@@ -35,21 +35,23 @@ class Firm:
         # Investments are deduced immediately when done
         for tech in self.cars:
             self.budget += self.profit[tech][self.sim.t]
+        self.budget -= params.fixed_costs
 
     def update_market_share(self):
         for tech in self.market_share:
-            if self.sim.total_sales[tech][self.sim.t] > 0:
-                self.market_share[tech][self.sim.t] = self.profit[tech][self.sim.t] / \
-                                                  self.sim.total_sales[tech][self.sim.t]
+            if tech in self.cars:
+                self.market_share[tech][self.sim.t] = self.sold_cars[tech][self.sim.t] / \
+                                                      self.sim.num_cars[tech][self.sim.t]
+            else:
+                self.market_share[tech][self.sim.t] = 0
 
     def bankrupt(self):
         return True if self.budget < 0 else False
 
-    def update_profit(self, tech):
+    def update_profit(self):
         # Sales income is accounted for at update profit, followed by update budget iteration
-        self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t] * self.cars[tech].sales_price \
-                                         - params.fixed_costs
-        return self.profit[tech][self.sim.t]
+        for tech in self.cars:
+            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t] * self.cars[tech].sales_price
 
     def change_portfolio(self):
         if len(self.cars) == 2:

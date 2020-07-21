@@ -37,7 +37,7 @@ class Consumer:
 
         self.my_car = my_market[0]
         self.my_car.firm.sales(self.my_car.type)
-        sim.update_car_info(self.my_car)
+        sim.update_car_info(self.my_car.type)
 
     def driving(self):
         # Return emissions
