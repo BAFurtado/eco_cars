@@ -1,7 +1,8 @@
-import params
-from cars import Vehicle
 from collections import defaultdict
 from math import e
+
+import params
+from cars import Vehicle
 
 
 class Firm:
@@ -111,25 +112,25 @@ class Firm:
                 self.investments[tech] += to_invest_now
                 self.budget -= to_invest_now
                 print(params.cor.Fore.LIGHTCYAN_EX + f'Advertise material. We, at firm {self.id}, '
-                                                     f'have made an investment '
+                                                     f'have made an investment on {tech} '
                                                      f'of {to_invest_now:,.2f}')
 
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
                 if choice == 1 and self.cars[tech].production_cost > params.production_cost['min']:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
                     self.cars[tech].production_cost += delta
-                    print(params.cor.Fore.LIGHTCYAN_EX + f'Production cost reduced by {delta:,.2f}')
+                    print(params.cor.Fore.GREEN + f'Production cost reduced by {delta:,.2f}')
                 elif choice == 3 and self.cars[tech].QL < params.quality_level['max']:
                     delta = params.alpha2 * rdm * (params.quality_level['max'] - self.cars[tech].QL)
                     self.cars[tech].QL += delta
-                    print(params.cor.Fore.LIGHTCYAN_EX + f'Quality increased by {delta:,.2f}')
+                    print(params.cor.Fore.MAGENTA + f'Quality increased by {delta:,.2f}')
                 else:
                     if tech == 'gas':
                         # EE
                         if self.cars[tech].EE < params.energy_economy['max']:
                             delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
                             self.cars[tech].EE += delta
-                            print(params.cor.Fore.LIGHTCYAN_EX + f'Energy economy increased by {delta:,.2f}')
+                            print(params.cor.Fore.LIGHTYELLOW_EX + f'Energy economy increased by {delta:,.2f}')
                     else:
                         # EC
                         if self.cars[tech].EC < params.energy_capacity['max']:

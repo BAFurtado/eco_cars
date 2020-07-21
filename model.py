@@ -1,7 +1,8 @@
 import random
-import time
 from collections import defaultdict
 
+import pandas as pd
+import time
 import params
 from cars import Vehicle
 from consumers import Consumer
@@ -18,7 +19,7 @@ from firms import Firm
 
 class Simulation:
     def __init__(self):
-        self.seed = random.Random(0)
+        self.seed = random.Random()
         self.t = 0
         self.ids = 0
         self.running = True
@@ -29,6 +30,7 @@ class Simulation:
         self.num_cars = defaultdict(int)
         self.emissions = 0
         self.total_sales = defaultdict(float)
+        self.report = pd.DataFrame(columns=['t', 'green_market_share', 'new_firm', 'emissions', 'emissions_index'])
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -46,8 +48,7 @@ class Simulation:
             # print(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for 2 seconds')
             if self.t == params.T:
                 self.running = False
-
-        print(params.cor.Fore.RED + f'Emissions for this run was {self.emissions:,.2f}')
+        print(params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
 
     def update_current_data(self):
         # Calculate green_share of firms
@@ -108,8 +109,8 @@ class Simulation:
         5. Choose car
         6. Update market share
         """
-        # TODO: Check proper order of commands and firm balancing
         self.offer()
+        self.apply_policies()
         self.demand()
         self.driving()
 
@@ -124,7 +125,7 @@ class Simulation:
         for key in keys:
             self.total_sales[key] += self.firms[key].update_profit()
         print(params.cor.Fore.GREEN + f'Total revenue at time {self.t} is {sum(self.total_sales.values()):,.2f}')
-        print(params.cor.Fore.LIGHTGREEN_EX + f'Maximum market share at time {self.t} is {max(f.market_share for f in self.firms.values()):.4f}')
+        print(params.cor.Fore.LIGHTRED_EX + f'Maximum market share at time {self.t} is {max(f.market_share for f in self.firms.values()):.4f}')
 
         for key in keys:
             self.firms[key].update_market_share(sum(self.total_sales.values()))
@@ -159,6 +160,11 @@ class Simulation:
     def driving(self):
         for each in self.consumers.values():
             self.emissions += each.driving()
+        self.report.loc[self.t, 'emissions'] = self.emissions
+        self.report.loc[self.t, 'emissions_index'] = self.emissions / self.report.loc[0, 'emissions']
+        print(params.cor.Fore.RED + f"Emissions at t {self.t} was {self.emissions:,.2f}. "
+                                    f"Emissions index: {self.report.loc[self.t, 'emissions_index']:.4f}")
+        self.emissions = 0
 
 
 def main():

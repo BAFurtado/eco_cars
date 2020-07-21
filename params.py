@@ -1,6 +1,5 @@
 """ Exogenous inputs
 """
-
 import colorama as cor
 
 
