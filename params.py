@@ -15,7 +15,7 @@ energy_capacity = {'green': 2.35, 'gas': 60, 'max': 60}
 quality_level = {'green': .5, 'gas': .5, 'max': 1}
 emission = {'green': 1, 'gas': 23.06}
 price_energy = {'green': 1.12, 'gas': 1.6}
-stations = {'green': 2, 'gas': 1}
+stations = {'green': 1, 'gas': 2}
 iva = .196
 
 # Firms characteristics ---------------------------------------------
@@ -25,7 +25,8 @@ mu_max = .1
 rd_min = 50000
 alpha1 = 1e-5
 alpha2 = .5
-# epsilon is calculated when there is at least one firm that is green. Otherwise it is .1 -- check model.info()
+# epsilon is calculated when there is at least one firm that is green
+epsilon = .1
 omega = .5
 # Costs of adoption of new technology
 cost_adoption = 10000

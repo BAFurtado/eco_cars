@@ -42,11 +42,10 @@ class Vehicle:
 
     def criteria_selection(self, emotion):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]
-        ms2 = self.firm.sim.current_data['epsilon']
         criteria = {'price_accessibility': 1/self.sales_price,
                     'use_accessibility': 1/params.price_energy[self.type],
-                    'stations': params.stations[self.type],
-                    'market_share': max(ms1, ms2),
+                    'stations': params.stations['gas'] if self.type == 'gas' else self.firm.sim.green_stations[self.firm.sim.t],
+                    'market_share': max(ms1, params.epsilon),
                     'energy_capacity': self.EC,
                     'car_cleanness': 1/self.EC,
                     'quality': self.QL,

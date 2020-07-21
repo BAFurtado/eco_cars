@@ -25,8 +25,9 @@ class Simulation:
         self.running = True
         self.firms = dict()
         self.consumers = dict()
-        self.current_data = dict()
         self.create_agents()
+        self.green_market_share = dict()
+        self.green_stations = dict()
         self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
         self.emissions = 0
         self.report = pd.DataFrame(columns=['t', 'green_market_share', 'new_firm', 'emissions', 'emissions_index'])
@@ -47,16 +48,9 @@ class Simulation:
                 self.running = False
                 break
             sleep = 5
-            time.sleep(sleep)
+            # time.sleep(sleep)
             print(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for {sleep} seconds')
         print(params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
-
-    def update_current_data(self):
-        # Calculate green_share of firms
-        green_share = sum([1 for firm in self.firms.values() if firm.portfolio == 'green']) / len(self.firms)
-        epsilon = .1 if green_share >= 0 else 0
-        self.current_data['green_share'] = green_share
-        self.current_data['epsilon'] = epsilon
 
     def update_car_info(self, car_type):
         self.num_cars[car_type][self.t] += 1
@@ -94,7 +88,12 @@ class Simulation:
 
     # TODO: implement this
     def update_green_stations(self):
-        pass
+        # Update green market share
+        green_cars = sum([firm.sold_cars['green'][self.t] for firm in self.firms.values() if 'green' in firm.cars])
+        total_cars = self.num_cars['gas'][self.t] + self.num_cars['green'][self.t]
+        self.green_market_share[self.t] = green_cars/total_cars
+        # Update green stations
+        self.green_stations[self.t] = 1 + max(self.green_market_share.values())
 
     def apply_policies(self):
         # TODO: Check item 3.5
@@ -121,6 +120,7 @@ class Simulation:
         self.driving()
 
     def offer(self):
+        self.update_green_stations()
         landfill = list()
         # Randomize order of firms at each turn
         keys = list(self.firms)
@@ -133,6 +133,7 @@ class Simulation:
             if self.firms[key].bankrupt():
                 landfill.append(key)
                 continue
+
             if self.t > 9:
                 # If portfolio is changed, costs of adoption apply
                 self.firms[key].change_portfolio()
@@ -147,7 +148,6 @@ class Simulation:
             del self.firms[i]
 
     def demand(self):
-        self.update_current_data()
         # Randomize order of firms at each turn
         keys = list(self.consumers)
         self.seed.shuffle(keys)

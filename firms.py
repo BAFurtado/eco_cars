@@ -14,7 +14,6 @@ class Firm:
         # Budget
         self.budget = sim.seed.randint(0, params.budget_max_limit)
         # Firm configuration decisions:
-        self.portfolio = 'gas'
         self.profit = {'gas': defaultdict(float), 'green': defaultdict(float)}
         # Investments in R&D
         self.investments = {'gas': defaultdict(float), 'green': defaultdict(float)}
@@ -62,15 +61,14 @@ class Firm:
             return
         if self.budget > params.cost_adoption:
             # TODO: Check values are of current 'gas' technology: both for EE and production_cost
-            prob_adoption = ((self.cars['gas'].EE / params.energy_economy['max']
-                              + params.production_cost['min'] / self.cars['gas'].production_cost) / 2) ** params.omega \
-                            * (self.sim.current_data['green_share'] + self.sim.current_data['epsilon']) ** \
-                            (1 - params.omega)
+            prob_adoption = ((self.cars['gas'].EE / params.energy_economy['max'] + params.production_cost['min'] /
+                              self.cars['gas'].production_cost) / 2) ** params.omega \
+                            * max(self.sim.green_market_share[self.sim.t], params.epsilon) ** (1 - params.omega)
             # print(params.cor.Fore.LIGHTRED_EX + f'Prob. adoption of green portfolio: {prob_adoption:.4f}')
             if prob_adoption > self.sim.seed.random():
                 # Determine costs of adopting green technology
                 # Choosing parameters of cost before calculating probability
-                greens = [firm for firm in self.sim.firms.values() if firm.portfolio == 'green']
+                greens = [firm for firm in self.sim.firms.values() if 'green' in firm.cars]
                 imitation_parameters = None, None, None
                 if not greens:
                     # Be the first firm
@@ -78,7 +76,7 @@ class Firm:
                                   params.quality_level['green'])
                 else:
                     # Choose company to imitate green technology, prob. proportional to firm size
-                    firm_to_imitate = self.sim.seed.choices(greens, weights=lambda x: x.market_share)
+                    firm_to_imitate = self.sim.seed.choices(greens, weights=lambda x: x.market_share['green'][self.sim.t])
                     car = firm_to_imitate.cars['green']
                     # New car production will fall somewhere between current Vehicle EC, QL, production_cost
                     pc, ec, ql = (self.sim.seed.uniform(self.cars['gas'].production_cost, car.production_cost),
