@@ -162,5 +162,8 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t] / \
-               self.investments[car.type][self.sim.t - 1]
+        if self.investments[car.type][self.sim.t - 1] > 0:
+            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t] / \
+                   self.investments[car.type][self.sim.t - 1]
+        else:
+            return 0

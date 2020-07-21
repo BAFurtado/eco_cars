@@ -116,9 +116,9 @@ class Simulation:
         5. Choose car
         6. Update market share
         """
-        self.offer()
-        self.apply_policies()
         self.demand()
+        self.apply_policies()
+        self.offer()
         self.driving()
 
     def offer(self):
