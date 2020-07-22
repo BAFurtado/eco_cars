@@ -32,7 +32,7 @@ class Firm:
         # Investments are deduced immediately when done
         for tech in self.cars:
             self.budget += self.profit[tech][self.sim.t]
-        self.budget -= params.fixed_costs
+        self.budget -= params.fixed_costs if self.sim.t != 0 else 0
 
     def update_market_share(self):
         if self.sim.t == 0:
@@ -94,7 +94,8 @@ class Firm:
                                   self.sim.seed.uniform(self.cars['gas'].EC, car.EC),
                                   self.sim.seed.uniform(self.cars['gas'].QL, car.QL))
                 # Adopt Green
-                print(params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted a new green portfolio')
+                print(params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted a new green portfolio '
+                                                       f'at time {self.sim.t}')
                 self.budget -= params.cost_adoption
                 self.cars['green'] = Vehicle(_type='green',
                                              production_cost=pc,
@@ -168,7 +169,7 @@ class Firm:
             roi = self.calculate_roi(car)
             self.sim.log.info(f'ROI for firm {self.id} is {roi}')
             if self.sim.seed.random() < roi:
-                print(params.cor.Fore.LIGHTRED_EX + f'Abandoning a portfolio: firm {self.id}')
+                print(params.cor.Fore.LIGHTRED_EX + f'Abandoning a portfolio: firm {self.id} at time {self.sim.t}')
                 del self.cars[car.type]
                 return
 

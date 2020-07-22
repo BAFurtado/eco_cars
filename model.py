@@ -35,13 +35,14 @@ class Simulation:
         self.ids = 0
         self.running = True
         self.firms = dict()
+        self.new_firms = list()
         self.consumers = dict()
         self.create_agents()
         self.green_market_share = dict()
         self.green_stations = dict()
         self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
         self.emissions = 0
-        self.report = pd.DataFrame(columns=['green_market_share', 'new_firm', 'emissions', 'emissions_index'])
+        self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share', 'emissions', 'emissions_index'])
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -86,10 +87,9 @@ class Simulation:
             techs = list(firm_to_imitate.cars.keys())
         # Create new firm, without a car at first, then follow decision on techs
         # Budget is random
-
         new_firm = self.firms[self.ids] = Firm(self.ids, self, gas=False)
         self.log.info(f'New firm {new_firm.id} created')
-        self.report.loc[self.t, 'new_firm'] += 1
+        self.new_firms.append(new_firm.id)
         self.ids += 1
         # Add portfolio
         for i in techs:
@@ -159,6 +159,11 @@ class Simulation:
                 self.firms[key].change_portfolio()
             self.firms[key].abandon_portfolio()
             self.firms[key].invest_rd()
+
+        # New firms market share
+        self.report.loc[self.t, 'new_firms_share'] = sum([f.market_share['total'][self.t]
+                                                          for f in self.firms.values()
+                                                          if f.id in self.new_firms])
 
         if landfill:
             print(params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '
