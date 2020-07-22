@@ -166,6 +166,7 @@ class Firm:
             return
         for car in self.cars.values():
             roi = self.calculate_roi(car)
+            # print(f'ROI for firm {self.id} is {roi}')
             if self.sim.seed.random() < roi:
                 print(params.cor.Fore.LIGHTRED_EX + f'Abandoning a portfolio: firm {self.id}')
                 del self.cars[car.type]
@@ -173,8 +174,7 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        if self.investments[car.type][self.sim.t - 1] > 0:
-            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t] / \
-                   self.investments[car.type][self.sim.t - 1]
+        if self.investments[car.type][self.sim.t - 2] > 0:
+            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t - 1] / self.investments[car.type][self.sim.t - 2]
         else:
             return 0

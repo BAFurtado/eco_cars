@@ -87,7 +87,6 @@ class Simulation:
             if i == 'green':
                 new_firm.green_adoption_marker = self.t
 
-    # TODO: implement this
     def update_green_stations(self):
         # Update green market share
         if self.t < 9:
