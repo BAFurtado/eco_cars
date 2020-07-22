@@ -2,6 +2,7 @@ import random
 from collections import defaultdict
 
 import pandas as pd
+import logging
 import time
 import params
 from cars import Vehicle
@@ -18,8 +19,18 @@ from firms import Firm
 
 
 class Simulation:
-    def __init__(self):
-        self.seed = random.Random()
+    def __init__(self, verbose=False, seed=False):
+        self.log = logging.getLogger('main')
+        if verbose:
+            logging.basicConfig(level=logging.INFO)
+            self.sleep = True
+        else:
+            self.log.setLevel(30)
+            self.sleep = False
+        if not seed:
+            self.seed = random.Random()
+        else:
+            self.seed = random.Random(0)
         self.t = 0
         self.ids = 0
         self.running = True
@@ -47,9 +58,10 @@ class Simulation:
             if self.t == params.T:
                 self.running = False
                 break
-            sleep = 5
-            # time.sleep(sleep)
-            print(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for {sleep} seconds')
+            if self.sleep:
+                sleep = 5
+                time.sleep(sleep)
+                self.log.info(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for {sleep} seconds')
         print(params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
 
     def update_car_info(self, car_type):
@@ -74,7 +86,9 @@ class Simulation:
             techs = list(firm_to_imitate.cars.keys())
         # Create new firm, without a car at first, then follow decision on techs
         # Budget is random
+
         new_firm = self.firms[self.ids] = Firm(self.ids, self, gas=False)
+        self.log.info(f'New firm {new_firm.id} created')
         self.report.loc[self.t, 'new_firm'] += 1
         self.ids += 1
         # Add portfolio
@@ -165,16 +179,17 @@ class Simulation:
             self.emissions += each.driving()
         self.report.loc[self.t, 'emissions'] = self.emissions
         self.report.loc[self.t, 'emissions_index'] = self.emissions / self.report.loc[0, 'emissions']
-        print(params.cor.Fore.RED + f"Emissions at t {self.t} was {self.emissions:,.2f}. "
-                                    f"Emissions index: {self.report.loc[self.t, 'emissions_index']:.4f}")
+        self.log.info(params.cor.Fore.RED + f"Emissions at t {self.t} was {self.emissions:,.2f}. "
+                                            f"Emissions index: {self.report.loc[self.t, 'emissions_index']:.4f}")
         self.emissions = 0
 
 
-def main():
-    my_sim = Simulation()
+def main(verbose=False):
+    my_sim = Simulation(verbose=verbose)
     my_sim.controller()
     return my_sim
 
 
 if __name__ == '__main__':
-    s = main()
+    v = False
+    s = main(v)
