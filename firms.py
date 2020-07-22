@@ -20,7 +20,6 @@ class Firm:
         # Assign a vehicle for this firm to sell
         self.cars = dict()
         self.market_share = {'gas': defaultdict(float), 'green': defaultdict(float), 'total': defaultdict(float)}
-        self.current_market_share = 0
         self.sim = sim
         if gas:
             self.create_gas_car()
@@ -58,6 +57,7 @@ class Firm:
         # Sales income is accounted for at update profit, followed by update budget iteration
         if self.sim.t == 0:
             self.profit['gas'][0] = 0
+            return
         for tech in self.cars:
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * self.cars[tech].sales_price
 

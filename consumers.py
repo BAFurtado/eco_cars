@@ -33,7 +33,10 @@ class Consumer:
         if not my_market:
             return
 
-        my_market.sort(key=lambda c: c.criteria_selection(self.emotion), reverse=True)
+        criteria = ['price_accessibility', 'use_accessibility', 'stations', 'market_share',
+                    'energy_capacity', 'car_cleanness', 'quality', 'emotion']
+        criteria1, criteria2 = sim.seed.choices(criteria, k=2)
+        my_market.sort(key=lambda c: c.criteria_selection(self.emotion, criteria1, criteria2), reverse=True)
 
         self.my_car = my_market[0]
         self.my_car.firm.sales(self.my_car.type)

@@ -40,7 +40,7 @@ class Vehicle:
     def calculate_price(self):
         self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * self.production_cost - 1
 
-    def criteria_selection(self, emotion):
+    def criteria_selection(self, emotion, criteria1, criteria2):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]
         criteria = {'price_accessibility': 1/self.sales_price,
                     'use_accessibility': 1/params.price_energy[self.type],
@@ -51,5 +51,4 @@ class Vehicle:
                     'quality': self.QL,
                     'emotion': emotion}
 
-        criteria1, criteria2 = self.firm.sim.seed.choices(list(criteria.keys()), k=2)
         return criteria[criteria1] * criteria[criteria2]
