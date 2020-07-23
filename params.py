@@ -44,4 +44,11 @@ dk = {'23': {'min': 0, 'max': 99},
 br = {'min': 0, 'max': 1}
 
 # Policy characteristics ---------------------------------------------
+e_benchmark = {'low': .9, 'high': .1}
+# Imposto/Tax
+tax = {'low': .1, 'high': .5}
+# Support green vehicles sales
+rebate = {'low': -2000, 'high': -6000}
+# Feebate: max discount for gas vehicles
+discount = {'low': -1000, 'high': -3000}
 

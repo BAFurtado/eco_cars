@@ -19,7 +19,7 @@ from firms import Firm
 
 
 class Simulation:
-    def __init__(self, verbose=False, seed=False):
+    def __init__(self, policy=None, verbose=False, seed=False):
         self.log = logging.getLogger('main')
         if verbose:
             logging.basicConfig(level=logging.INFO)
@@ -32,6 +32,8 @@ class Simulation:
         else:
             self.seed = random.Random(0)
         self.t = 0
+        # Benchmark e policy parameter: average emission sold vehicles
+        self.e = 0
         self.ids = 0
         self.running = True
         self.firms = dict()
@@ -42,6 +44,7 @@ class Simulation:
         self.green_stations = dict()
         self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
         self.emissions = 0
+        self.policy = policy
         self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share', 'emissions', 'emissions_index'])
 
     def create_agents(self):
@@ -116,7 +119,15 @@ class Simulation:
         self.report.loc[self.t, 'green_market_share'] = self.green_market_share[self.t]
 
     def apply_policies(self):
-        # TODO: Check item 3.5
+        # e (e_benchmark) is the average emission of vehicles sold in the previous period
+        # TODO: Does this consider driving distance?
+        # Calculate e
+        if self.t > 0:
+            cars_emission = [car.emissions() for firm in self.firms.values() for car in firm.cars.values()]
+            sold = [sold[self.t - 1] for firm in self.firms.values() for sold in firm.sold_cars.values()]
+            sold_cars_emissions = sum([c * s for c, s in zip(cars_emission, sold)])/sum(sold)
+            self.e = sold_cars_emissions
+            self.log.info(f'Parameter e -- sold cars emission average -- is {sold_cars_emissions:.4f}')
         pass
 
     def run(self):
@@ -135,7 +146,8 @@ class Simulation:
         6. Update market share
         """
         self.offer()
-        self.apply_policies()
+        if self.policy:
+            self.apply_policies()
         self.demand()
         self.driving()
 
@@ -189,12 +201,13 @@ class Simulation:
         self.emissions = 0
 
 
-def main(verbose=False):
-    my_sim = Simulation(verbose=verbose)
+def main(policy, verbose=False):
+    my_sim = Simulation(policy, verbose=verbose)
     my_sim.controller()
     return my_sim
 
 
 if __name__ == '__main__':
-    v = False
-    s = main(v)
+    p = 'test'
+    v = True
+    my_sim = main(p, v)
