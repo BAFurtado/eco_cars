@@ -31,9 +31,6 @@ class Vehicle:
     def autonomy(self):
         return self.EE * self.EC
 
-    def running_cost(self):
-        return params.price_energy[self.type]/self.EE
-
     def emissions(self):
         return params.emission[self.type]/self.EE
 

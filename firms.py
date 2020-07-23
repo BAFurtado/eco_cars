@@ -168,7 +168,10 @@ class Firm:
             roi = self.calculate_roi(car)
             self.sim.log.info(f'ROI for firm {self.id} is {roi}')
             if self.sim.seed.random() < roi:
-                print(params.cor.Fore.LIGHTRED_EX + f'Abandoning a portfolio: firm {self.id} at time {self.sim.t}')
+                print(params.cor.Fore.LIGHTRED_EX + f'Abandoning portfolio {car.type}: firm {self.id} '
+                                                    f'at time {self.sim.t}')
+                # Also, restrict new change, setting marker
+                self.green_adoption_marker = self.sim.t
                 del self.cars[car.type]
                 return
 
