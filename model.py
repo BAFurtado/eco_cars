@@ -33,7 +33,9 @@ class Simulation:
             self.seed = random.Random(0)
         self.t = 0
         # Benchmark e policy parameter: average emission sold vehicles
-        self.e = 0
+        self.e = 1
+        # When e_max policy is not being tested, all cars will pass
+        self.e_max = 99
         self.ids = 0
         self.running = True
         self.firms = dict()
@@ -45,7 +47,10 @@ class Simulation:
         self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
         self.emissions = 0
         self.policy = policy
-        self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share', 'emissions', 'emissions_index'])
+        # 'emissions' is total value, 'emissions_index' is relative to first month emissions
+        # 'e' is the calculated parameter benchmark, based on sold vehicles and their energy economy
+        self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share',
+                                            'emissions', 'emissions_index', 'e'])
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -120,15 +125,25 @@ class Simulation:
 
     def apply_policies(self):
         # e (e_benchmark) is the average emission of vehicles sold in the previous period
-        # TODO: Does this consider driving distance?
         # Calculate e
         if self.t > 0:
             cars_emission = [car.emissions() for firm in self.firms.values() for car in firm.cars.values()]
             sold = [sold[self.t - 1] for firm in self.firms.values() for sold in firm.sold_cars.values()]
-            sold_cars_emissions = sum([c * s for c, s in zip(cars_emission, sold)])/sum(sold)
+            sold_cars_emissions = sum([c * sd for c, sd in zip(cars_emission, sold)])/sum(sold)
             self.e = sold_cars_emissions
+            self.report.loc[self.t, 'e'] = self.e
             self.log.info(f'Parameter e -- sold cars emission average -- is {sold_cars_emissions:.4f}')
-        pass
+        else:
+            return
+        if self.policy['policy'] == 'max_e':
+            self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
+            self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
+        elif self.policy['policy'] == 'tax':
+            pass
+        elif self.policy['policy'] == 'green_support':
+            pass
+        elif self.policy['policy'] == 'discount':
+            pass
 
     def run(self):
         """
@@ -158,9 +173,10 @@ class Simulation:
         keys = list(self.firms)
         self.seed.shuffle(keys)
 
+        total_cars_sold = (self.num_cars['gas'][self.t - 1] + self.num_cars['green'][self.t - 1])
         for key in keys:
             self.firms[key].update_profit()
-            self.firms[key].update_market_share()
+            self.firms[key].update_market_share(total_cars_sold)
             self.firms[key].update_budget()
             if self.firms[key].bankrupt():
                 landfill.append(key)
@@ -208,6 +224,10 @@ def main(policy, verbose=False):
 
 
 if __name__ == '__main__':
-    p = 'test'
-    v = True
-    my_sim = main(p, v)
+    # Available policies are: 'max_e', 'tax', 'green_support', 'discount'
+    # Available levels are: 'low' and 'high'
+    pol = None
+    level = None
+    p = {'policy': pol, 'level': level}
+    v = False
+    s = main(p, v)

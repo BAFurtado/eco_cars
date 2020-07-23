@@ -34,7 +34,7 @@ class Firm:
             self.budget += self.profit[tech][self.sim.t]
         self.budget -= params.fixed_costs if self.sim.t != 0 else 0
 
-    def update_market_share(self):
+    def update_market_share(self, total_cars_sold):
         if self.sim.t == 0:
             self.market_share['gas'][0] = 0
             self.market_share['total'][0] = 0
@@ -46,9 +46,7 @@ class Firm:
             else:
                 self.market_share[tech][self.sim.t] = 0
         self.market_share['total'][self.sim.t] = (self.sold_cars['gas'][self.sim.t - 1] +
-                                                  self.sold_cars['green'][self.sim.t - 1]) / \
-                                                 (self.sim.num_cars['gas'][self.sim.t - 1] +
-                                                  self.sim.num_cars['green'][self.sim.t - 1])
+                                                  self.sold_cars['green'][self.sim.t - 1]) / total_cars_sold
 
     def bankrupt(self):
         return True if self.budget < 0 else False

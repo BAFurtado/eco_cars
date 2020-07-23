@@ -28,8 +28,10 @@ class Consumer:
             dk = sim.seed.uniform(params.dk['22']['min'], params.dk['22']['max'])
         else:
             dk = sim.seed.uniform(params.dk['55']['min'], params.dk['55']['max'])
+        # Policy introduced here. When testing policy e_max will be endogenously set
         my_market = [car for firm in sim.firms.values() for car in firm.cars.values()
-                     if car.sales_price < self.price_max and car.autonomy() > dk]
+                     if car.sales_price < self.price_max and car.autonomy() > dk and
+                     car.emissions() < sim.e_max]
         if not my_market:
             return
 
