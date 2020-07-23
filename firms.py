@@ -130,7 +130,6 @@ class Firm:
                 self.sim.log.info(params.cor.Fore.LIGHTCYAN_EX + f'Advertise material. We, at firm {self.id}, '
                                                                  f'have made an investment on {tech} '
                                                                  f'of {to_invest_now:,.2f}')
-
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
                 if choice == 1 and self.cars[tech].production_cost > params.production_cost['min']:
                     delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
@@ -142,17 +141,19 @@ class Firm:
                     self.sim.log.info(params.cor.Fore.MAGENTA + f'Quality increased by {delta:,.4f}')
                 else:
                     if tech == 'gas':
-                        # EE
-                        if self.cars[tech].EE < params.energy_economy['max']:
-                            delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
+                        delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
+                        if self.cars[tech].EE + delta < params.energy_economy['max']:
                             self.cars[tech].EE += delta
-                            self.sim.log.info(params.cor.Fore.LIGHTYELLOW_EX + f'Energy economy increased by {delta:,.4f}')
+                        else:
+                            self.cars[tech].EE = params.energy_economy['max']
+                        self.sim.log.info(params.cor.Fore.LIGHTYELLOW_EX + f'Energy economy increased by {delta:,.4f}')
                     else:
-                        # EC
-                        if self.cars[tech].EC < params.energy_capacity['max']:
-                            delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
+                        delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
+                        if self.cars[tech].EC + delta < params.energy_capacity['max']:
                             self.cars[tech].EC += delta
-                            self.sim.log.info(params.cor.Fore.GREEN + f'Energy capacity increased by {delta:,.4f}')
+                        else:
+                            self.cars[tech].EC = params.energy_capacity['max']
+                        self.sim.log.info(params.cor.Fore.GREEN + f'Energy capacity increased by {delta:,.4f}')
 
     def sales(self, car_type):
         # Register number of sold_cars

@@ -228,6 +228,8 @@ if __name__ == '__main__':
     # Available levels are: 'low' and 'high'
     pol = None
     level = None
+    # pol = 'max_e'
+    # level = 'low'
     p = {'policy': pol, 'level': level}
     v = False
     s = main(p, v)

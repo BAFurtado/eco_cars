@@ -47,7 +47,7 @@ class Vehicle:
                     'stations': params.stations['gas'] if self.type == 'gas' else self.firm.sim.green_stations[self.firm.sim.t],
                     'market_share': max(ms1, params.epsilon),
                     'energy_capacity': self.EC,
-                    'car_cleanness': 1/self.EC,
+                    'car_cleanness': 1/self.autonomy(),
                     'quality': self.QL,
                     'emotion': emotion}
 
