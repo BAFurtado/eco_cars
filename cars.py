@@ -35,7 +35,14 @@ class Vehicle:
         return params.emission[self.type]/self.EE
 
     def calculate_price(self):
-        self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * self.production_cost - 1
+        if 'tax' in self.firm.sim.policy.keys():
+            if self.emissions() > self.firm.sim.e:
+                policy_tax = next(iter(self.firm.sim.policy['tax'].values()))
+            elif self.emissions() < self.firm.sim.e:
+                policy_tax = -next(iter(self.firm.sim.policy['tax'].values()))
+        else:
+            policy_tax = 0
+        self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * (1 + policy_tax) * self.production_cost - 1
 
     def criteria_selection(self, emotion, criteria1, criteria2):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]

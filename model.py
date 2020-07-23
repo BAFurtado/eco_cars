@@ -36,6 +36,7 @@ class Simulation:
         self.e = 1
         # When e_max policy is not being tested, all cars will pass
         self.e_max = 99
+        self.policy = policy
         self.ids = 0
         self.running = True
         self.firms = dict()
@@ -46,7 +47,7 @@ class Simulation:
         self.green_stations = dict()
         self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
         self.emissions = 0
-        self.policy = policy
+
         # 'emissions' is total value, 'emissions_index' is relative to first month emissions
         # 'e' is the calculated parameter benchmark, based on sold vehicles and their energy economy
         self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share',
@@ -139,7 +140,7 @@ class Simulation:
             self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
             self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
         elif self.policy['policy'] == 'tax':
-            pass
+            [car.calculate_price() for firm in self.firms.values() for car in firm.cars.values()]
         elif self.policy['policy'] == 'green_support':
             pass
         elif self.policy['policy'] == 'discount':
@@ -161,8 +162,7 @@ class Simulation:
         6. Update market share
         """
         self.offer()
-        if self.policy:
-            self.apply_policies()
+        self.apply_policies()
         self.demand()
         self.driving()
 
@@ -228,8 +228,8 @@ if __name__ == '__main__':
     # Available levels are: 'low' and 'high'
     pol = None
     level = None
-    # pol = 'max_e'
-    # level = 'low'
+    pol = 'tax'
+    level = 'low'
     p = {'policy': pol, 'level': level}
     v = False
     s = main(p, v)
