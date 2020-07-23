@@ -142,17 +142,11 @@ class Firm:
                 else:
                     if tech == 'gas':
                         delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
-                        if self.cars[tech].EE + delta < params.energy_economy['max']:
-                            self.cars[tech].EE += delta
-                        else:
-                            self.cars[tech].EE = params.energy_economy['max']
+                        self.cars[tech].EE += delta
                         self.sim.log.info(params.cor.Fore.LIGHTYELLOW_EX + f'Energy economy increased by {delta:,.4f}')
                     else:
                         delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
-                        if self.cars[tech].EC + delta < params.energy_capacity['max']:
-                            self.cars[tech].EC += delta
-                        else:
-                            self.cars[tech].EC = params.energy_capacity['max']
+                        self.cars[tech].EC += delta
                         self.sim.log.info(params.cor.Fore.GREEN + f'Energy capacity increased by {delta:,.4f}')
 
     def sales(self, car_type):
