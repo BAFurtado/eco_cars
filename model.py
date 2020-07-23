@@ -226,10 +226,9 @@ def main(policy, verbose=False):
 if __name__ == '__main__':
     # Available policies are: 'max_e', 'tax', 'green_support', 'discount'
     # Available levels are: 'low' and 'high'
-    pol = None
-    level = None
-    pol = 'tax'
-    level = 'low'
+    pol, level = None, None
+    # pol = 'tax'
+    # level = 'low'
     p = {'policy': pol, 'level': level}
     v = False
     s = main(p, v)

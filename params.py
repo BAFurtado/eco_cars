@@ -1,7 +1,7 @@
 """ Exogenous inputs
 """
 import colorama as cor
-
+import bisect
 
 # Initiating time parameter
 T = 40
@@ -52,4 +52,12 @@ tax = {'low': .1, 'high': .5}
 green_support = {'low': -2000, 'high': -6000}
 # Feebate: max discount for gas vehicles
 discount = {'low': -1000, 'high': -3000}
+
+
+def discount_tax_table(e):
+    # Parameter support table to get discount or tax increase values
+    intervals = [.7, .85, .95, 1, 1.05, 1.15, 1.3, 1.5]
+    values = [-1, -.75, -.5, -.25, 0, .25, .5, .75, 1]
+    index = bisect.bisect_left(intervals, e)
+    return values[index]
 
