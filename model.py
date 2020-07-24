@@ -139,12 +139,10 @@ class Simulation:
         if self.policy['policy'] == 'max_e':
             self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
             self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
-        elif self.policy['policy'] == 'tax':
+        elif self.policy['policy'] is None:
+            pass
+        else:
             [car.calculate_price() for firm in self.firms.values() for car in firm.cars.values()]
-        elif self.policy['policy'] == 'green_support':
-            pass
-        elif self.policy['policy'] == 'discount':
-            pass
 
     def run(self):
         """
@@ -180,8 +178,8 @@ class Simulation:
             self.firms[key].update_budget()
             if self.firms[key].bankrupt():
                 landfill.append(key)
+                # If bankrupt, go to the next firm
                 continue
-
             if self.t > 9:
                 # If portfolio is changed, costs of adoption apply
                 self.firms[key].change_portfolio()
