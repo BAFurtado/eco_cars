@@ -134,13 +134,10 @@ class Simulation:
             self.e = sold_cars_emissions
             self.report.loc[self.t, 'e'] = self.e
             self.log.info(f'Parameter e -- sold cars emission average -- is {sold_cars_emissions:.4f}')
-        else:
-            return
+
         if self.policy['policy'] == 'max_e':
             self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
             self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
-        elif self.policy['policy'] is None:
-            pass
         else:
             [car.calculate_price() for firm in self.firms.values() for car in firm.cars.values()]
 
