@@ -182,7 +182,7 @@ class Simulation:
             if self.t > 9:
                 # If portfolio is changed, costs of adoption apply
                 self.firms[key].change_portfolio()
-            self.firms[key].abandon_portfolio()
+                self.firms[key].abandon_portfolio()
             self.firms[key].invest_rd()
 
         # New firms market share

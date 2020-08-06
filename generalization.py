@@ -26,13 +26,35 @@ def processing_averages(pol_results):
     return averages
 
 
-def plotting(results):
+def plot_details(ax):
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
+    # ax.yaxis.set_major_formatter(plt.FuncFormatter('{:.0f}'.format))
+    plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
+    plt.tick_params(axis='both', which='both', bottom=False, top=False,
+                    labelbottom=True, left=False, right=False, labelleft=True)
+    return ax
+
+
+def plotting(results, n):
     # Receives a dictionary of results for policies and inside Ts runs with DataFrame reports
+    notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
+             'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
+             'emissions_index': ['Emissions index', 'darkblue'],
+             'public': ['Net public expenditure ($)', 'firebrick']}
     for pol in results:
         res = processing_averages(results[pol])
         fig, ax = plt.subplots()
         for key in res:
-            ax.plot(res[key].index, res[key])
+            ax.plot(res[key].index, res[key], label=notes[key][0], color=notes[key][1])
+        ax.legend(frameon=False)
+        ax = plot_details(ax)
+        ax.set(xlabel='T periods', ylabel='value', title=f'Results after {n} runs using policy: {pol}')
+        plt.savefig(f'results/{pol}.png', bbox_inches='tight')
         plt.show()
     return res
 
@@ -55,6 +77,6 @@ def running(n=10):
 
 
 if __name__ == '__main__':
-    m = 2
+    m = 4
     r = running(m)
-    a = plotting(r)
+    a = plotting(r, m)
