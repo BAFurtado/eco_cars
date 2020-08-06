@@ -1,11 +1,7 @@
-### To check
+### Notes on the simulation
 
-1. Oferta acontece antes das primeiras compras. Portanto, market share e profits na primeira rodada de offer() 
-são zeros. Neste caso, o **budget** não está sendo descontado do custo fixo de 25,000 
-2. A firma que é eliminada pode ser utilizada como imitação, dentre as alternativas aleatórias, logo depois é 
-eliminada. Há problema?
-3. Nota. O dk só começa a fazer sentido quando é implementado o carro 'green'. Todos veículos a gas tem autonomia máxima
-4. Como a oferta acontece primeiro, na hora do cálculo do ROI, os veículos vendidos precisam ser do t anterior (t -1), 
-pela fórmula, o investimento também é t-1, teria que ser t - 2? Implementado como **t-2**
-5. Primeira política implementada (max e -- emissions). Parâmetro está muito restrito e nenhum carro é vendido,
-interrompendo o modelo...
+1. A firma que é eliminada pode ser utilizada como imitação, dentre as alternativas aleatórias, logo depois é 
+eliminada. 
+2. Primeira política implementada (max e -- emissions). Parâmetro está muito restrito e nenhum carro é vendido,
+3. Em outras combinações sem políticas, dado o número pequeno de firmas, o cálculo dos lucros, em alguns períodos, 
+algumas firmas não vendem carros.

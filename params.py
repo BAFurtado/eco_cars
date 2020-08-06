@@ -55,7 +55,8 @@ discount = {'low': 1000, 'high': 3000}
 
 
 def discount_tax_table(e_bench, my_e):
-    e = my_e/e_bench
+    # Also notice that given that no cars are sold (given market restrictions, emissions are 0)
+    e = my_e/e_bench if e_bench > 0 else 0
     # Parameter support table to get discount or tax increase values
     intervals = [.7, .85, .95, 1, 1.05, 1.15, 1.3, 1.5]
     values = [-1, -.75, -.5, -.25, 0, .25, .5, .75, 1]

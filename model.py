@@ -130,7 +130,8 @@ class Simulation:
         if self.t > 0:
             cars_emission = [car.emissions() for firm in self.firms.values() for car in firm.cars.values()]
             sold = [sold[self.t - 1] for firm in self.firms.values() for sold in firm.sold_cars.values()]
-            sold_cars_emissions = sum([c * sd for c, sd in zip(cars_emission, sold)])/sum(sold)
+            # Notice, sometimes no cars are sold (market conditions or policies are too restrict)
+            sold_cars_emissions = sum([c * sd for c, sd in zip(cars_emission, sold)])/sum(sold) if sum(sold) > 0 else 0
             self.e = sold_cars_emissions
             self.report.loc[self.t, 'e'] = self.e
             self.log.info(f'Parameter e -- sold cars emission average -- is {sold_cars_emissions:.4f}')

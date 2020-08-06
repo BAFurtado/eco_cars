@@ -30,9 +30,21 @@ class Firm:
 
     def update_budget(self):
         # Investments are deduced immediately when done
+        # Here we add profits per car, deduce fixed costs
+        # Cost of adoption and RD investments are deduced as/when they happen
         for tech in self.cars:
             self.budget += self.profit[tech][self.sim.t]
         self.budget -= params.fixed_costs if self.sim.t != 0 else 0
+
+    def update_profit(self):
+        # Sales income is accounted for at update profit, followed by update budget iteration
+        if self.sim.t == 0:
+            self.profit['gas'][0] = 0
+            return
+        # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
+        for tech in self.cars:
+            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t] * \
+                                             (self.cars[tech].sales_price - self.cars[tech].production_cost)
 
     def update_market_share(self, total_cars_sold):
         if self.sim.t == 0:
@@ -50,14 +62,6 @@ class Firm:
 
     def bankrupt(self):
         return True if self.budget < 0 else False
-
-    def update_profit(self):
-        # Sales income is accounted for at update profit, followed by update budget iteration
-        if self.sim.t == 0:
-            self.profit['gas'][0] = 0
-            return
-        for tech in self.cars:
-            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * self.cars[tech].sales_price
 
     def change_portfolio(self):
         if len(self.cars) == 2:
@@ -171,7 +175,8 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        if self.investments[car.type][self.sim.t - 2] > 0:
-            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t - 1] / self.investments[car.type][self.sim.t - 2]
+        if self.investments[car.type][self.sim.t - 1] > 0:
+            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t] / \
+                   self.investments[car.type][self.sim.t - 1]
         else:
             return 0
