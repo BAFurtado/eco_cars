@@ -46,7 +46,7 @@ def plotting(results, n):
     notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
              'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
              'emissions_index': ['Emissions index', 'darkblue'],
-             'public_index': ['Net public expenditure ($)', 'firebrick']}
+             'public_index': ['Net public expenditure index', 'firebrick']}
     policies_titles = {None: 'Benchmark',
                        'tax': 'Tax scheme',
                        'discount': 'Discount',
