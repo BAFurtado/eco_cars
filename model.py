@@ -69,7 +69,7 @@ class Simulation:
                 self.running = False
                 break
             if self.sleep:
-                sleep = 5
+                sleep = 1
                 time.sleep(sleep)
                 self.log.info(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for {sleep} seconds')
         print(params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
@@ -140,9 +140,12 @@ class Simulation:
                 self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
                 self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
             # When updating car prices, if policy is in effect, discounts or taxes are summed and returned
-            self.report.loc[self.t, 'public'] = sum([car.calculate_price()
-                                                     for firm in self.firms.values()
-                                                     for car in firm.cars.values()])
+            public_expenditure = sum([car.calculate_price() * firm.sold_cars[car.type][self.t - 1]
+                                      for firm in self.firms.values()
+                                      for car in firm.cars.values()])
+            self.report.loc[self.t, 'public'] = public_expenditure
+            self.log.info(params.cor.Fore.RED + f"Government has paid/received total at this t {self.t} "
+                                                f"a net total of $ {public_expenditure:,.2f}")
 
     def run(self):
         """
@@ -224,9 +227,9 @@ def main(policy, verbose=False):
 if __name__ == '__main__':
     # Available policies are: 'max_e', 'tax', 'discount', 'green_support'
     # Available levels are: 'low' and 'high'
-    pol, level = None, None
-    # pol = 'green_support'
-    # level = 'low'
+    # pol, level = None, None
+    pol = 'discount'
+    level = 'low'
     p = {'policy': pol, 'level': level}
-    v = False
+    v = True
     s = main(p, v)
