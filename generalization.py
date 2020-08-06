@@ -16,7 +16,7 @@ import model
 def processing_averages(pol_results):
     # Receives a specific policy dictionary of results of runs and processes the averages
     averages = dict()
-    cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public']
+    cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public_index']
     for col in cols:
         averages[col] = pd.DataFrame()
     for run in pol_results:
@@ -46,7 +46,7 @@ def plotting(results, n):
     notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
              'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
              'emissions_index': ['Emissions index', 'darkblue'],
-             'public': ['Net public expenditure ($)', 'firebrick']}
+             'public_index': ['Net public expenditure ($)', 'firebrick']}
     policies_titles = {None: 'Benchmark',
                        'tax': 'Tax scheme',
                        'discount': 'Discount',
@@ -87,6 +87,6 @@ def running(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 3
+    m = 100
     running(m)
     print(f'This run took {time.time() - t0:.2f} seconds!')

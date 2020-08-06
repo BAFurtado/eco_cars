@@ -2,6 +2,7 @@ import random
 from collections import defaultdict
 
 import pandas as pd
+import numpy as np
 import logging
 import time
 import params
@@ -51,7 +52,8 @@ class Simulation:
         # 'emissions' is total value, 'emissions_index' is relative to first month emissions
         # 'e' is the calculated parameter benchmark, based on sold vehicles and their energy economy
         self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share',
-                                            'emissions', 'emissions_index', 'e', 'public'])
+                                            'emissions', 'emissions_index', 'e',
+                                            'public', 'public_index'])
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -144,6 +146,11 @@ class Simulation:
                                       for firm in self.firms.values()
                                       for car in firm.cars.values()])
             self.report.loc[self.t, 'public'] = public_expenditure
+            base = [b for b in self.report.public if (not np.isnan(b)) and (b != 0)]
+            if not base:
+                self.report.loc[self.t, 'public_index'] = 0
+            else:
+                self.report.loc[self.t, 'public_index'] = public_expenditure / base[0]
             self.log.info(params.cor.Fore.RED + f"Government has paid/received total at this t {self.t} "
                                                 f"a net total of $ {public_expenditure:,.2f}")
 

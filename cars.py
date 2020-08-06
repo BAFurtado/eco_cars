@@ -37,12 +37,12 @@ class Vehicle:
     def calculate_price(self):
         policy_value, policy_tax = 0, 0
         e_parameter = params.discount_tax_table(self.firm.sim.e, self.emissions())
-        if 'tax' in self.firm.sim.policy['policy']:
+        if self.firm.sim.policy['policy'] == 'tax':
             # First part refers to 'low', 'high' [.1, .5], Second refers to Table 5 levels
             policy_tax = params.tax[self.firm.sim.policy['level']] * e_parameter
-        elif 'discount' in self.firm.sim.policy['policy']:
+        elif self.firm.sim.policy['policy'] == 'discount':
             policy_value = params.discount[self.firm.sim.policy['level']] * e_parameter
-        elif 'green_support' in self.firm.sim.policy['policy']:
+        elif self.firm.sim.policy['policy'] == 'green_support':
             # Only for green cars that perform less than average benchmark
             if self.type == 'green' and self.emissions() < self.firm.sim.e:
                 policy_value = params.green_support[self.firm.sim.policy['level']] * e_parameter
