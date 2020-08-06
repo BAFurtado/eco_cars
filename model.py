@@ -119,7 +119,8 @@ class Simulation:
             green_cars = sum([firm.sold_cars['green'][self.t - 1]
                               for firm in self.firms.values() if 'green' in firm.cars])
             total_cars = self.num_cars['gas'][self.t - 1] + self.num_cars['green'][self.t - 1]
-            self.green_market_share[self.t] = green_cars/total_cars
+            # One more place in which sold cars are 0
+            self.green_market_share[self.t] = green_cars/total_cars if total_cars > 0 else 0
             # Update green stations
             self.green_stations[self.t] = 1 + max(self.green_market_share.values())
         self.report.loc[self.t, 'green_market_share'] = self.green_market_share[self.t]

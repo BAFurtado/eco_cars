@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import time
 
 import model
 
@@ -46,6 +47,11 @@ def plotting(results, n):
              'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
              'emissions_index': ['Emissions index', 'darkblue'],
              'public': ['Net public expenditure ($)', 'firebrick']}
+    policies_titles = {None: 'Benchmark',
+                       'tax': 'Tax scheme',
+                       'discount': 'Discount',
+                       'green_support': 'Green support',
+                       'max_e': "Restriction on cars' emissions"}
     for pol in results:
         res = processing_averages(results[pol])
         fig, ax = plt.subplots()
@@ -53,30 +59,34 @@ def plotting(results, n):
             ax.plot(res[key].index, res[key], label=notes[key][0], color=notes[key][1])
         ax.legend(frameon=False)
         ax = plot_details(ax)
-        ax.set(xlabel='T periods', ylabel='value', title=f'Results after {n} runs using policy: {pol}')
+        ax.set(xlabel='T periods', ylabel='value', title=f'Results after {n} runs using policy: {policies_titles[pol]}')
         plt.savefig(f'results/{pol}.png', bbox_inches='tight')
         plt.show()
     return res
 
 
 def running(n=10):
-    # Available policies are: 'max_e', 'tax', 'discount', 'green_support'
-    # Available levels are: 'low' and 'high'
-    pol, level = None, None
-    # pol = 'green_support'
-    # level = 'low'
-    p = {'policy': pol, 'level': level}
     v = False
-    # For each run policy, when dictionary with all runs is saved.
-    # Thus, result collected is a dictionary of dictionaries containing DataFrames
-    results = {pol: dict()}
-    for i in range(n):
-        s = model.main(p, v)
-        results[pol][i] = s.report
-    return results
+    # Available policies are:
+    policies = [None, 'tax', 'discount', 'green_support', 'max_e']
+    # Available levels are: 'low' and 'high'
+    levels = ['low']
+    # Note. Uncomment the line below if you want to test for just one Policy at a time
+    # pol, level = None, None
+    for pol in policies:
+        for level in levels:
+            p = {'policy': pol, 'level': level}
+            # For each run policy, when dictionary with all runs is saved.
+            # Thus, result collected is a dictionary of dictionaries containing DataFrames
+            results = {pol: dict()}
+            for i in range(n):
+                s = model.main(p, v)
+                results[pol][i] = s.report
+            plotting(results, n)
 
 
 if __name__ == '__main__':
-    m = 4
-    r = running(m)
-    a = plotting(r, m)
+    t0 = time.time()
+    m = 3
+    running(m)
+    print(f'This run took {time.time() - t0:.2f} seconds!')

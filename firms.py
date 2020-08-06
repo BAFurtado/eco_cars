@@ -58,7 +58,8 @@ class Firm:
             else:
                 self.market_share[tech][self.sim.t] = 0
         self.market_share['total'][self.sim.t] = (self.sold_cars['gas'][self.sim.t - 1] +
-                                                  self.sold_cars['green'][self.sim.t - 1]) / total_cars_sold
+                                                  self.sold_cars['green'][self.sim.t - 1]) / total_cars_sold \
+            if total_cars_sold > 0 else 0
 
     def bankrupt(self):
         return True if self.budget < 0 else False
