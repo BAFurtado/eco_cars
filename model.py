@@ -51,7 +51,7 @@ class Simulation:
         # 'emissions' is total value, 'emissions_index' is relative to first month emissions
         # 'e' is the calculated parameter benchmark, based on sold vehicles and their energy economy
         self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share',
-                                            'emissions', 'emissions_index', 'e'])
+                                            'emissions', 'emissions_index', 'e', 'public'])
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -138,7 +138,10 @@ class Simulation:
             if self.policy['policy'] == 'max_e':
                 self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
                 self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
-            [car.calculate_price() for firm in self.firms.values() for car in firm.cars.values()]
+            # When updating car prices, if policy is in effect, discounts or taxes are summed and returned
+            self.report.loc[self.t, 'public'] = sum([car.calculate_price()
+                                                     for firm in self.firms.values()
+                                                     for car in firm.cars.values()])
 
     def run(self):
         """

@@ -71,7 +71,6 @@ class Firm:
             # Firms only move from gas to green
             return
         if self.budget > params.cost_adoption:
-            # TODO: Check values are of current 'gas' technology: both for EE and production_cost
             prob_adoption = ((self.cars['gas'].EE / params.energy_economy['max'] + params.production_cost['min'] /
                               self.cars['gas'].production_cost) / 2) ** params.omega \
                             * max(self.sim.green_market_share[self.sim.t], params.epsilon) ** (1 - params.omega)
@@ -175,6 +174,7 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
+        # TODO: Confirm that we will diverge from formula and calculate ROI for the whole period.
         if self.investments[car.type][self.sim.t - 1] > 0:
             return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t] / \
                    self.investments[car.type][self.sim.t - 1]

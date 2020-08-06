@@ -48,6 +48,7 @@ class Vehicle:
                 policy_value = next(iter(self.firm.sim.policy['green_support'].values())) * e_parameter
         self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * \
                            (1 + policy_tax) * self.production_cost - 1 + policy_value
+        return policy_tax * self.production_cost + policy_value
 
     def criteria_selection(self, emotion, criteria1, criteria2):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]

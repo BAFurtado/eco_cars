@@ -5,3 +5,4 @@ eliminada.
 2. Primeira política implementada (max e -- emissions). Parâmetro está muito restrito e nenhum carro é vendido,
 3. Em outras combinações sem políticas, dado o número pequeno de firmas, o cálculo dos lucros, em alguns períodos, 
 algumas firmas não vendem carros.
+4. Still not implemented (brew) # TODO: Confirm that we will diverge from formula and calculate ROI for the whole period.
