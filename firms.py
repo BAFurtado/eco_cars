@@ -42,8 +42,9 @@ class Firm:
             self.profit['gas'][0] = 0
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
+
         for tech in self.cars:
-            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t] * \
+            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t-1] * \ #self.sold_cars[tech][self.sim.t] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost)
 
     def update_market_share(self, total_cars_sold):
