@@ -219,7 +219,8 @@ class Simulation:
         for each in self.consumers.values():
             self.emissions += each.driving()
         self.report.loc[self.t, 'emissions'] = self.emissions
-        self.report.loc[self.t, 'emissions_index'] = self.emissions / self.report.loc[0, 'emissions']
+        if self.t > 2:
+            self.report.loc[self.t, 'emissions_index'] = self.emissions / self.report.loc[3, 'emissions']
         self.log.info(params.cor.Fore.RED + f"Emissions at t {self.t} was {self.emissions:,.2f}. "
                                             f"Emissions index: {self.report.loc[self.t, 'emissions_index']:.4f}")
         self.emissions = 0
@@ -234,9 +235,9 @@ def main(policy, verbose=False):
 if __name__ == '__main__':
     # Available policies are: 'max_e', 'tax', 'discount', 'green_support'
     # Available levels are: 'low' and 'high'
-    # pol, level = None, None
-    pol = 'discount'
-    level = 'low'
+    pol, level = None, None
+    # pol = 'discount'
+    # level = 'low'
     p = {'policy': pol, 'level': level}
-    v = True
+    v = False
     s = main(p, v)

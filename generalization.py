@@ -87,6 +87,6 @@ def running(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 100
+    m = 200
     running(m)
     print(f'This run took {time.time() - t0:.2f} seconds!')

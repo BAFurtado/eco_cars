@@ -43,7 +43,7 @@ class Firm:
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
         for tech in self.cars:
-            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t] * \
+            self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost)
 
     def update_market_share(self, total_cars_sold):
@@ -177,7 +177,7 @@ class Firm:
         # ROI is dependent on each vehicle
         # TODO: Confirm that we will diverge from formula and calculate ROI for the whole period.
         if self.investments[car.type][self.sim.t - 1] > 0:
-            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t] / \
+            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t - 1] / \
                    self.investments[car.type][self.sim.t - 1]
         else:
             return 0
