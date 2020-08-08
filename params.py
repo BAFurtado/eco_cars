@@ -2,6 +2,7 @@
 """
 import colorama as cor
 import bisect
+from numpy import linspace
 
 # Initiating time parameter
 T = 40
@@ -45,13 +46,15 @@ br = {'min': 0, 'max': 1}
 
 # Policy characteristics ---------------------------------------------
 # Fixed e_max
-e_max = {'low': .9, 'high': .1}
+levels = linspace(.1, .9, 9)
+
+e_max = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspace(.1, .9, 9)))}
 # Tax
-tax = {'low': .1, 'high': .5}
+tax = {round(levels[i], 1): round(v, 2) for i, v in enumerate(linspace(.1, .5, 9))}
 # Support green vehicles sales -- 'rebate'
-green_support = {'low': 2000, 'high': 6000}
+green_support = {round(levels[i], 1): round(v, 0) for i, v in enumerate(linspace(2000, 6000, 9))}
 # Feebate: max discount for gas vehicles
-discount = {'low': 1000, 'high': 3000}
+discount = {round(levels[i], 1): round(v, 0) for i, v in enumerate(linspace(1000, 3000, 9))}
 
 
 def discount_tax_table(e_bench, my_e):

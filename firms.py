@@ -171,7 +171,7 @@ class Firm:
                 print(params.cor.Fore.LIGHTRED_EX + f'Abandoning portfolio {car.type}: firm {self.id} '
                                                     f'at time {self.sim.t}')
                 # Also, restrict new change, setting marker
-                self.portfolio_marker = self.sim.t
+                self.portfolio_marker[car.type] = self.sim.t
                 del self.cars[car.type]
                 return
 

@@ -20,7 +20,7 @@ from firms import Firm
 
 
 class Simulation:
-    def __init__(self, policy=None, verbose=False, seed=False):
+    def __init__(self, policy=None, verbose=False, seed=True):
         self.log = logging.getLogger('main')
         if verbose:
             logging.basicConfig(level=logging.INFO)
@@ -228,8 +228,8 @@ class Simulation:
         self.emissions = 0
 
 
-def main(policy, verbose=False):
-    my_sim = Simulation(policy, verbose=verbose)
+def main(policy, verbose=False, seed=True):
+    my_sim = Simulation(policy, verbose, seed)
     my_sim.controller()
     return my_sim
 
