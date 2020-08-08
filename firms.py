@@ -21,12 +21,13 @@ class Firm:
         self.cars = dict()
         self.market_share = {'gas': defaultdict(float), 'green': defaultdict(float), 'total': defaultdict(float)}
         self.sim = sim
+        self.portfolio_marker = dict()
         if gas:
             self.create_gas_car()
-        self.green_adoption_marker = 0
 
     def create_gas_car(self):
         self.cars['gas'] = Vehicle(firm=self)
+        self.portfolio_marker['gas'] = self.sim.t
 
     def update_budget(self):
         # Investments are deduced immediately when done
@@ -42,6 +43,7 @@ class Firm:
             self.profit['gas'][0] = 0
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
+
         for tech in self.cars:
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost)
@@ -105,7 +107,7 @@ class Firm:
                                              ee=params.energy_economy['green'],
                                              ql=ql,
                                              firm=self)
-                self.green_adoption_marker = self.sim.t
+                self.portfolio_marker['green'] = self.sim.t
 
     def invest_rd(self):
         # 1. Check available money
@@ -160,24 +162,25 @@ class Firm:
     def abandon_portfolio(self):
         if len(self.cars) == 1:
             return
-        if self.sim.t - self.green_adoption_marker < 10:
-            return
         for car in self.cars.values():
+            if self.sim.t - self.portfolio_marker[car.type] < 10:
+                continue
             roi = self.calculate_roi(car)
             self.sim.log.info(f'ROI for firm {self.id} is {roi}')
             if self.sim.seed.random() < roi:
                 print(params.cor.Fore.LIGHTRED_EX + f'Abandoning portfolio {car.type}: firm {self.id} '
                                                     f'at time {self.sim.t}')
                 # Also, restrict new change, setting marker
-                self.green_adoption_marker = self.sim.t
+                self.portfolio_marker = self.sim.t
                 del self.cars[car.type]
                 return
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        # TODO: Confirm that we will diverge from formula and calculate ROI for the whole period.
-        if self.investments[car.type][self.sim.t - 1] > 0:
-            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t - 1] / \
-                   self.investments[car.type][self.sim.t - 1]
-        else:
-            return 0
+        # ROI has been implemented differently from model simulation and sums up all investment in the period
+        # Calculation of sold cars, since last change of portfolio, using current car's production cost to calculate roi
+        q_sold_cars = sum([self.sold_cars[car.type][t]
+                           for t in range(self.portfolio_marker[car.type], self.sim.t - 1)])
+        investments_made = sum([self.investments[car.type][t]
+                                for t in range(self.portfolio_marker[car.type], self.sim.t - 1)])
+        return params.p_lambda * car.production_cost * q_sold_cars / investments_made if investments_made > 0 else 0
