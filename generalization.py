@@ -15,11 +15,11 @@ notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
          'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
          'emissions_index': ['Emissions index', 'darkblue'],
          'public_index': ['Net public expenditure index', 'firebrick']}
-policies_titles = {None: 'Benchmark',
-                   'tax': 'Tax scheme',
-                   'discount': 'Discount',
-                   'green_support': 'Green support',
-                   'max_e': "Restriction on cars' emissions"}
+policies_titles = {None: ['Benchmark', 'black'],
+                   'tax': ['Tax scheme', 'firebrick'],
+                   'discount': ['Discount', 'yellowgreen'],
+                   'green_support': ['Green support', 'green'],
+                   'max_e': ["Restriction on cars' emissions", 'dimgrey']}
 verbose = False
 seed = False
 
@@ -61,7 +61,8 @@ def plotting(results, n):
             ax.plot(res[key].index, res[key], label=notes[key][0], color=notes[key][1])
         ax.legend(frameon=False)
         ax = plot_details(ax)
-        ax.set(xlabel='T periods', ylabel='value', title=f'Results after {n} runs using policy: {policies_titles[pol]}')
+        ax.set(xlabel='T periods', ylabel='value',
+               title=f'Results after {n} runs using policy: {policies_titles[pol][0]}')
         plt.savefig(f'results/{pol}.png', bbox_inches='tight')
         plt.show()
     return res
@@ -81,35 +82,45 @@ def processing_standard_policies(pol_results):
     return averages
 
 
-def plot_policies(results, level, n):
-    # Receives a dictionary of results for policies and inside Ts runs with DataFrame reports
-    for pol in results:
-        res = processing_standard_policies(results[pol])
+def plot_policies(results, levels, n):
+    # Receives a dictionary of results for policies
+    # Each with all 9 levels
+    # Each witn an 'n' number of runs
+    # Inside each run, a DataFrame with reported results
+    for graph in notes:
         fig, ax = plt.subplots()
-        for key in res:
-            ax.plot(res[key].index, res[key], label=notes[key][0], color=notes[key][1])
+        for pol in policies_titles:
+            x_s, y_s = list(), list()
+            for level in levels:
+                x_s.append(level)
+                # Calculate values for graph and add to list
+                y_s.append(sum([results[pol][level][key].loc[graph] for key in results[pol][level]]) / n)
+            # Plot each policy line
+            ax.plot(x_s, y_s, label=policies_titles[pol][0], color=policies_titles[pol][1])
+        # Finish touches
         ax.legend(frameon=False)
         ax = plot_details(ax)
-        ax.set(xlabel='T periods', ylabel='value', title=f'Results after {n} runs using policy: {policies_titles[pol]}')
-        plt.savefig(f'results/{pol}.png', bbox_inches='tight')
+        ax.set(xlabel='Policy strength', ylabel='value', title=f'Results for {graph} after {n} runs')
+        plt.savefig(f'results/{graph}.png', bbox_inches='tight')
         plt.show()
-    return res
+    return results
 
 
 def policies(n=10):
-    levels = linspace(.1, .9, 9)
+    levels = [round(l, 1) for l in linspace(.1, .9, 9)]
     pols = [None, 'tax', 'discount', 'green_support', 'max_e']
     results = dict()
     for pol in pols:
         results[pol] = dict()
         for level in levels:
-            p = {'policy': pol, 'level': round(level, 1)}
+            p = {'policy': pol, 'level': level}
             # For each run policy, when dictionary with all runs is saved.
             # Thus, result collected is a dictionary of dictionaries containing DataFrames
             results[pol][level] = dict()
             for i in range(n):
                 s = model.main(p, verbose, seed=seed)
                 results[pol][level][i] = s.report.loc[39]
+    plot_policies(results, levels, n)
     return results
 
 
