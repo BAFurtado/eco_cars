@@ -8,4 +8,6 @@ algumas firmas não vendem carros.
 period.
 4. A firma que é eliminada pode ser utilizada como imitação, dentre as alternativas aleatórias, logo depois é 
 eliminada. 
-5. **Do discounts and taxes paid/received by consumers affect value received by firms?** 
+5. **Do discounts and taxes paid/received by consumers affect value received by firms?**
+6. **Public expenditure is calculated by periods. Should we use ACCUMULATED expenditures**
+ 

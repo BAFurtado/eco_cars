@@ -89,25 +89,34 @@ def plot_policies(results, levels, n):
     # Inside each run, a DataFrame with reported results
     for graph in notes:
         fig, ax = plt.subplots()
+        benchmark_values = list()
         for pol in policies_titles:
             x_s, y_s = list(), list()
-            for level in levels:
+            for i, level in enumerate(levels):
                 x_s.append(level)
-                # Calculate values for graph and add to list
-                y_s.append(sum([results[pol][level][key].loc[graph] for key in results[pol][level]]) / n)
+                # Calculate values for graph relative to benchmark and add to list
+                y_output = sum([results[pol][level][key].loc[graph] for key in results[pol][level]]) / n
+                if pol is None:
+                    y_output = 1 if y_output == 0 else y_output
+                    benchmark_values.append(y_output)
+                else:
+                    y_output = y_output/benchmark_values[i]
+                y_s.append(y_output)
             # Plot each policy line
+            if pol is None:
+                y_s = [b / b for b in benchmark_values]
             ax.plot(x_s, y_s, label=policies_titles[pol][0], color=policies_titles[pol][1])
         # Finish touches
         ax.legend(frameon=False)
         ax = plot_details(ax)
-        ax.set(xlabel='Policy strength', ylabel='value', title=f'Results for {graph} after {n} runs')
+        ax.set(xlabel='Policy strength', ylabel='value', title=f'Results for {notes[graph][0]} after {n} runs')
         plt.savefig(f'results/{graph}.png', bbox_inches='tight')
         plt.show()
     return results
 
 
 def policies(n=10):
-    levels = [round(l, 1) for l in linspace(.1, .9, 9)]
+    levels = [round(lev, 1) for lev in linspace(.1, .9, 9)]
     pols = [None, 'tax', 'discount', 'green_support', 'max_e']
     results = dict()
     for pol in pols:
@@ -120,8 +129,7 @@ def policies(n=10):
             for i in range(n):
                 s = model.main(p, verbose, seed=seed)
                 results[pol][level][i] = s.report.loc[39]
-    plot_policies(results, levels, n)
-    return results
+    return results, levels, n
 
 
 def benchmark(n=10):
@@ -138,7 +146,8 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 3
+    m = 100
     # benchmark(m)
-    r = policies(m)
+    r, l, m = policies(m)
+    plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')
