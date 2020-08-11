@@ -53,7 +53,7 @@ class Simulation:
         # 'e' is the calculated parameter benchmark, based on sold vehicles and their energy economy
         self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share',
                                             'emissions', 'emissions_index', 'e',
-                                            'public', 'public_index'])
+                                            'public', 'public_index', 'public_cumulative'])
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -149,6 +149,7 @@ class Simulation:
                                       for car in firm.cars.values()])
             self.report.loc[self.t, 'public'] = public_expenditure
             base = [b for b in self.report.public if (not np.isnan(b)) and (b != 0)]
+            self.report.loc[self.t, 'public_cumulative'] = sum(base)
             if not base:
                 self.report.loc[self.t, 'public_index'] = 0
             else:

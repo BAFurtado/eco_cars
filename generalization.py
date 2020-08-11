@@ -14,7 +14,7 @@ import model
 notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
          'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
          'emissions_index': ['Emissions index', 'darkblue'],
-         'public_index': ['Net public expenditure index', 'firebrick']}
+         'public_cumulative': ['Total public expenditure index', 'firebrick']}
 policies_titles = {None: ['Benchmark', 'black'],
                    'tax': ['Tax scheme', 'firebrick'],
                    'discount': ['Discount', 'yellowgreen'],
@@ -109,7 +109,7 @@ def plot_policies(results, levels, n):
         ax.legend(frameon=False)
         ax = plot_details(ax)
         ax.set(xlabel='Policy strength', ylabel='value', title=f'Results for {notes[graph][0]} after {n} runs')
-        plt.savefig(f'results/{graph}.png', bbox_inches='tight')
+        plt.savefig(f'policy_stringent_figures/{graph}.png', bbox_inches='tight')
         plt.show()
     return results
 
@@ -145,7 +145,7 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 100
+    m = 10
     # benchmark(m)
     r, l, m = policies(m)
     plot_policies(r, l, m)
