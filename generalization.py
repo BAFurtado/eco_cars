@@ -97,14 +97,13 @@ def plot_policies(results, levels, n):
                 # Calculate values for graph relative to benchmark and add to list
                 y_output = sum([results[pol][level][key].loc[graph] for key in results[pol][level]]) / n
                 if pol is None:
-                    y_output = 1 if y_output == 0 else y_output
                     benchmark_values.append(y_output)
                 else:
-                    y_output = y_output/benchmark_values[i]
+                    y_output = y_output/benchmark_values[i] if benchmark_values[i] != 0 else 0
                 y_s.append(y_output)
             # Plot each policy line
             if pol is None:
-                y_s = [b / b for b in benchmark_values]
+                y_s = [b / b if b != 0 else 0 for b in benchmark_values]
             ax.plot(x_s, y_s, label=policies_titles[pol][0], color=policies_titles[pol][1])
         # Finish touches
         ax.legend(frameon=False)

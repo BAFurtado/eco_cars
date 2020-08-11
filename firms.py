@@ -43,7 +43,6 @@ class Firm:
             self.profit['gas'][0] = 0
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
-
         for tech in self.cars:
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost)
@@ -177,10 +176,9 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        # ROI has been implemented differently from model simulation and sums up all investment in the period
-        # Calculation of sold cars, since last change of portfolio, using current car's production cost to calculate roi
-        q_sold_cars = sum([self.sold_cars[car.type][t]
-                           for t in range(self.portfolio_marker[car.type], self.sim.t - 1)])
-        investments_made = sum([self.investments[car.type][t]
-                                for t in range(self.portfolio_marker[car.type], self.sim.t - 1)])
-        return params.p_lambda * car.production_cost * q_sold_cars / investments_made if investments_made > 0 else 0
+        # ROI reverted to just previous period
+        if self.investments[car.type][self.sim.t - 1] > 0:
+            return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t - 1] / \
+                   self.investments[car.type][self.sim.t - 1]
+        else:
+            return 0
