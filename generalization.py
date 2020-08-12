@@ -103,7 +103,7 @@ def plot_policies(results, levels, n):
                 y_s.append(y_output)
             # Plot each policy line
             if pol is None:
-                y_s = [b / b if b != 0 else 0 for b in benchmark_values]
+                y_s = [b / b if b != 0 else 1 for b in benchmark_values]
             ax.plot(x_s, y_s, label=policies_titles[pol][0], color=policies_titles[pol][1])
         # Finish touches
         ax.legend(frameon=False)
@@ -145,8 +145,8 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 10
-    # benchmark(m)
+    m = 3
+    benchmark(m)
     r, l, m = policies(m)
     plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')

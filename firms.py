@@ -130,6 +130,7 @@ class Firm:
             to_invest_now = investments * 1 if len(self.cars) == 1 else investments * .5
             if rdm < 1 - e ** (-params.alpha1 * to_invest_now):
                 # Success. Investment to occur!
+                # TODO: implement future reduction on investments costs
                 self.investments[tech][self.sim.t] += to_invest_now
                 self.budget -= to_invest_now
                 self.sim.log.info(params.cor.Fore.LIGHTCYAN_EX + f'Advertise material. We, at firm {self.id}, '

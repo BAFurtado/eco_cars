@@ -48,7 +48,7 @@ class Vehicle:
                 policy_value = params.green_support[self.firm.sim.policy['level']] * e_parameter
         # TODO: Although sales price is full, probably firms should receive value deduced from iva and policy tax?
         self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * \
-                           (1 + policy_tax) * self.production_cost - 1 + policy_value
+                           (1 + policy_tax) * self.production_cost + policy_value
         return policy_tax * self.production_cost + policy_value
 
     def criteria_selection(self, emotion, criteria1, criteria2):
