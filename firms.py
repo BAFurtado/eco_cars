@@ -43,6 +43,7 @@ class Firm:
             self.profit['gas'][0] = 0
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
+        # Teria que descontar o IVA do sales price
         for tech in self.cars:
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost)
