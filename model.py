@@ -235,12 +235,12 @@ def main(policy, verbose=False, seed=True):
     return my_sim
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
     # Available policies are: 'max_e', 'tax', 'discount', 'green_support'
     # Available levels are: 'low' and 'high'
-    pol, level = None, None
+#    pol, level = None, None
     # pol = 'discount'
     # level = 'low'
-    p = {'policy': pol, 'level': level}
-    v = False
-    s = main(p, v)
+#    p = {'policy': pol, 'level': level}
+#    v = False
+#    s = main(p, v)

@@ -43,7 +43,11 @@ class Firm:
             self.profit['gas'][0] = 0
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
-        # Teria que descontar o IVA do sales price
+        # - Teria que descontar o IVA do sales price
+        #
+        # - Aqui temos que costruir a politica brasileira onde tem uma dedução do IPI (achamos que podemos descontar do IVA para semplificar) de no minimo 3%
+        # quando a fabrica começa o desenvolvimento do carro eletrico
+
         for tech in self.cars:
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost)
