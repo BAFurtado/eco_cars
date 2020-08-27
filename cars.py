@@ -10,8 +10,11 @@ class Vehicle:
         """
     def __init__(self, _type='gas',
                  production_cost=params.production_cost['gas'],
+                 # Distance (km) a car can travel per unit of energy consumed
                  ee=params.energy_economy['gas'],
+                 # Storage size
                  ec=params.energy_capacity['gas'],
+                 # Performance measure ~= quality characteristics
                  ql=params.quality_level['gas'],
                  firm=None):
         # Type: 'combustion' or 'electric'
@@ -29,6 +32,7 @@ class Vehicle:
         self.calculate_price()
 
     def autonomy(self):
+        # Driving range (DR)
         return self.EE * self.EC
 
     def emissions(self):
