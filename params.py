@@ -58,6 +58,7 @@ discount = {round(levels[i], 1): round(v, 0) for i, v in enumerate(linspace(1000
 
 
 def discount_tax_table(e_bench, my_e):
+    # e_bench é o valor geral no periodo anterior, my_e é o da firma
     # Also notice that given that no cars are sold (given market restrictions, emissions are 0)
     e = my_e/e_bench if e_bench > 0 else 0
     # Parameter support table to get discount or tax increase values

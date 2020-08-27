@@ -27,7 +27,7 @@ seed = False
 def processing_averages(pol_results):
     # Receives a specific policy dictionary of results of runs and processes the averages
     averages = dict()
-    cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public_index']
+    cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public_cumulative']
     for col in cols:
         averages[col] = pd.DataFrame()
     for run in pol_results:
@@ -68,18 +68,18 @@ def plotting(results, n):
     return res
 
 
-def processing_standard_policies(pol_results):
-    # Receives a specific policy dictionary of results of runs and processes the averages
-    averages = dict()
-    cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public_index']
-    for col in cols:
-        averages[col] = pd.DataFrame()
-    for run in pol_results:
-        for col in cols:
-            averages[col].loc[:, run] = pol_results[run][col]
-    for col in cols:
-        averages[col] = averages[col].mean(axis=1)
-    return averages
+# def processing_standard_policies(pol_results):
+#     # Receives a specific policy dictionary of results of runs and processes the averages
+#     averages = dict()
+#     cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public_index']
+#     for col in cols:
+#         averages[col] = pd.DataFrame()
+#     for run in pol_results:
+#         for col in cols:
+#             averages[col].loc[:, run] = pol_results[run][col]
+#     for col in cols:
+#         averages[col] = averages[col].mean(axis=1)
+#     return averages
 
 
 def plot_policies(results, levels, n):
