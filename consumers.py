@@ -8,8 +8,6 @@ class Consumer:
     def __init__(self, _id, sim):
         self.id = _id
         self.price_max = sim.seed.normalvariate(params.p_max['mu'], params.p_max['sigma'])
-        # Value that represents consumer emotion (Br)
-        self.emotion = sim.seed.random()
         self.my_car = None
         self.distance = sim.seed.normalvariate(params.distance['mu'], params.distance['sigma'])
 
@@ -41,7 +39,9 @@ class Consumer:
         criteria = ['car_affordability', 'use_affordability', 'stations', 'market_share',
                     'energy_capacity', 'car_cleanness', 'quality', 'emotion']
         criteria1, criteria2 = sim.seed.choices(criteria, k=2)
-        my_market.sort(key=lambda c: c.criteria_selection(self.emotion, criteria1, criteria2), reverse=True)
+        # Value that represents consumer emotion (brand). It can change at each t.
+        emotion = sim.seed.random()
+        my_market.sort(key=lambda c: c.criteria_selection(emotion, criteria1, criteria2), reverse=True)
 
         self.my_car = my_market[0]
         self.my_car.firm.sales(self.my_car.type)
