@@ -51,6 +51,10 @@ class Vehicle:
             if self.type == 'green' and self.emissions() < self.firm.sim.e:
                 policy_value = params.green_support[self.firm.sim.policy['level']] * e_parameter
         # TODO: Although sales price is full, probably firms should receive value deduced from iva and policy tax?
+        # TODO: Aqui temos que costruir a politica brasileira onde tem uma dedução do IPI?
+        # TODO: Solução: criar variável taxas/impostos por veículo (preços ao consumidor: soma custo + taxas + margem
+        # (achamos que podemos descontar do IVA para semplificar) de no minimo 3%
+        # quando a fabrica começa o desenvolvimento do carro eletrico
         # As firmas só recebem a Política Tx e pagam o IVA que vai pro gove
         self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * \
                            (1 + policy_tax) * self.production_cost + policy_value

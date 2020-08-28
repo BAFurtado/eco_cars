@@ -35,9 +35,9 @@ class Firm:
         self.portfolio_marker['gas'] = self.sim.t
 
     def update_budget(self):
-        # Investments are deduced immediately when done
+        # Investments are deduced immediately when they occur, if they occcur
         # Here we add profits per car, deduce fixed costs
-        # Cost of adoption and RD investments are deduced as/when they happen
+        # Cost of adoption are also deduced as/if they happen
         for tech in self.cars:
             self.budget += self.profit[tech][self.sim.t]
         self.budget -= params.fixed_costs if self.sim.t != 0 else 0
@@ -49,11 +49,8 @@ class Firm:
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
         # Teria que descontar o IVA do sales price
-        # TODO: Aqui temos que costruir a politica brasileira onde tem uma dedução do IPI
-        # (achamos que podemos descontar do IVA para semplificar) de no minimo 3%
-        # quando a fabrica começa o desenvolvimento do carro eletrico
-
         for tech in self.cars:
+            # For each technology (gas, green), number of those cars sold times sales price minus production cost
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost)
 
