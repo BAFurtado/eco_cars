@@ -13,13 +13,18 @@ class Firm:
         # Budget
         self.budget = sim.seed.randint(0, params.budget_max_limit)
         # Firm configuration decisions:
-        self.profit = {'gas': defaultdict(float), 'green': defaultdict(float)}
+        self.profit = {'gas': defaultdict(float),
+                       'green': defaultdict(float)}
         # Investments in R&D
-        self.investments = {'gas': defaultdict(float), 'green': defaultdict(float)}
-        self.sold_cars = {'gas': defaultdict(int), 'green': defaultdict(int)}
+        self.investments = {'gas': defaultdict(float),
+                            'green': defaultdict(float)}
+        self.sold_cars = {'gas': defaultdict(int),
+                          'green': defaultdict(int)}
         # Assign a vehicle for this firm to sell
         self.cars = dict()
-        self.market_share = {'gas': defaultdict(float), 'green': defaultdict(float), 'total': defaultdict(float)}
+        self.market_share = {'gas': defaultdict(float),
+                             'green': defaultdict(float),
+                             'total': defaultdict(float)}
         self.sim = sim
         self.portfolio_marker = dict()
         if gas:
@@ -43,9 +48,9 @@ class Firm:
             self.profit['gas'][0] = 0
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
-        # - Teria que descontar o IVA do sales price
-        #
-        # - Aqui temos que costruir a politica brasileira onde tem uma dedução do IPI (achamos que podemos descontar do IVA para semplificar) de no minimo 3%
+        # Teria que descontar o IVA do sales price
+        # TODO: Aqui temos que costruir a politica brasileira onde tem uma dedução do IPI
+        # (achamos que podemos descontar do IVA para semplificar) de no minimo 3%
         # quando a fabrica começa o desenvolvimento do carro eletrico
 
         for tech in self.cars:

@@ -31,7 +31,7 @@ class Vehicle:
         self.sales_price = None
         self.calculate_price()
 
-    def autonomy(self):
+    def drive_range(self):
         # Driving range (DR)
         return self.EE * self.EC
 
@@ -58,12 +58,13 @@ class Vehicle:
 
     def criteria_selection(self, emotion, criteria1, criteria2):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]
-        criteria = {'price_accessibility': 1/self.sales_price,
-                    'use_accessibility': 1/params.price_energy[self.type],
-                    'stations': params.stations['gas'] if self.type == 'gas' else self.firm.sim.green_stations[self.firm.sim.t],
+        criteria = {'car_affordability': 1 / self.sales_price,
+                    'use_affordability': 1 / params.price_energy[self.type],
+                    'stations': params.stations['gas'] if self.type == 'gas'
+                    else self.firm.sim.green_stations[self.firm.sim.t],
                     'market_share': max(ms1, params.epsilon),
                     'energy_capacity': self.EC,
-                    'car_cleanness': 1/self.autonomy(),
+                    'car_cleanness': 1 / self.emissions(),
                     'quality': self.QL,
                     'emotion': emotion}
 

@@ -46,14 +46,13 @@ class Simulation:
         self.create_agents()
         self.green_market_share = dict()
         self.green_stations = dict()
-        self.num_cars = {'green': defaultdict(int), 'gas': defaultdict(int)}
+        self.num_cars = {'green': defaultdict(int),
+                         'gas': defaultdict(int)}
         self.emissions = 0
-
         # 'emissions' is total value, 'emissions_index' is relative to first month emissions
         # 'e' is the calculated parameter benchmark, based on sold vehicles and their energy economy
-        self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share',
-                                            'emissions', 'emissions_index', 'e',
-                                            'public', 'public_index', 'public_cumulative'])
+        self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share', 'emissions', 'emissions_index',
+                                            'e', 'public', 'public_index', 'public_cumulative'])
 
     def create_agents(self):
         for i in range(params.num_firms):
@@ -114,7 +113,7 @@ class Simulation:
             else:
                 new_firm.portfolio_marker['gas'] = self.t
 
-    def update_green_stations(self):
+    def update_green_market_and_stations(self):
         # Update green market share
         if self.t < 9:
             self.green_market_share[self.t] = 0
@@ -178,7 +177,7 @@ class Simulation:
         self.driving()
 
     def offer(self):
-        self.update_green_stations()
+        self.update_green_market_and_stations()
         landfill = list()
         # Randomize order of firms at each turn
         keys = list(self.firms)

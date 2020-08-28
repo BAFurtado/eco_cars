@@ -2,6 +2,8 @@
 
 #### Upon reading!
 
+0. O Cleanness do carro estava como 1/drive_range, mas é 1/emmissions, certo? Troquei.
+
 0. Formula 4 suggests PC -- production cost -- at t - 1. In the model, PC has no memory of past values. But when 
 investments occur, PC is updated. Because consumers buy first, necessarily PC refer to previous period. Right?
 
