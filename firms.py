@@ -48,9 +48,8 @@ class Firm:
             self.profit['gas'][0] = 0
             return
         # Here we include in the profit per car the quantity sold * the net gain between sales price and production cost
-        # Teria que descontar o IVA do sales price
         for tech in self.cars:
-            # For each technology (gas, green), number of those cars sold times sales price minus production cost
+            # For each technology (gas, green), number of cars sold times sales price minus production cost
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost)
 
@@ -80,9 +79,10 @@ class Firm:
             # Firms only move from gas to green
             return
         if self.budget > params.cost_adoption:
-            prob_adoption = ((self.cars['gas'].EE / params.energy_economy['max'] + params.production_cost['min'] /
-                              self.cars['gas'].production_cost) / 2) ** params.omega \
-                            * max(self.sim.green_market_share[self.sim.t], params.epsilon) ** (1 - params.omega)
+            epsilon = params.epsilon if self.sim.green_market_share[self.sim.t] == 0 \
+                else self.sim.green_market_share[self.sim.t]
+            prob_adoption = (((self.cars['gas'].EE / params.energy_economy['max'] + params.production_cost['min'] /
+                               self.cars['gas'].production_cost) ** params.omega) / 2) * epsilon ** (1 - params.omega)
             self.sim.log.info(params.cor.Fore.LIGHTRED_EX + f'Prob. adoption of green portfolio: {prob_adoption:.4f}')
             if prob_adoption > self.sim.seed.random():
                 # Determine costs of adopting green technology
