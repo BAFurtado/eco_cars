@@ -13,6 +13,8 @@ Mas, de fato, a fórmula menciona pe_t. Teríamos que ter os dados originais de 
 investments occur, PC is updated. Because consumers buy first, necessarily PC refer to previous period. Right?
 6. A escolha de parametros para a tecnologia verde estava sendo feita entre o carro corrente a gasolina e a firma 
 a imitar e não entre green t0 e a firma a imitar. Corrigi :|
+7. Conferido pela segunda vez. Autores mencionam no item C.2.2 que quanto mais tempo investido em um carro, menor chance
+de abandonar portfólio, mas isso não condiz com a fórmula e afirmação que ROI é do período anterior. 
 1. Autores mencionam CUMULATIVE COSTS p.64
 2. ROI is just previous period
 

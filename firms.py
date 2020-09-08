@@ -127,14 +127,14 @@ class Firm:
         self.invest_into_vehicle(investments)
 
     def invest_into_vehicle(self, investments):
-        # May improve PC (production_cost), EE, EC, QL
-        # Choose which one randomly depending on current technology
-        # 1. PC 2. EE or EC 3. QL
-        choice = self.sim.seed.choice([1, 2, 3])
+        # eta = 1 if just one car, 1/2 if gas and green
+        to_invest_now = investments * 1 if len(self.cars) == 1 else investments * .5
         for tech in self.cars.keys():
             rdm = self.sim.seed.random()
-            # eta = 1 if just one car, 1/2 if gas and green
-            to_invest_now = investments * 1 if len(self.cars) == 1 else investments * .5
+            # May improve PC (production_cost), EE, EC, QL
+            # Choose which one randomly depending on current technology
+            # 1. PC 2. EE or EC 3. QL
+            choice = self.sim.seed.choice([1, 2, 3])
             if rdm < 1 - e ** (-params.alpha1 * to_invest_now):
                 # Success. Investment to occur!
                 # TODO: implement future reduction on investments costs
@@ -144,23 +144,27 @@ class Firm:
                                                                  f'have made an investment on {tech} '
                                                                  f'of {to_invest_now:,.2f}')
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
-                if choice == 1 and self.cars[tech].production_cost > params.production_cost['min']:
-                    delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
-                    self.cars[tech].production_cost += delta
-                    self.sim.log.info(params.cor.Fore.GREEN + f'Production cost reduced by {delta:,.2f}')
-                elif choice == 3 and self.cars[tech].QL < params.quality_level['max']:
-                    delta = params.alpha2 * rdm * (params.quality_level['max'] - self.cars[tech].QL)
-                    self.cars[tech].QL += delta
-                    self.sim.log.info(params.cor.Fore.MAGENTA + f'Quality increased by {delta:,.4f}')
+                if choice == 1:
+                    if self.cars[tech].production_cost >= params.production_cost['min']:
+                        delta = params.alpha2 * rdm * (params.production_cost['min'] - self.cars[tech].production_cost)
+                        self.cars[tech].production_cost += delta
+                        self.sim.log.info(params.cor.Fore.GREEN + f'Production cost reduced by {delta:,.2f}')
+                elif choice == 3:
+                    if self.cars[tech].QL <= params.quality_level['max']:
+                        delta = params.alpha2 * rdm * (params.quality_level['max'] - self.cars[tech].QL)
+                        self.cars[tech].QL += delta
+                        self.sim.log.info(params.cor.Fore.MAGENTA + f'Quality increased by {delta:,.4f}')
                 else:
                     if tech == 'gas':
-                        delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
-                        self.cars[tech].EE += delta
-                        self.sim.log.info(params.cor.Fore.LIGHTYELLOW_EX + f'Energy economy increased by {delta:,.4f}')
+                        if self.cars[tech].EE <= params.energy_economy['max']:
+                            delta = params.alpha2 * rdm * (params.energy_economy['max'] - self.cars[tech].EE)
+                            self.cars[tech].EE += delta
+                            self.sim.log.info(params.cor.Fore.LIGHTYELLOW_EX + f'Energy economy increased by {delta:,.4f}')
                     else:
-                        delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
-                        self.cars[tech].EC += delta
-                        self.sim.log.info(params.cor.Fore.GREEN + f'Energy capacity increased by {delta:,.4f}')
+                        if self.cars[tech].EC <= params.energy_capacity['max']:
+                            delta = params.alpha2 * rdm * (params.energy_capacity['max'] - self.cars[tech].EC)
+                            self.cars[tech].EC += delta
+                            self.sim.log.info(params.cor.Fore.GREEN + f'Energy capacity increased by {delta:,.4f}')
 
     def sales(self, car_type):
         # Register number of sold_cars

@@ -17,7 +17,7 @@ class Vehicle:
                  # Performance measure ~= quality characteristics
                  ql=params.quality_level['gas'],
                  firm=None):
-        # Type: 'combustion' or 'electric'
+        # Type: 'combustion' or 'electric', 'gas' or 'green'
         self.type = _type
         # Price (production_cost)
         self.production_cost = production_cost

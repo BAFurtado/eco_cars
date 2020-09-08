@@ -145,8 +145,8 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 3
+    m = 10
     benchmark(m)
-    r, l, m = policies(m)
-    plot_policies(r, l, m)
+    # r, l, m = policies(m)
+    # plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')
