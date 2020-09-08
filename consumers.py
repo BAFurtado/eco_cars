@@ -38,7 +38,7 @@ class Consumer:
         # Choose two criteria to evaluate among possible purchases
         criteria = ['car_affordability', 'use_affordability', 'stations', 'market_share',
                     'energy_capacity', 'car_cleanness', 'quality', 'emotion']
-        criteria1, criteria2 = sim.seed.choices(criteria, k=2)
+        criteria1, criteria2 = sim.seed.sample(criteria, k=2)
         # Value that represents consumer emotion (brand). It can change at each t.
         emotion = sim.seed.random()
         # In case the criteria are identical

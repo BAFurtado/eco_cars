@@ -26,6 +26,7 @@ escolhidas. Alterei para embaralhar a lista antes de utilizar os critérios para
 critérios são iguais.
 10. A marcação de não mudança de portfólio de 10 anos vale para qualquer mudança. Portanto, só pode abandonar 'gas' no
 ano 20. Implementada correção.
+11. As vezes, mesmo criteria era usado duas vezes, substitui random.choices por random.sample
 
 0. IVA é usado como benchmarket para public finance.
 1. Autores mencionam CUMULATIVE COSTS p.64
