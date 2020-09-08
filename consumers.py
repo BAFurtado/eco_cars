@@ -41,6 +41,8 @@ class Consumer:
         criteria1, criteria2 = sim.seed.choices(criteria, k=2)
         # Value that represents consumer emotion (brand). It can change at each t.
         emotion = sim.seed.random()
+        # In case the criteria are identical
+        sim.seed.shuffle(my_market)
         my_market.sort(key=lambda c: c.criteria_selection(emotion, criteria1, criteria2), reverse=True)
 
         self.my_car = my_market[0]

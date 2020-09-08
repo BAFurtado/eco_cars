@@ -2,6 +2,11 @@
 
 #### Upon reading!
 
+### Importante take aways!
+
+**Tudo conferido, pequenos ajustes, mas: continua índice de greens bem  maior que o reportado no artigo
+**
+
 0. O Cleanness do carro estava como 1/drive_range, mas é 1/emmissions. Troquei.
 1. Probability adoption estava dividindo antes de elevar. Troquei.
 2. Epsilon estava escolhendo o máximo entre 0 e market share green, na verdade é epsilon se 0 e share se diferente 
@@ -15,13 +20,11 @@ investments occur, PC is updated. Because consumers buy first, necessarily PC re
 a imitar e não entre green t0 e a firma a imitar. Corrigi :|
 7. Conferido pela segunda vez. Autores mencionam no item C.2.2 que quanto mais tempo investido em um carro, menor chance
 de abandonar portfólio, mas isso não condiz com a fórmula e afirmação que ROI é do período anterior. 
+8. Firmas que quebraram não podem mais serem imitadas
+
+0. IVA é usado como benchmarket para public finance.
 1. Autores mencionam CUMULATIVE COSTS p.64
-2. ROI is just previous period
-
 6. **Public expenditure is calculated using ACCUMULATED expenditures**
-
-4. A firma que é eliminada pode ser utilizada como imitação, dentre as alternativas aleatórias, logo depois é 
-eliminada. 
 
 ## TO EVALUATE STILL
 5. **Do discounts and taxes paid/received by consumers affect value received by firms?**

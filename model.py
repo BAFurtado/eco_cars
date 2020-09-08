@@ -78,11 +78,23 @@ class Simulation:
     def update_car_info(self, car_type):
         self.num_cars[car_type][self.t] += 1
 
-    def new_firm(self):
+    def new_firm(self, busted):
         # 1. Pick an existing firm, proportional to market share
         weights = [f.market_share['total'][self.t] for f in self.firms.values()]
         key = self.seed.choices(list(self.firms.values()), weights=weights)
-        firm_to_imitate = self.firms[key[0].id]
+        while True:
+            # Making sure firm to imitate has not just gone busted
+            try:
+                i = 0
+                if self.firms[key[i].id] not in busted:
+                    firm_to_imitate = self.firms[key[i].id]
+                    break
+                else:
+                    i += 1
+            except IndexError:
+                # In the case that there are no firms to imitate that have not gone busted
+                firm_to_imitate = self.firms[key[0].id]
+                break
         # 2. if original company has both technologies, just 1/3 chance both are going to be replicated
         choice = self.seed.random()
         if len(firm_to_imitate.cars) == 2:
@@ -119,8 +131,7 @@ class Simulation:
             self.green_market_share[self.t] = 0
             self.green_stations[self.t] = 1
         else:
-            green_cars = sum([firm.sold_cars['green'][self.t - 1]
-                              for firm in self.firms.values() if 'green' in firm.cars])
+            green_cars = self.num_cars['green'][self.t - 1]
             total_cars = self.num_cars['gas'][self.t - 1] + self.num_cars['green'][self.t - 1]
             # One more place in which sold cars are 0
             self.green_market_share[self.t] = green_cars / total_cars if total_cars > 0 else 0
@@ -207,7 +218,7 @@ class Simulation:
             print(params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '
                                                     f'has(ve) gone bankrupt at time {self.t}')
         for i in landfill:
-            self.new_firm()
+            self.new_firm(landfill)
             del self.firms[i]
 
     def demand(self):

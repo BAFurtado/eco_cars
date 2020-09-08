@@ -68,20 +68,6 @@ def plotting(results, n):
     return res
 
 
-# def processing_standard_policies(pol_results):
-#     # Receives a specific policy dictionary of results of runs and processes the averages
-#     averages = dict()
-#     cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public_index']
-#     for col in cols:
-#         averages[col] = pd.DataFrame()
-#     for run in pol_results:
-#         for col in cols:
-#             averages[col].loc[:, run] = pol_results[run][col]
-#     for col in cols:
-#         averages[col] = averages[col].mean(axis=1)
-#     return averages
-
-
 def plot_policies(results, levels, n):
     # Receives a dictionary of results for policies
     # Each with all 9 levels
@@ -145,7 +131,7 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 10
+    m = 100
     benchmark(m)
     # r, l, m = policies(m)
     # plot_policies(r, l, m)

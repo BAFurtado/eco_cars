@@ -7,7 +7,7 @@ from numpy import linspace
 # Initiating time parameter
 T = 40
 num_firms = 8
-num_consumers = 10000
+num_consumers = 2000
 
 # Vehicles characteristics ---------------------------------------------
 production_cost = {'green': 27356, 'gas': 16950, 'min': 10000}
