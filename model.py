@@ -120,10 +120,7 @@ class Simulation:
                           self.seed.uniform(params.energy_capacity[i], firm_to_imitate.cars[i].EC),
                           self.seed.uniform(params.energy_economy[i], firm_to_imitate.cars[i].EE))
             new_firm.cars[i] = Vehicle(firm=new_firm, _type=i, production_cost=pc, ec=ec, ee=ee)
-            if i == 'green':
-                new_firm.portfolio_marker['green'] = self.t
-            else:
-                new_firm.portfolio_marker['gas'] = self.t
+            new_firm.portfolio_marker = self.t
 
     def update_green_market_and_stations(self):
         # Update green market share

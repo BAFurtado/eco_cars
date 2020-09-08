@@ -21,6 +21,11 @@ a imitar e não entre green t0 e a firma a imitar. Corrigi :|
 7. Conferido pela segunda vez. Autores mencionam no item C.2.2 que quanto mais tempo investido em um carro, menor chance
 de abandonar portfólio, mas isso não condiz com a fórmula e afirmação que ROI é do período anterior. 
 8. Firmas que quebraram não podem mais serem imitadas
+9. Como no início os carros são praticamente iguais, as firmas em primeiro lugar da lista estavam sendo sempre 
+escolhidas. Alterei para embaralhar a lista antes de utilizar os critérios para compra, para evitar o caso em que os 
+critérios são iguais.
+10. A marcação de não mudança de portfólio de 10 anos vale para qualquer mudança. Portanto, só pode abandonar 'gas' no
+ano 20. Implementada correção.
 
 0. IVA é usado como benchmarket para public finance.
 1. Autores mencionam CUMULATIVE COSTS p.64

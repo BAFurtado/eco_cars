@@ -26,13 +26,13 @@ class Firm:
                              'green': defaultdict(float),
                              'total': defaultdict(float)}
         self.sim = sim
-        self.portfolio_marker = dict()
+        self.portfolio_marker = 0
         if gas:
             self.create_gas_car()
 
     def create_gas_car(self):
         self.cars['gas'] = Vehicle(firm=self)
-        self.portfolio_marker['gas'] = self.sim.t
+        self.portfolio_marker = self.sim.t
 
     def update_budget(self):
         # Investments are deduced immediately when they occur, if they occcur
@@ -113,7 +113,7 @@ class Firm:
                                              ee=params.energy_economy['green'],
                                              ql=ql,
                                              firm=self)
-                self.portfolio_marker['green'] = self.sim.t
+                self.portfolio_marker = self.sim.t
 
     def invest_rd(self):
         # 1. Check available money
@@ -174,7 +174,7 @@ class Firm:
         if len(self.cars) == 1:
             return
         for car in self.cars.values():
-            if self.sim.t - self.portfolio_marker[car.type] < 10:
+            if self.sim.t - self.portfolio_marker < 10:
                 continue
             roi = self.calculate_roi(car)
             self.sim.log.info(f'ROI for firm {self.id} is {roi}')
@@ -182,7 +182,7 @@ class Firm:
                 print(params.cor.Fore.LIGHTRED_EX + f'Abandoning portfolio {car.type}: firm {self.id} '
                                                     f'at time {self.sim.t}')
                 # Also, restrict new change, setting marker
-                self.portfolio_marker[car.type] = self.sim.t
+                self.portfolio_marker = self.sim.t
                 del self.cars[car.type]
                 return
 
