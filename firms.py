@@ -99,10 +99,10 @@ class Firm:
                     choices = self.sim.seed.choices(greens, weights=weights)
                     firm_to_imitate = choices[0]
                     car = firm_to_imitate.cars['green']
-                    # New car production will fall somewhere between current Vehicle EC, QL, production_cost
-                    pc, ec, ql = (self.sim.seed.uniform(self.cars['gas'].production_cost, car.production_cost),
-                                  self.sim.seed.uniform(self.cars['gas'].EC, car.EC),
-                                  self.sim.seed.uniform(self.cars['gas'].QL, car.QL))
+                    # New car production will fall somewhere between initial value and imitated firm value
+                    pc, ec, ql = (self.sim.seed.uniform(params.production_cost['green'], car.production_cost),
+                                  self.sim.seed.uniform(params.energy_capacity['green'], car.EC),
+                                  self.sim.seed.uniform(params.quality_level['green'], car.QL))
                 # Adopt Green
                 print(params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted a new green portfolio '
                                                        f'at time {self.sim.t}')
