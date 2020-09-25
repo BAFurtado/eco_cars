@@ -4,7 +4,24 @@
 
 ### Importante take aways!
 
-**Tudo conferido, pequenos ajustes, mas: continua índice de greens bem  maior que o reportado no artigo
+** Nova rodada de conferência para September 29.
+
+1. Continuo sem saber como implementar a linha do item C.22: "Firm i will decide to abandon technology j 
+according to probabilities that depend on ROIij
+and **the total number of periods** in which the firm has developed technology j: the lower the return on
+investment of technology j, the higher its probability of being abandoned, and the **longer the experience
+has lasted, the harder it is to abandon**"
+
+@andrugo7: Podes pensar como implementar isso (matematicamente)? Acho que faltou na fórmula/descrição, mas é relevante.
+Deve ser o ROI * alguma coisa (1 - 1/num de anos)?
+
+2. Segunda coisa mais relevante, penso, é o IVA a ser descontado do preço do imóvel e recolhido para ente público.
+Based on this as well: "The VAT benefits are used as a benchmark for the other
+scenarios with government regulation.36" 4.1
+
+
+
+**Tudo conferido, pequenos ajustes, mas: continua índice de greens maior que o reportado no artigo
 **
 
 0. O Cleanness do carro estava como 1/drive_range, mas é 1/emmissions. Troquei.
@@ -27,6 +44,8 @@ critérios são iguais.
 10. A marcação de não mudança de portfólio de 10 anos vale para qualquer mudança. Portanto, só pode abandonar 'gas' no
 ano 20. Implementada correção.
 11. As vezes, mesmo criteria era usado duas vezes, substitui random.choices por random.sample
+
+#### ROI maior que 1. Verificar. Production_cost reduction does not affect sales prices?
 
 0. IVA é usado como benchmarket para public finance.
 1. Autores mencionam CUMULATIVE COSTS p.64

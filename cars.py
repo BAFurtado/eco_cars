@@ -30,6 +30,8 @@ class Vehicle:
         self.firm = firm
         self.sales_price = None
         self.calculate_price()
+        self.owed_taxes = 0
+        self.policy_value_discount = 0
 
     def drive_range(self):
         # Driving range (DR)
@@ -50,15 +52,15 @@ class Vehicle:
             # Only for green cars that perform less than average benchmark
             if self.type == 'green' and self.emissions() < self.firm.sim.e:
                 policy_value = params.green_support[self.firm.sim.policy['level']] * e_parameter
-        # TODO: Although sales price is full, probably firms should receive value deduced from iva and policy tax?
-        # TODO: Aqui temos que costruir a politica brasileira onde tem uma dedução do IPI?
-        # TODO: Solução: criar variável taxas/impostos por veículo (preços ao consumidor: soma custo + taxas + margem
-        # (achamos que podemos descontar do IVA para semplificar) de no minimo 3%
-        # quando a fabrica começa o desenvolvimento do carro eletrico
-        # As firmas só recebem a Política Tx e pagam o IVA que vai pro gove
+        # policy_value é DESCONTO. policy_tax é SOBRETAXA OU DESCONTO NA TAXA
+        # TODO: política brasileira
+        # Politica Brasileira: descontar do IVA  no minimo 3% quando a fabrica inicia desenvolvimento do carro eletrico
         self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * \
                            (1 + policy_tax) * self.production_cost + policy_value
-        return policy_tax * self.production_cost + policy_value
+        # QUAL CUSTO O GOVERNO DEIXA DE RECEBER, QUAL DEIXA A FIRMA?
+        self.owed_taxes = (policy_tax + params.iva) * self.production_cost
+        self.policy_value_discount = policy_value
+        return self.owed_taxes + self.policy_value_discount
 
     def criteria_selection(self, emotion, criteria1, criteria2):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]

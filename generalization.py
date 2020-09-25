@@ -20,7 +20,7 @@ policies_titles = {None: ['Benchmark', 'black'],
                    'discount': ['Discount', 'yellowgreen'],
                    'green_support': ['Green support', 'green'],
                    'max_e': ["Restriction on cars' emissions", 'dimgrey']}
-verbose = False
+verbose = True
 seed = False
 
 
@@ -131,7 +131,7 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 100
+    m = 3
     benchmark(m)
     # r, l, m = policies(m)
     # plot_policies(r, l, m)
