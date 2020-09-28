@@ -27,7 +27,8 @@ seed = False
 def processing_averages(pol_results):
     # Receives a specific policy dictionary of results of runs and processes the averages
     averages = dict()
-    cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public_cumulative']
+    # cols = ['green_market_share', 'new_firms_share', 'emissions_index', 'public_cumulative']
+    cols = ['green_market_share', 'new_firms_share', 'emissions_index']
     for col in cols:
         averages[col] = pd.DataFrame()
     for run in pol_results:
@@ -131,7 +132,7 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 3
+    m = 10
     benchmark(m)
     # r, l, m = policies(m)
     # plot_policies(r, l, m)
