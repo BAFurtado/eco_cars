@@ -4,6 +4,12 @@
 
 ### Importante take aways!
 
+Ultimos updates 29/9:
+
+1. Implementada policy_value no budget das firmas
+2. Incluida taxa de desconto por tempo no ROI.
+3. Public expenditure é anual, não cumulativa...
+
 ** Nova rodada de conferência para September 29.
 
 1. Continuo sem saber como implementar a linha do item C.22: "Firm i will decide to abandon technology j 
@@ -12,8 +18,6 @@ and **the total number of periods** in which the firm has developed technology j
 investment of technology j, the higher its probability of being abandoned, and the **longer the experience
 has lasted, the harder it is to abandon**"
 
-@andrugo7: Podes pensar como implementar isso (matematicamente)? Acho que faltou na fórmula/descrição, mas é relevante.
-Deve ser o ROI * alguma coisa (1 - 1/num de anos)?
 
 2. Segunda coisa mais relevante, penso, é o IVA a ser descontado do preço do imóvel e recolhido para ente público.
 Based on this as well: "The VAT benefits are used as a benchmark for the other
