@@ -34,6 +34,9 @@ cost_adoption = 10000
 # ROI
 p_lambda = .1
 
+# Our parameter to implement reduction of probability of adoption as long as it gets
+k = -.01
+
 # Consumers characteristics ---------------------------------------------
 # Distance of consumers
 prob_adoption = .25

@@ -52,7 +52,7 @@ class Firm:
             # For each technology (gas, green), number of cars sold times sales price minus production cost
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost
-                                              - self.cars[tech].owed_taxes)
+                                              - self.cars[tech].owed_taxes - self.cars[tech].policy_value_discount)
 
     def update_market_share(self, total_cars_sold):
         if self.sim.t == 0:
@@ -178,7 +178,7 @@ class Firm:
             if self.sim.t - self.portfolio_marker < 10:
                 continue
             roi = self.calculate_roi(car)
-            self.sim.log.info(f'ROI for firm {self.id} is {roi}')
+            self.sim.log.info(f'ROI for firm {self.id} is {roi:.2f}')
             if self.sim.seed.random() < roi:
                 print(params.cor.Fore.LIGHTRED_EX + f'Abandoning portfolio {car.type}: firm {self.id} '
                                                     f'at time {self.sim.t}')
@@ -189,9 +189,9 @@ class Firm:
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        # ROI reverted to just previous period
+        # IMPLEMENTED REDUCTOR OF PROBABILITY GIVEN MORE TIME OF ADOPTION: e ** (-.01 * time_adopation)
         if self.investments[car.type][self.sim.t - 1] > 0:
             return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t - 1] / \
-                   self.investments[car.type][self.sim.t - 1]
+                   self.investments[car.type][self.sim.t - 1] * e ** (params.k + (self.sim.t - self.portfolio_marker))
         else:
             return 0

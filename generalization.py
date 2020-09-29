@@ -14,7 +14,7 @@ import model
 notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
          'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
          'emissions_index': ['Emissions index', 'darkblue'],
-         'public_cumulative': ['Total public expenditure index', 'firebrick']}
+         'public': ['Annual public expenditure', 'firebrick']}
 policies_titles = {None: ['Benchmark', 'black'],
                    'tax': ['Tax scheme', 'firebrick'],
                    'discount': ['Discount', 'yellowgreen'],
@@ -120,7 +120,7 @@ def policies(n=10):
 
 def benchmark(n=10):
     pol, level = None, None
-    p = {'policy': None, 'level': None}
+    p = {'policy': pol, 'level': level}
     # For each run policy, when dictionary with all runs is saved.
     # Thus, result collected is a dictionary of dictionaries containing DataFrames
     results = {pol: dict()}
@@ -132,7 +132,7 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 10
+    m = 1
     benchmark(m)
     # r, l, m = policies(m)
     # plot_policies(r, l, m)
