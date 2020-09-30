@@ -4,6 +4,7 @@ import pandas as pd
 import time
 
 import model
+from joblib import Parallel, delayed
 
 # 1. Emissions index
 # 2. Green market-share
@@ -101,8 +102,8 @@ def plot_policies(results, levels, n):
     return results
 
 
-def policies(n=10):
-    levels = [round(lev, 1) for lev in linspace(.1, .9, 9)]
+def policies(n=10, n_jobs=1):
+    levels = [round(lev, 1) for lev in linspace(.1, .9, 2)]
     pols = [None, 'tax', 'discount', 'green_support', 'max_e']
     results = dict()
     for pol in pols:
@@ -112,9 +113,15 @@ def policies(n=10):
             # For each run policy, when dictionary with all runs is saved.
             # Thus, result collected is a dictionary of dictionaries containing DataFrames
             results[pol][level] = dict()
-            for i in range(n):
-                s = model.main(p, verbose, seed=seed)
-                results[pol][level][i] = s.report.loc[39]
+
+            with Parallel(n_jobs=n_jobs) as parallel:
+                s = parallel(delayed(model.main)(p, verbose, seed) for i in range(n))
+                for i in range(n):
+                    results[pol][level][i] = s[i].report.loc[39]
+
+            # for i in range(n):
+            #     s = model.main(p, verbose, seed=seed)
+            #     results[pol][level][i] = s.report.loc[39]
     return results, levels, n
 
 
@@ -132,8 +139,9 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 1
-    benchmark(m)
-    # r, l, m = policies(m)
-    # plot_policies(r, l, m)
+    m = 4
+    jobs = 4
+    # benchmark(m)
+    r, l, m = policies(m, jobs)
+    plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')
