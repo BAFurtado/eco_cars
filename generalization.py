@@ -21,7 +21,7 @@ policies_titles = {None: ['Benchmark', 'black'],
                    'discount': ['Discount', 'yellowgreen'],
                    'green_support': ['Green support', 'green'],
                    'max_e': ["Restriction on cars' emissions", 'dimgrey']}
-verbose = True
+verbose = False
 seed = False
 
 
@@ -66,7 +66,7 @@ def plotting(results, n):
         ax.set(xlabel='T periods', ylabel='value',
                title=f'Results after {n} runs using policy: {policies_titles[pol][0]}')
         plt.savefig(f'results/{pol}.png', bbox_inches='tight')
-        plt.show()
+        # plt.show()
     return res
 
 
@@ -98,12 +98,12 @@ def plot_policies(results, levels, n):
         ax = plot_details(ax)
         ax.set(xlabel='Policy strength', ylabel='value', title=f'Results for {notes[graph][0]} after {n} runs')
         plt.savefig(f'policy_stringent_figures/{graph}.png', bbox_inches='tight')
-        plt.show()
+        # plt.show()
     return results
 
 
 def policies(n=10, n_jobs=1):
-    levels = [round(lev, 1) for lev in linspace(.1, .9, 2)]
+    levels = [round(lev, 1) for lev in linspace(.1, .9, 9)]
     pols = [None, 'tax', 'discount', 'green_support', 'max_e']
     results = dict()
     for pol in pols:
@@ -139,9 +139,10 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 4
-    jobs = 4
-    # benchmark(m)
+    m = 200
+    # Number of jobs is cpus that will run simultaneously
+    jobs = 16
+    benchmark(m)
     r, l, m = policies(m, jobs)
     plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')
