@@ -179,7 +179,7 @@ class Firm:
                 continue
             roi = self.calculate_roi(car)
             self.sim.log.info(f'ROI for firm {self.id} is {roi:.2f}')
-            if self.sim.seed.random() < roi:
+            if roi < 1:
                 print(params.cor.Fore.LIGHTRED_EX + f'Abandoning portfolio {car.type}: firm {self.id} '
                                                     f'at time {self.sim.t}')
                 # Also, restrict new change, setting marker
@@ -192,6 +192,6 @@ class Firm:
         # IMPLEMENTED REDUCTOR OF PROBABILITY GIVEN MORE TIME OF ADOPTION: e ** (-.01 * time_adopation)
         if self.investments[car.type][self.sim.t - 1] > 0:
             return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t - 1] / \
-                   self.investments[car.type][self.sim.t - 1] * e ** (params.k + (self.sim.t - self.portfolio_marker))
+                   self.investments[car.type][self.sim.t - 1]
         else:
             return 0
