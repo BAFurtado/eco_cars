@@ -103,7 +103,7 @@ def plot_policies(results, levels, n):
 
 
 def policies(n=10, n_jobs=1):
-    levels = [round(lev, 1) for lev in linspace(.1, .9, 9)]
+    levels = [round(lev, 1) for lev in linspace(.1, .9, 18)]
     pols = [None, 'tax', 'discount', 'green_support', 'max_e']
     results = dict()
     for pol in pols:
@@ -139,7 +139,7 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 200
+    m = 1000
     # Number of jobs is cpus that will run simultaneously
     jobs = 16
     benchmark(m)
