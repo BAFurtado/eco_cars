@@ -247,4 +247,4 @@ if __name__ == '__main__':
     pols = [None, 'tax', 'discount', 'green_support', 'max_e']
     pol = pols[2]
     p = {'policy': pol, 'level': level}
-    s = main(p)
+    s = main(p, verbose=True)

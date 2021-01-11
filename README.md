@@ -8,24 +8,17 @@ Andrea Ugolini
 
 Bernardo Alves Furtado
 
-#### Objetivo
+#### In construction
 
-Buscamos simular por meio de um Agent-based Model (ABM) como: 
-(a) os instrumento polı́ticos Inovar-auto, ROTA2030, PRO-
-CONVE, EURO 6 e RenovaBio, separadamente e conjuntamente, impactam nas
-decisões, a nı́vel econômico e tecnológico, das empresas, nas decisões de compra
-por parte dos consumidores, nas emissões de CO2 e nas finanças públicas. Ade-
-mais, (b) ver como outros instrumento de politicas públicas, implementadas na
-União Europeia e outros paı́ses, impactariam no Brasil. Enfim, (c) encontrar qual
-seria o melhor instrumento ou mix de instrumentos que poderia ser implementado
-para acelerar a redução de CO2, a implementação de nova tecnologia e o impacto
-nas finanças publicas.
+We simulate an Agent-based Model (ABM) based on van der Vooren and Brouillat (2015) that endogenously test green cars' 
+markets to test alternatives of Brazilian Public Policies. The model contains consumers, firms and their cars (fossil 
+or green) with endogenous budget and innovation mechanisms. Given alternative policies, the model outputs total 
+emission, public expenditure and green market share. 
 
-#### Based on:
+#### Python model by Bernardo A Furtado, based on:
 Van der Vooren, A. and E. Brouillat (2015): “Evaluating co2 reduction policy mixes
 in the automotive sector,” Environmental Innovation and Societal Transitions, 14,
 60–83.
-
 
 #### To run:
 Go `python model.py`
