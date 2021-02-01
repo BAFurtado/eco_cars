@@ -84,6 +84,7 @@ class Firm:
                 else self.sim.green_market_share[self.sim.t]
             prob_adoption = (((self.cars['gas'].EE / params.energy_economy['max'] + params.production_cost['min'] /
                                self.cars['gas'].production_cost) ** params.omega) / 2) * epsilon ** (1 - params.omega)
+            # A formula anterior prob_adoption tem em erro. Ao epsilon temos adicionar o Green Market_Share.
             self.sim.log.info(params.cor.Fore.LIGHTRED_EX + f'Prob. adoption of green portfolio: {prob_adoption:.4f}')
             if prob_adoption > self.sim.seed.random():
                 # Determine costs of adopting green technology
