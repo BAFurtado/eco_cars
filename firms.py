@@ -101,6 +101,7 @@ class Firm:
                     firm_to_imitate = choices[0]
                     car = firm_to_imitate.cars['green']
                     # New car production will fall somewhere between initial value and imitated firm value
+                    # Não estou achando os parametros car.production_cost, car.E e car.QL
                     pc, ec, ql = (self.sim.seed.uniform(params.production_cost['green'], car.production_cost),
                                   self.sim.seed.uniform(params.energy_capacity['green'], car.EC),
                                   self.sim.seed.uniform(params.quality_level['green'], car.QL))
