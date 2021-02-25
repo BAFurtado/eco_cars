@@ -10,14 +10,21 @@ num_firms = 8
 num_consumers = 2000
 
 # Vehicles characteristics ---------------------------------------------
-production_cost = {'green': 27356, 'gas': 16950, 'min': 10000}
-energy_economy = {'green': 66.2, 'gas': 15.9, 'max': 66.2}
-energy_capacity = {'green': 2.35, 'gas': 60, 'max': 60}
-quality_level = {'green': .5, 'gas': .5, 'max': 1}
-emission = {'green': 1, 'gas': 23.06}
-price_energy = {'green': 1.12, 'gas': 1.6}
-stations = {'green': 1, 'gas': 2}
-iva = .196
+production_cost = {'green': 35.158, 'hybrid': 23474, 'gas': 18163, 'min': 10000}
+energy_economy = {'green': 64.13, 'hybrid': 15.4, 'gas': 12.75, 'max': 66.2}
+energy_capacity = {'green': 4.21, 'hybrid': 43, 'gas': 50, 'max': 60}
+quality_level = {'green': .5, 'hybrid': .5, 'gas': .5, 'max': 1}
+emission = {'green': 0, 'hybrid': 12.94, 'gas': 13.64}
+price_energy = {'co': {'green': .88, 'gas': .73},
+                'ne': {'green': .81, 'gas': .74},
+                'n': {'green': .99, 'gas': .73},
+                'se': {'green': .89, 'gas': .75},
+                's': {'green': .82, 'gas': 71}}
+stations = {'green': 1, 'hybrid': 1, 'gas': 2}
+pis = {'gas': .0165, 'hybrid': .02, 'green': .02}
+cofins = {'gas': .076, 'hybrid': 0.96, 'green': .096}
+ipi = {'gas': .11, 'hybrid': .07, 'green': .08}
+icms = {'co': .1271, 'ne': .145, 'n': .157, 'se': .1322, 's': .1167}
 
 # Firms characteristics ---------------------------------------------
 budget_max_limit = 500000
@@ -55,9 +62,7 @@ e_max = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspac
 # Tax
 tax = {round(levels[i], 1): round(v, 2) for i, v in enumerate(linspace(.1, .5, 9))}
 # Support green vehicles sales -- 'rebate'
-green_support = {round(levels[i], 1): round(v, 0) for i, v in enumerate(linspace(2000, 6000, 9))}
-# Feebate: max discount for gas vehicles
-discount = {round(levels[i], 1): round(v, 0) for i, v in enumerate(linspace(1000, 3000, 9))}
+p_d = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspace(.1, .9, 9)))}
 
 
 def discount_tax_table(e_bench, my_e):
