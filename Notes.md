@@ -17,6 +17,10 @@ senão o outro? Já direto nos parâmetros...
 
 4. Pis e COFINS são maiores para os menos poluentes? É isso mesmo?
 
+5. Vou simplificar a análise da política. Os autores originais faziam uma gradação de 
+implementação da política. Vou fazer mais simples (tem, não tem) e incluir a análise de sensibilidade.
+   
+
 
 
    

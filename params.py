@@ -64,6 +64,12 @@ tax = {round(levels[i], 1): round(v, 2) for i, v in enumerate(linspace(.1, .5, 9
 # Support green vehicles sales -- 'rebate'
 p_d = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspace(.1, .9, 9)))}
 
+freight = {'co': {'co': 143, 'ne': 440, 'n': 44, 'se': 232, 's': 273},
+           'ne': {'co': 440, 'ne': 154, 'n': 44, 'se': 386, 's': 573},
+           'n': {'co': 441, 'ne': 709, 'n': 44, 'se': 602, 's': 642},
+           'se': {'co': 232, 'ne': 386, 'n': 44, 'se': 96, 's': 208},
+           's': {'co': 273, 'ne': 573, 'n': 44, 'se': 208, 's': 84}}
+
 
 def discount_tax_table(e_bench, my_e):
     # e_bench é o valor geral no periodo anterior, my_e é o da firma
