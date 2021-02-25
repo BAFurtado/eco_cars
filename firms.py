@@ -84,7 +84,6 @@ class Firm:
                 else self.sim.green_market_share[self.sim.t]
             prob_adoption = (((self.cars['gas'].EE / params.energy_economy['max'] + params.production_cost['min'] /
                                self.cars['gas'].production_cost) ** params.omega) / 2) * epsilon ** (1 - params.omega)
-            # A formula anterior prob_adoption tem em erro. Ao epsilon temos adicionar o Green Market_Share.
             self.sim.log.info(params.cor.Fore.LIGHTRED_EX + f'Prob. adoption of green portfolio: {prob_adoption:.4f}')
             if prob_adoption > self.sim.seed.random():
                 # Determine costs of adopting green technology
@@ -175,9 +174,9 @@ class Firm:
     def abandon_portfolio(self):
         if len(self.cars) == 1:
             return
+        if self.sim.t - self.portfolio_marker < 10:
+            return
         for car in self.cars.values():
-            if self.sim.t - self.portfolio_marker < 10:
-                continue
             roi = self.calculate_roi(car)
             self.sim.log.info(f'ROI for firm {self.id} is {roi:.2f}')
             if roi < 1:
@@ -186,11 +185,12 @@ class Firm:
                 # Also, restrict new change, setting marker
                 self.portfolio_marker = self.sim.t
                 del self.cars[car.type]
+                # This return guarantees it just gives up one car portfolio each period.
                 return
 
     def calculate_roi(self, car):
         # ROI is dependent on each vehicle
-        # IMPLEMENTED REDUCTOR OF PROBABILITY GIVEN MORE TIME OF ADOPTION: e ** (-.01 * time_adopation)
+        # IMPLEMENTED REDUCTOR OF PROBABILITY GIVEN MORE TIME OF ADOPTION: e ** (-.01 * time_adoption)
         if self.investments[car.type][self.sim.t - 1] > 0:
             return params.p_lambda * car.production_cost * self.sold_cars[car.type][self.sim.t - 1] / \
                    self.investments[car.type][self.sim.t - 1]
