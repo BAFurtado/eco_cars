@@ -21,5 +21,5 @@ in the automotive sector,” Environmental Innovation and Societal Transitions, 
 60–83.
 
 #### To run:
-Go `python model.py`
+Go `python main.py`
 

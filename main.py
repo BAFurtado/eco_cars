@@ -1,10 +1,11 @@
-import matplotlib.pyplot as plt
-from numpy import linspace
-import pandas as pd
 import time
 
-import model
+import matplotlib.pyplot as plt
+import pandas as pd
 from joblib import Parallel, delayed
+from numpy import linspace
+
+import model
 
 # 1. Emissions index
 # 2. Green market-share
@@ -16,13 +17,13 @@ notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
          'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
          'emissions_index': ['Emissions index', 'darkblue'],
          'public': ['Annual public expenditure', 'firebrick']}
-policies_titles = {None: ['Benchmark', 'black'],
+policies_titles = {None: ['Baseline', 'black'],
                    'tax': ['Tax scheme', 'firebrick'],
-                   'discount': ['Discount', 'yellowgreen'],
-                   'green_support': ['Green support', 'green'],
+
+                   'p&d': ['P&D cashback', 'green'],
                    'max_e': ["Restriction on cars' emissions", 'dimgrey']}
-verbose = False
-seed = False
+verbose = True
+seed = True
 
 
 def processing_averages(pol_results):
@@ -104,7 +105,7 @@ def plot_policies(results, levels, n):
 
 def policies(n=10, n_jobs=1):
     levels = [round(lev, 1) for lev in linspace(.1, .9, 18)]
-    pols = [None, 'tax', 'discount', 'green_support', 'max_e']
+    pols = [None, 'tax', 'p&d', 'max_e']
     results = dict()
     for pol in pols:
         results[pol] = dict()
@@ -139,9 +140,9 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 1000
+    m = 10
     # Number of jobs is cpus that will run simultaneously
-    jobs = 16
+    jobs = 12
     benchmark(m)
     r, l, m = policies(m, jobs)
     plot_policies(r, l, m)
