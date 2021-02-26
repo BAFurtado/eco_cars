@@ -246,8 +246,8 @@ def main(policy, verbose=False, seed=True):
 
 
 if __name__ == '__main__':
-    level = .1
+    level = .5
     pols = [None, 'tax', 'discount', 'green_support', 'max_e']
-    pol = pols[2]
+    pol = pols[0]
     p = {'policy': pol, 'level': level}
     s = main(p, verbose=True)

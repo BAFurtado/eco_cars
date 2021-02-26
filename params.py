@@ -53,7 +53,10 @@ k = -.01
 # Distance of consumers
 prob_adoption = .25
 distance = {'mu': 11755, 'sigma': 2500}
-p_max = {'mu': 29000, 'sigma': 5000}
+
+p_max_proportion = {'n': .6436, 'ne': .5899, 'se': 1, 's': .9341, 'co': .9423}
+
+p_max = {'mu': 37000, 'sigma': 7500}
 dk = {'23': {'min': 0, 'max': 99},
       '22': {'min': 100, 'max': 249},
       '55': {'min': 250, 'max': 953}}

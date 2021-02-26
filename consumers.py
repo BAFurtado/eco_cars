@@ -8,7 +8,8 @@ class Consumer:
     def __init__(self, _id, region, sim):
         self.id = _id
         self.region = region
-        self.price_max = sim.seed.normalvariate(params.p_max['mu'], params.p_max['sigma'])
+        self.price_max = sim.seed.normalvariate(params.p_max['mu'],
+                                                params.p_max['sigma'] * params.p_max_proportion[self.region])
         self.my_car = None
         self.distance = sim.seed.normalvariate(params.distance['mu'], params.distance['sigma'])
 
