@@ -5,8 +5,9 @@ class Consumer:
     """ Purchase and use vehicles
     """
 
-    def __init__(self, _id, sim):
+    def __init__(self, _id, region, sim):
         self.id = _id
+        self.region = region
         self.price_max = sim.seed.normalvariate(params.p_max['mu'], params.p_max['sigma'])
         self.my_car = None
         self.distance = sim.seed.normalvariate(params.distance['mu'], params.distance['sigma'])

@@ -8,6 +8,9 @@ from numpy import linspace
 T = 40
 num_firms = 8
 num_consumers = 2000
+regions_consumers = {'n': .0832, 'ne': .2783, 'se': .4213, 's': .1436, 'co': 1 - .0832 - .2783 - .4213 - .1436}
+# TODO. Still waiting for actual input of number of firms here!
+regions_firms = {'n': 0, 'ne': 3, 'se': 15, 's': 5, 'co': 1}
 
 # Vehicles characteristics ---------------------------------------------
 production_cost = {'green': 35.158, 'hybrid': 23474, 'gas': 18163, 'min': 10000}
@@ -15,6 +18,8 @@ energy_economy = {'green': 64.13, 'hybrid': 15.4, 'gas': 12.75, 'max': 66.2}
 energy_capacity = {'green': 4.21, 'hybrid': 43, 'gas': 50, 'max': 60}
 quality_level = {'green': .5, 'hybrid': .5, 'gas': .5, 'max': 1}
 emission = {'green': 0, 'hybrid': 12.94, 'gas': 13.64}
+
+# Price of hybrid is going to be taken as an average of the two
 price_energy = {'co': {'green': .88, 'gas': .73},
                 'ne': {'green': .81, 'gas': .74},
                 'n': {'green': .99, 'gas': .73},
@@ -60,9 +65,9 @@ levels = linspace(.1, .9, 9)
 
 e_max = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspace(.1, .9, 9)))}
 # Tax
-tax = {round(levels[i], 1): round(v, 2) for i, v in enumerate(linspace(.1, .5, 9))}
+tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .03, 9))}
 # Support green vehicles sales -- 'rebate'
-p_d = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspace(.1, .9, 9)))}
+p_d = {round(levels[i], 1): round(v, 3) for i, v in enumerate(reversed(linspace(0, .125, 9)))}
 
 freight = {'co': {'co': 143, 'ne': 440, 'n': 44, 'se': 232, 's': 273},
            'ne': {'co': 440, 'ne': 154, 'n': 44, 'se': 386, 's': 573},

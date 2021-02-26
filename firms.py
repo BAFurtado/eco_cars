@@ -8,8 +8,9 @@ from cars import Vehicle
 class Firm:
     """ Produce and market vehicles
     """
-    def __init__(self, _id, sim, gas=True):
+    def __init__(self, _id, region, sim, gas=True):
         self.id = _id
+        self.region = region
         # Budget
         self.budget = sim.seed.randint(0, params.budget_max_limit)
         # Firm configuration decisions:

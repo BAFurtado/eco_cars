@@ -55,11 +55,14 @@ class Simulation:
                                             'e', 'public', 'public_index', 'public_cumulative'])
 
     def create_agents(self):
-        for i in range(params.num_firms):
-            self.firms[self.ids] = Firm(self.ids, self)
-            self.ids += 1
+        for key in params.regions_firms:
+            for i in range(params.regions_firms[key]):
+                self.firms[self.ids] = Firm(self.ids, key, self)
+                self.ids += 1
+        regions = self.seed.choices(population=list(params.regions_consumers.keys()),
+                                    k=params.num_consumers, weights=params.regions_consumers.values())
         for j in range(params.num_consumers):
-            self.consumers[self.ids] = Consumer(self.ids, self)
+            self.consumers[self.ids] = Consumer(self.ids, regions[j], self)
             self.ids += 1
 
     def controller(self):
