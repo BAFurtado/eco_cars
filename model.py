@@ -64,6 +64,10 @@ class Simulation:
         for j in range(params.num_consumers):
             self.consumers[self.ids] = Consumer(self.ids, regions[j], self)
             self.ids += 1
+        self.log.info(params.cor.Fore.LIGHTGREEN_EX + f"We have created {len(self.firms)} agents "
+                                                      f"and {len(self.consumers)} firms."
+                                                      f"{len([c for c in self.consumers.values() if c.region == 'se'])} "
+                                                      f"consumers from SE")
 
     def controller(self):
         while self.running:

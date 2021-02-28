@@ -46,25 +46,23 @@ class Vehicle:
         if self.firm.sim.policy['policy'] == 'tax':
             # First part refers to 'low', 'high' [.1, .5], Second refers to Table 5 levels
             policy_tax = params.tax[self.firm.sim.policy['level']] * e_parameter
-        elif self.firm.sim.policy['policy'] == 'discount':
-            policy_value = params.discount[self.firm.sim.policy['level']] * e_parameter
-        elif self.firm.sim.policy['policy'] == 'green_support':
-            # Only for green cars that perform less than average benchmark
-            if self.type == 'green' and self.emissions() < self.firm.sim.e:
-                policy_value = params.green_support[self.firm.sim.policy['level']] * e_parameter
         # policy_value é DESCONTO. policy_tax é SOBRETAXA OU DESCONTO NA TAXA
-        # TODO: política brasileira
         # Politica Brasileira: descontar do IVA  no minimo 3% quando a fabrica inicia desenvolvimento do carro eletrico
-        self.sales_price = (1 + params.iva) * (1 + params.p_lambda) * \
-                           (1 + policy_tax) * self.production_cost + policy_value
-        # QUAL CUSTO O GOVERNO DEIXA DE RECEBER, QUAL DEIXA A FIRMA?
-        self.owed_taxes = (policy_tax + params.iva) * self.production_cost
+        # Sales Price does not include FREIGHT and ICMS
+        self.sales_price = (1 + params.pis[self.type]) * \
+                           (1 + params.cofins[self.type]) * \
+                           (1 + params.ipi[self.type]) * \
+                           (1 + params.p_lambda) * (1 + policy_tax) * self.production_cost + policy_value
+        self.owed_taxes = (policy_tax + params.pis[self.type] +
+                           params.cofins[self.type] +
+                           params.ipi[self.type]) * self.production_cost
         self.policy_value_discount = policy_value
         return self.owed_taxes + self.policy_value_discount
 
-    def criteria_selection(self, emotion, criteria1, criteria2):
+    def criteria_selection(self, emotion, region, criteria1, criteria2):
+        # TODO. Results depend on consumers' region
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]
-        criteria = {'car_affordability': 1 / self.sales_price,
+        criteria = {'car_affordability': 1 / (self.sales_price + params.freight[self.firm.region][region]),
                     'use_affordability': 1 / params.price_energy[self.type],
                     'stations': params.stations['gas'] if self.type == 'gas'
                     else self.firm.sim.green_stations[self.firm.sim.t],
