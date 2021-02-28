@@ -60,9 +60,11 @@ class Vehicle:
         return self.owed_taxes + self.policy_value_discount
 
     def criteria_selection(self, emotion, region, criteria1, criteria2):
-        # TODO. Results depend on consumers' region
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]
-        criteria = {'car_affordability': 1 / (self.sales_price + params.freight[self.firm.region][region]),
+        # Included FREIGHT from firm region to consumer region!
+        # Included ICMS charged on DESTIN. That is, the region of the CONSUMER
+        criteria = {'car_affordability': 1 / ((self.sales_price * (1 + params.icms[region])) +
+                                              params.freight[self.firm.region][region]),
                     'use_affordability': 1 / params.price_energy[self.type],
                     'stations': params.stations['gas'] if self.type == 'gas'
                     else self.firm.sim.green_stations[self.firm.sim.t],

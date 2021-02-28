@@ -4,8 +4,10 @@
 
 ** IMPORTANTE **
 
-A tabela de valores do texto -- tabela 3 -- já inclui o desconto do IPI?
+1. A tabela de valores do texto -- tabela 3 -- já inclui o desconto do IPI?
 XXXXXXXX
+2. ICMS cobrado na região de DESTINO, certo... so CONSUMIDOR!
+
 
 1. Como dar dinheiro para os consumidores?
 No original era 29000 com variancia de 5000, sendo o carro mais caro 27000
