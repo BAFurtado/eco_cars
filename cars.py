@@ -41,14 +41,19 @@ class Vehicle:
         return params.emission[self.type]/self.EE
 
     def calculate_price(self):
-        policy_value, policy_tax = 0, 0
-        e_parameter = params.discount_tax_table(self.firm.sim.e, self.emissions())
-        if self.firm.sim.policy['policy'] == 'tax':
-            # First part refers to 'low', 'high' [.1, .5], Second refers to Table 5 levels
-            policy_tax = params.tax[self.firm.sim.policy['level']] * e_parameter
         # policy_value é DESCONTO. policy_tax é SOBRETAXA OU DESCONTO NA TAXA
-        # Politica Brasileira: descontar do IVA  no minimo 3% quando a fabrica inicia desenvolvimento do carro eletrico
-        # Sales Price does not include FREIGHT and ICMS
+        # Politica Brasileira: descontar do IPI  no minimo 3% quando a fabrica inicia desenvolvimento do carro eletrico
+        policy_value, policy_tax = 0, 0
+
+        if self.firm.sim.policy['policy'] == 'tax':
+            policy_tax = params.tax[self.firm.sim.policy['level']]
+        elif self.firm.sim.policy['policy'] == 'max_e':
+            # First part refers to intensity of policy. Second refers to Table 5 levels
+            e_parameter = params.discount_tax_table(self.firm.sim.e, self.emissions())
+            policy_tax = params.tax[self.firm.sim.policy['level']] * e_parameter
+        # P&D CASHBACK Policy should be applied at the firm level. Not the car level.
+        # Sales Price does not include FREIGHT and ICMS.
+        # They are added at the moment of evaluation and purchasing of the consumer
         self.sales_price = (1 + params.pis[self.type]) * \
                            (1 + params.cofins[self.type]) * \
                            (1 + params.ipi[self.type]) * \
