@@ -31,7 +31,6 @@ class Vehicle:
         self.sales_price = None
         self.calculate_price()
         self.owed_taxes = 0
-        self.policy_value_discount = 0
 
     def drive_range(self):
         # Driving range (DR)
@@ -43,8 +42,7 @@ class Vehicle:
     def calculate_price(self):
         # policy_value é DESCONTO. policy_tax é SOBRETAXA OU DESCONTO NA TAXA
         # Politica Brasileira: descontar do IPI  no minimo 3% quando a fabrica inicia desenvolvimento do carro eletrico
-        policy_value, policy_tax = 0, 0
-
+        policy_tax = 0
         if self.firm.sim.policy['policy'] == 'tax':
             policy_tax = params.tax[self.firm.sim.policy['level']]
         elif self.firm.sim.policy['policy'] == 'max_e':
@@ -57,12 +55,11 @@ class Vehicle:
         self.sales_price = (1 + params.pis[self.type]) * \
                            (1 + params.cofins[self.type]) * \
                            (1 + params.ipi[self.type]) * \
-                           (1 + params.p_lambda) * (1 + policy_tax) * self.production_cost + policy_value
+                           (1 + params.p_lambda) * (1 + policy_tax) * self.production_cost
         self.owed_taxes = (policy_tax + params.pis[self.type] +
                            params.cofins[self.type] +
                            params.ipi[self.type]) * self.production_cost
-        self.policy_value_discount = policy_value
-        return self.owed_taxes + self.policy_value_discount
+        return self.owed_taxes
 
     def criteria_selection(self, emotion, region, criteria1, criteria2):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]

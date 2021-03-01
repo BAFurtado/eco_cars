@@ -158,11 +158,25 @@ class Simulation:
                 self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
                 self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
             # When updating car prices, if policy is in effect, DISCOUNTS AND TAXES are summed and returned
-            # TODO. HERE WE NEED TO SEPARATE PER REGION AND CAPTURE P&D
-            public_expenditure = sum([car.calculate_price() * firm.sold_cars[car.type][self.t - 1]
-                                      for firm in self.firms.values()
-                                      for car in firm.cars.values()])
-            self.report.loc[self.t, 'public'] = public_expenditure
+            public_expenditure = defaultdict(float)
+            for r in ['se', 's', 'ne', 'n', 'co']:
+                for firm in self.firms.values():
+                    if firm.region == r:
+                        for car in firm.cars.values():
+                            temp_debt = [car.calculate_price() * firm.sold_cars[car.type][self.t - 1]]
+                            # Checking criteria to enter policy tax deduction when in effect.
+                            if car.type == 'green' or car.type == 'hybrid' and self.policy['policy'] == 'p_d':
+                                # Deducing up to 12.5% of the investment made by the firm on that car
+                                max_possible_deduction = firm.investments[car.type][self.t - 1] * self.policy['level']
+                                cashback = min(temp_debt, max_possible_deduction)
+                                public_expenditure[r] += temp_debt - cashback
+                                firm.budget += cashback
+                            else:
+                                public_expenditure[r] += temp_debt
+                # Registering all public investment on the region
+                self.report.loc[self.t, 'public' + '_' + r] = public_expenditure[r]
+            # All regions together
+            self.report.loc[self.t, 'public'] = sum(public_expenditure.values())
             base = [b for b in self.report.public if (not np.isnan(b)) and (b != 0)]
             self.report.loc[self.t, 'public_cumulative'] = sum(base)
             if not base:
