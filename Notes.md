@@ -2,12 +2,18 @@
 
 ### Dúvidas das implementações novas do modelo
 
+NOVAS NOTAS DE ULTIMOS AJUSTES INCLUIDOS
 ** IMPORTANTE **
 
 1. A tabela de valores do texto -- tabela 3 -- já inclui o desconto do IPI?
 XXXXXXXX
 2. ICMS cobrado na região de DESTINO, certo... so CONSUMIDOR!
 
+3. IMPLEMENTADO O cashback de PD como limitado a 12.5% do investimento, comparado com TODOS OS impostos a pagar, 
+   MENOS ICMS. 
+
+4. ACHO QUE O CRITERIO DE CAR AFFORDABILITY DEVERIA SER MAIS PRESENTE QUE OS DEMAIS PORQUE VAI FAZER MUITA DIFERENÇA 
+   AGORA ...
 
 1. Como dar dinheiro para os consumidores?
 No original era 29000 com variancia de 5000, sendo o carro mais caro 27000
