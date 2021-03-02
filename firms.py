@@ -15,15 +15,19 @@ class Firm:
         self.budget = sim.seed.randint(0, params.budget_max_limit)
         # Firm configuration decisions:
         self.profit = {'gas': defaultdict(float),
+                       'hybrid': defaultdict(float),
                        'green': defaultdict(float)}
         # Investments in R&D
         self.investments = {'gas': defaultdict(float),
+                            'hybrid': defaultdict(float),
                             'green': defaultdict(float)}
         self.sold_cars = {'gas': defaultdict(int),
+                          'hybrid': defaultdict(int),
                           'green': defaultdict(int)}
         # Assign a vehicle for this firm to sell
         self.cars = dict()
         self.market_share = {'gas': defaultdict(float),
+                             'hybrid': defaultdict(float),
                              'green': defaultdict(float),
                              'total': defaultdict(float)}
         self.sim = sim
@@ -60,13 +64,14 @@ class Firm:
             self.market_share['gas'][0] = 0
             self.market_share['total'][0] = 0
             return
-        for tech in ['gas', 'green']:
+        for tech in ['gas', 'hybrid', 'green']:
             if tech in self.cars and self.sim.num_cars[tech][self.sim.t - 1] > 0:
                 self.market_share[tech][self.sim.t] = self.sold_cars[tech][self.sim.t - 1] / \
                                                       self.sim.num_cars[tech][self.sim.t - 1]
             else:
                 self.market_share[tech][self.sim.t] = 0
         self.market_share['total'][self.sim.t] = (self.sold_cars['gas'][self.sim.t - 1] +
+                                                  self.sold_cars['hybrid'][self.sim.t - 1] +
                                                   self.sold_cars['green'][self.sim.t - 1]) / total_cars_sold \
             if total_cars_sold > 0 else 0
 
@@ -74,47 +79,48 @@ class Firm:
         return True if self.budget < 0 else False
 
     def change_portfolio(self):
-        if len(self.cars) == 2:
-            # Firm already has both portfolios
-            return
-        if 'green' in self.cars.keys():
-            # Firms only move from gas to green
+        if len(self.cars) == 3 or 'gas' not in self.cars.keys():
+            # Firms only move from gas to green and hybrid
+            # Firm already has all portfolios
             return
         if self.budget > params.cost_adoption:
             epsilon = params.epsilon if self.sim.green_market_share[self.sim.t] == 0 \
                 else self.sim.green_market_share[self.sim.t]
             prob_adoption = (((self.cars['gas'].EE / params.energy_economy['max'] + params.production_cost['min'] /
                                self.cars['gas'].production_cost) ** params.omega) / 2) * epsilon ** (1 - params.omega)
-            self.sim.log.info(params.cor.Fore.LIGHTRED_EX + f'Prob. adoption of green portfolio: {prob_adoption:.4f}')
+            self.sim.log.info(params.cor.Fore.LIGHTRED_EX + f'Prob. adoption of a new portfolio: {prob_adoption:.4f}')
             if prob_adoption > self.sim.seed.random():
-                # Determine costs of adopting green technology
+                # Choosing randomly between green or hybrid
+                new_tech = self.sim.seed.choice(['green', 'hybrid'])
+                # Determine costs of adopting each new technology
                 # Choosing parameters of cost before calculating probability
-                greens = [firm for firm in self.sim.firms.values() if 'green' in firm.cars]
+                firms_available = [firm for firm in self.sim.firms.values() if new_tech in firm.cars]
                 imitation_parameters = None, None, None
-                if not greens:
+                if not firms_available:
                     # Be the first firm
-                    pc, ec, ql = (params.production_cost['green'], params.energy_capacity['green'],
-                                  params.quality_level['green'])
+                    pc, ec, ql = (params.production_cost[new_tech], params.energy_capacity[new_tech],
+                                  params.quality_level[new_tech])
                 else:
                     # Choose company to imitate green technology, prob. proportional to firm size
-                    weights = [f.market_share['green'][self.sim.t] for f in greens]
-                    choices = self.sim.seed.choices(greens, weights=weights)
+                    weights = [f.market_share[new_tech][self.sim.t] for f in firms_available]
+                    choices = self.sim.seed.choices(firms_available, weights=weights)
                     firm_to_imitate = choices[0]
-                    car = firm_to_imitate.cars['green']
+                    car = firm_to_imitate.cars[new_tech]
                     # New car production will fall somewhere between initial value and imitated firm value
-                    pc, ec, ql = (self.sim.seed.uniform(params.production_cost['green'], car.production_cost),
-                                  self.sim.seed.uniform(params.energy_capacity['green'], car.EC),
-                                  self.sim.seed.uniform(params.quality_level['green'], car.QL))
+                    pc, ec, ql = (self.sim.seed.uniform(params.production_cost[new_tech], car.production_cost),
+                                  self.sim.seed.uniform(params.energy_capacity[new_tech], car.EC),
+                                  self.sim.seed.uniform(params.quality_level[new_tech], car.QL))
                 # Adopt Green
-                print(params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted a new green portfolio '
+                print(params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted '
+                                                       f'a new {new_tech} portfolio '
                                                        f'at time {self.sim.t}')
                 self.budget -= params.cost_adoption
-                self.cars['green'] = Vehicle(_type='green',
-                                             production_cost=pc,
-                                             ec=ec,
-                                             ee=params.energy_economy['green'],
-                                             ql=ql,
-                                             firm=self)
+                self.cars[new_tech] = Vehicle(_type=new_tech,
+                                              production_cost=pc,
+                                              ec=ec,
+                                              ee=params.energy_economy[new_tech],
+                                              ql=ql,
+                                              firm=self)
                 self.portfolio_marker = self.sim.t
 
     def invest_rd(self):

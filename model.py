@@ -265,8 +265,9 @@ def main(policy, verbose=False, seed=True):
 
 
 if __name__ == '__main__':
-    level = .5
+    level = 1
     # Three policies may be applied
+    # Pol = NONE is baseline, no policy example
     # 1. Reduction of IPI: 'tax'
     # 2. Cashback on P&D investment: 'p_d'
     # 3. Ruling on max emissions: 'max_e'

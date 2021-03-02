@@ -2,6 +2,12 @@
 
 ### Dúvidas das implementações novas do modelo
 
+#### Implementando HYBRID
+
+1.             # Firms only move from gas to green and hybrid
+2.             # Chooses between green or hybrid randomly
+3.             
+
 NOVAS NOTAS DE ULTIMOS AJUSTES INCLUIDOS
 ** IMPORTANTE **
 
