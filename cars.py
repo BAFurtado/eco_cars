@@ -67,7 +67,7 @@ class Vehicle:
         # Included ICMS charged on DESTIN. That is, the region of the CONSUMER
         criteria = {'car_affordability': 1 / ((self.sales_price * (1 + params.icms[region])) +
                                               params.freight[self.firm.region][region]),
-                    'use_affordability': 1 / params.price_energy[self.type],
+                    'use_affordability': 1 / params.price_energy[region][self.type],
                     'stations': params.stations['gas'] if self.type == 'gas'
                     else self.firm.sim.green_stations[self.firm.sim.t],
                     'market_share': max(ms1, params.epsilon),

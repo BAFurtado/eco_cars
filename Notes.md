@@ -6,7 +6,9 @@
 
 1.             # Firms only move from gas to green and hybrid
 2.             # Chooses between green or hybrid randomly
-3.             
+3.             PREÇOS HIBRIDO. MEDIA DOS DOIS
+4.             VOLTEI EMISSIONS PARA 1 DO GREEN POR CAUSA DE DIVISÃO DE ZERO MESMO... 
+E O CRITERIO FICARIA INFINITO OU MUITO GRANDE
 
 NOVAS NOTAS DE ULTIMOS AJUSTES INCLUIDOS
 ** IMPORTANTE **

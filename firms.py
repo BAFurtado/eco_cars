@@ -57,7 +57,7 @@ class Firm:
             # For each technology (gas, green), number of cars sold times sales price minus production cost
             self.profit[tech][self.sim.t] += self.sold_cars[tech][self.sim.t - 1] * \
                                              (self.cars[tech].sales_price - self.cars[tech].production_cost
-                                              - self.cars[tech].owed_taxes - self.cars[tech].policy_value_discount)
+                                              - self.cars[tech].owed_taxes)
 
     def update_market_share(self, total_cars_sold):
         if self.sim.t == 0:

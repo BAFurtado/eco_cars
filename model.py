@@ -47,12 +47,14 @@ class Simulation:
         self.green_market_share = dict()
         self.green_stations = dict()
         self.num_cars = {'green': defaultdict(int),
+                         'hybrid': defaultdict(int),
                          'gas': defaultdict(int)}
         self.emissions = 0
         # 'emissions' is total value, 'emissions_index' is relative to first month emissions
         # 'e' is the calculated parameter benchmark, based on sold vehicles and their energy economy
-        self.report = pd.DataFrame(columns=['green_market_share', 'new_firms_share', 'emissions', 'emissions_index',
-                                            'e', 'public', 'public_index', 'public_cumulative'])
+        self.report = pd.DataFrame(columns=['green_market_share', 'hybrid_market_share', 'new_firms_share',
+                                            'emissions', 'emissions_index', 'e',
+                                            'public', 'public_index', 'public_cumulative'])
 
     def create_agents(self):
         for key in params.regions_firms:
@@ -64,10 +66,10 @@ class Simulation:
         for j in range(params.num_consumers):
             self.consumers[self.ids] = Consumer(self.ids, regions[j], self)
             self.ids += 1
-        self.log.info(params.cor.Fore.LIGHTGREEN_EX + f"We have created {len(self.firms)} agents "
-                                                      f"and {len(self.consumers)} firms."
-                                                      f"{len([c for c in self.consumers.values() if c.region == 'se'])} "
-                                                      f"consumers from SE")
+        self.log.info(params.cor.Fore.MAGENTA + f"We have created {len(self.firms)} firms "
+                                                f"and {len(self.consumers)} agents, being "
+                                                f"{len([c for c in self.consumers.values() if c.region == 'se'])} "
+                                                f"of them from SE")
 
     def controller(self):
         while self.running:
@@ -104,19 +106,19 @@ class Simulation:
                 break
         # 2. if original company has both technologies, just 1/3 chance both are going to be replicated
         choice = self.seed.random()
-        if len(firm_to_imitate.cars) == 2:
-            # 1/3 chance of copying both technologies
-            if choice < 1/3:
-                techs = ['gas', 'green']
-            elif choice < 2/3:
-                techs = ['gas']
+        if len(firm_to_imitate.cars) == 3:
+            # 1/6 chance of copying both technologies
+            if choice < 1/6:
+                techs = ['gas', 'green', 'hybrid']
+            elif choice < 1/2:
+                techs = self.seed.sample(firm_to_imitate.cars.keys(), k=2)
             else:
-                techs = ['green']
+                techs = [self.seed.choice(list(firm_to_imitate.cars.keys()))]
         else:
-            techs = list(firm_to_imitate.cars.keys())
+            techs = firm_to_imitate.cars.keys()
         # Create new firm, without a car at first, then follow decision on techs
         # Budget is random
-        new_firm = self.firms[self.ids] = Firm(self.ids, self, gas=False)
+        new_firm = Firm(self.ids, firm_to_imitate.region, self, gas=False)
         self.log.info(f'New firm {new_firm.id} created')
         self.new_firms.append(new_firm.id)
         self.ids += 1
@@ -163,7 +165,7 @@ class Simulation:
                 for firm in self.firms.values():
                     if firm.region == r:
                         for car in firm.cars.values():
-                            temp_debt = [car.calculate_price() * firm.sold_cars[car.type][self.t - 1]]
+                            temp_debt = sum([car.calculate_price() * firm.sold_cars[car.type][self.t - 1]])
                             # Checking criteria to enter policy tax deduction when in effect.
                             if car.type == 'green' or car.type == 'hybrid' and self.policy['policy'] == 'p_d':
                                 # Deducing up to 12.5% of the investment made by the firm on that car
@@ -182,9 +184,9 @@ class Simulation:
             if not base:
                 self.report.loc[self.t, 'public_index'] = 0
             else:
-                self.report.loc[self.t, 'public_index'] = public_expenditure / base[0]
+                self.report.loc[self.t, 'public_index'] = sum(public_expenditure.values()) / base[0]
             self.log.info(params.cor.Fore.RED + f"Government has paid/received total at this t {self.t} "
-                                                f"a net total of $ {public_expenditure:,.2f}")
+                                                f"a net total of $ {sum(public_expenditure.values()):,.2f}")
 
     def run(self):
         """
@@ -213,7 +215,7 @@ class Simulation:
         keys = list(self.firms)
         self.seed.shuffle(keys)
 
-        total_cars_sold = (self.num_cars['gas'][self.t - 1] + self.num_cars['green'][self.t - 1])
+        total_cars_sold = sum([self.num_cars[tech][self.t - 1] for tech in ['gas', 'green', 'hybrid']])
         for key in keys:
             self.firms[key].update_profit()
             self.firms[key].update_market_share(total_cars_sold)

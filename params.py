@@ -17,14 +17,14 @@ production_cost = {'green': 35.158, 'hybrid': 23474, 'gas': 18163, 'min': 10000}
 energy_economy = {'green': 64.13, 'hybrid': 15.4, 'gas': 12.75, 'max': 66.2}
 energy_capacity = {'green': 4.21, 'hybrid': 43, 'gas': 50, 'max': 60}
 quality_level = {'green': .5, 'hybrid': .5, 'gas': .5, 'max': 1}
-emission = {'green': 0, 'hybrid': 12.94, 'gas': 13.64}
+emission = {'green': 1, 'hybrid': 12.94, 'gas': 13.64}
 
 # Price of hybrid is going to be taken as an average of the two
-price_energy = {'co': {'green': .88, 'gas': .73},
-                'ne': {'green': .81, 'gas': .74},
-                'n': {'green': .99, 'gas': .73},
-                'se': {'green': .89, 'gas': .75},
-                's': {'green': .82, 'gas': 71}}
+price_energy = {'co': {'green': .88, 'hybrid': 80.5, 'gas': .73},
+                'ne': {'green': .81, 'gas': .74, 'hybrid': .78},
+                'n': {'green': .99, 'gas': .73, 'hybrid': .86},
+                'se': {'green': .89, 'gas': .75, 'hybrid': .82},
+                's': {'green': .82, 'gas': .71, 'hybrid': .77}}
 stations = {'green': 1, 'hybrid': 1, 'gas': 2}
 pis = {'gas': .0165, 'hybrid': .02, 'green': .02}
 cofins = {'gas': .076, 'hybrid': 0.96, 'green': .096}
