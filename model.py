@@ -267,13 +267,14 @@ def main(policy, verbose=False, seed=True):
 
 
 if __name__ == '__main__':
-    level = 1
+    level = 1.0
     # Three policies may be applied
     # Pol = NONE is baseline, no policy example
     # 1. Reduction of IPI: 'tax'
     # 2. Cashback on P&D investment: 'p_d'
     # 3. Ruling on max emissions: 'max_e'
     pols = [None, 'tax', 'p_d', 'max_e']
-    pol = pols[0]
-    p = {'policy': pol, 'level': level}
-    s = main(p, verbose=True)
+    # pol = pols[0]
+    for pol in pols:
+        p = {'policy': pol, 'level': level}
+        s = main(p, verbose=True)

@@ -64,13 +64,13 @@ br = {'min': 0, 'max': 1}
 
 # Policy characteristics ---------------------------------------------
 # Fixed e_max
-levels = linspace(.1, .9, 9)
+levels = linspace(0, 1, 10)
 
-e_max = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspace(.1, .9, 9)))}
+e_max = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspace(.1, .9, 10)))}
 # IPI. Limited to 3%
-tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .03, 9))}
+tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .03, 10))}
 # Cash back P&D for companies' investments. Limited to 12.5%
-p_d = {round(levels[i], 1): round(v, 3) for i, v in enumerate(reversed(linspace(0, .125, 9)))}
+p_d = {round(levels[i], 1): round(v, 3) for i, v in enumerate(linspace(0, .125, 10))}
 
 freight = {'co': {'co': 143, 'ne': 440, 'n': 44, 'se': 232, 's': 273},
            'ne': {'co': 440, 'ne': 154, 'n': 44, 'se': 386, 's': 573},
