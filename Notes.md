@@ -52,9 +52,17 @@ senão o outro? Já direto nos parâmetros...
 implementação da política. Vou fazer mais simples (tem, não tem) e incluir a análise de sensibilidade.
    
 
+-------
+Fábrica por Região
+Região	Fábricas Automóveis
+Norte    	   0
+Nordeste	      3
+Sudeste	      14
+Sul 	         5
+Centro-Oeste	2
+Total 	24
 
-
-   
+  
 
 
 
