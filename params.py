@@ -10,22 +10,22 @@ num_firms = 8
 num_consumers = 2000
 regions_consumers = {'n': .0832, 'ne': .2783, 'se': .4213, 's': .1436, 'co': 1 - .0832 - .2783 - .4213 - .1436}
 # TODO. Still waiting for actual input of number of firms here!
-regions_firms = {'n': 0, 'ne': 3, 'se': 15, 's': 5, 'co': 1}
+regions_firms = {'n': 0, 'ne': 3, 'se': 14, 's': 5, 'co': 2}
 
 # Vehicles characteristics ---------------------------------------------
-production_cost = {'green': 35.158, 'hybrid': 23474, 'gas': 18163, 'min': 10000}
+production_cost = {'green': 35158, 'hybrid': 23474, 'gas': 18163, 'min': 10000}
 energy_economy = {'green': 64.13, 'hybrid': 15.4, 'gas': 12.75, 'max': 66.2}
 energy_capacity = {'green': 4.21, 'hybrid': 43, 'gas': 50, 'max': 60}
 quality_level = {'green': .5, 'hybrid': .5, 'gas': .5, 'max': 1}
 emission = {'green': 1, 'hybrid': 12.94, 'gas': 13.64}
 
 # Price of hybrid is going to be taken as an average of the two
-price_energy = {'co': {'green': .88, 'hybrid': 80.5, 'gas': .73},
+price_energy = {'co': {'green': .88, 'hybrid': .805, 'gas': .73},
                 'ne': {'green': .81, 'gas': .74, 'hybrid': .78},
                 'n': {'green': .99, 'gas': .73, 'hybrid': .86},
                 'se': {'green': .89, 'gas': .75, 'hybrid': .82},
                 's': {'green': .82, 'gas': .71, 'hybrid': .77}}
-stations = {'green': 1, 'hybrid': 1, 'gas': 2}
+stations = {'green': 1, 'hybrid': 2, 'gas': 2}
 pis = {'gas': .0165, 'hybrid': .02, 'green': .02}
 cofins = {'gas': .076, 'hybrid': 0.96, 'green': .096}
 ipi = {'gas': .11, 'hybrid': .07, 'green': .08}
@@ -72,11 +72,11 @@ tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .03, 1
 # Cash back P&D for companies' investments. Limited to 12.5%
 p_d = {round(levels[i], 1): round(v, 3) for i, v in enumerate(linspace(0, .125, 10))}
 
-freight = {'co': {'co': 143, 'ne': 440, 'n': 44, 'se': 232, 's': 273},
-           'ne': {'co': 440, 'ne': 154, 'n': 44, 'se': 386, 's': 573},
-           'n': {'co': 441, 'ne': 709, 'n': 44, 'se': 602, 's': 642},
-           'se': {'co': 232, 'ne': 386, 'n': 44, 'se': 96, 's': 208},
-           's': {'co': 273, 'ne': 573, 'n': 44, 'se': 208, 's': 84}}
+freight = {'co': {'co': 143, 'ne': 440, 'n': 441, 'se': 232, 's': 273},
+           'ne': {'co': 440, 'ne': 154, 'n': 709, 'se': 386, 's': 573},
+           'n': {'co': 441, 'ne': 709, 'n': 517, 'se': 602, 's': 642},
+           'se': {'co': 232, 'ne': 386, 'n': 600, 'se': 96, 's': 208},
+           's': {'co': 273, 'ne': 573, 'n': 642, 'se': 208, 's': 84}}
 
 
 def discount_tax_table(e_bench, my_e):

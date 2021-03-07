@@ -167,7 +167,7 @@ class Simulation:
                         for car in firm.cars.values():
                             temp_debt = sum([car.calculate_price() * firm.sold_cars[car.type][self.t - 1]])
                             # Checking criteria to enter policy tax deduction when in effect.
-                            if car.type == 'green' or car.type == 'hybrid' and self.policy['policy'] == 'p_d':
+                            if (car.type == 'green' or car.type == 'hybrid') and self.policy['policy'] == 'p_d':
                                 # Deducing up to 12.5% of the investment made by the firm on that car
                                 max_possible_deduction = firm.investments[car.type][self.t - 1] * self.policy['level']
                                 cashback = min(temp_debt, max_possible_deduction)
@@ -274,7 +274,7 @@ if __name__ == '__main__':
     # 2. Cashback on P&D investment: 'p_d'
     # 3. Ruling on max emissions: 'max_e'
     pols = [None, 'tax', 'p_d', 'max_e']
-    # pol = pols[0]
+    pols = pols[2]
     for pol in pols:
         p = {'policy': pol, 'level': level}
         s = main(p, verbose=True)
