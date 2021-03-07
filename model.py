@@ -156,7 +156,7 @@ class Simulation:
             self.e = sold_cars_emissions
             self.report.loc[self.t, 'e'] = self.e
             self.log.info(f'Parameter e -- sold cars emission average -- is {sold_cars_emissions:.4f}')
-            if self.policy['policy'] == 'max_e':
+            if self.policy['policy'] == 'e_max':
                 self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
                 self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
             # When updating car prices, if policy is in effect, DISCOUNTS AND TAXES are summed and returned
@@ -272,8 +272,8 @@ if __name__ == '__main__':
     # Pol = NONE is baseline, no policy example
     # 1. Reduction of IPI: 'tax'
     # 2. Cashback on P&D investment: 'p_d'
-    # 3. Ruling on max emissions: 'max_e'
-    pols = [None, 'tax', 'p_d', 'max_e']
+    # 3. Ruling on max emissions: 'e_max'
+    pols = [None, 'tax', 'p_d', 'e_max']
     pols = pols[2]
     for pol in pols:
         p = {'policy': pol, 'level': level}

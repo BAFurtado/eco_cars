@@ -45,7 +45,7 @@ class Vehicle:
         policy_tax = 0
         if self.firm.sim.policy['policy'] == 'tax':
             policy_tax = params.tax[self.firm.sim.policy['level']]
-        elif self.firm.sim.policy['policy'] == 'max_e':
+        elif self.firm.sim.policy['policy'] == 'e_max':
             # First part refers to intensity of policy. Second refers to Table 5 levels
             e_parameter = params.discount_tax_table(self.firm.sim.e, self.emissions())
             policy_tax = params.tax[self.firm.sim.policy['level']] * e_parameter

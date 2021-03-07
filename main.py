@@ -19,11 +19,10 @@ notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
          'public': ['Annual public expenditure', 'firebrick']}
 policies_titles = {None: ['Baseline', 'black'],
                    'tax': ['Tax scheme', 'firebrick'],
-
-                   'p&d': ['P&D cashback', 'green'],
-                   'max_e': ["Restriction on cars' emissions", 'dimgrey']}
-verbose = True
-seed = True
+                   'p_d': ['P&D cashback', 'green'],
+                   'e_max': ["Restriction on cars' emissions", 'dimgrey']}
+verbose = False
+seed = False
 
 
 def processing_averages(pol_results):
@@ -121,9 +120,9 @@ def policies(n=10, n_jobs=1):
                 for i in range(n):
                     results[pol][level][i] = s[i].report.loc[39]
 
-            # for i in range(n):
-            #     s = model.main(p, verbose, seed=seed)
-            #     results[pol][level][i] = s.report.loc[39]
+            for i in range(n):
+                s = model.main(p, verbose, seed=seed)
+                results[pol][level][i] = s.report.loc[39]
     return results, levels, n
 
 
@@ -134,7 +133,7 @@ def benchmark(n=10):
     # Thus, result collected is a dictionary of dictionaries containing DataFrames
     results = {pol: dict()}
     for i in range(n):
-        s = model.main(p, verbose, seed=seed)
+        s = model.main(p, verbose, seed=False)
         results[pol][i] = s.report
     plotting(results, n)
 
