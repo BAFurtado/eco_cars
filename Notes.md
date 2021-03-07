@@ -14,8 +14,8 @@ NOVAS NOTAS DE ULTIMOS AJUSTES INCLUIDOS
 ** IMPORTANTE **
 
 1. A tabela de valores do texto -- tabela 3 -- já inclui o desconto do IPI?
-XXXXXXXX
-2. ICMS cobrado na região de DESTINO, certo... so CONSUMIDOR!
+XXXXXXXX Não
+2. ICMS cobrado na região de DESTINO, certo... so CONSUMIDOR! ok
 
 3. IMPLEMENTADO O cashback de PD como limitado a 12.5% do investimento, comparado com TODOS OS impostos a pagar, 
    MENOS ICMS. 
