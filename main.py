@@ -103,8 +103,7 @@ def plot_policies(results, levels, n):
 
 
 def policies(n=10, n_jobs=1):
-    # levels = [round(lev, 1) for lev in linspace(.1, .9, 18)]
-    levels = [1]
+    levels = [round(lev, 1) for lev in linspace(0, 1, 10)]
     pols = [None, 'tax', 'p_d', 'e_max']
     results = dict()
     for pol in pols:
