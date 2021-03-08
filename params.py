@@ -9,7 +9,6 @@ T = 40
 num_firms = 8
 num_consumers = 2000
 regions_consumers = {'n': .0832, 'ne': .2783, 'se': .4213, 's': .1436, 'co': 1 - .0832 - .2783 - .4213 - .1436}
-# TODO. Still waiting for actual input of number of firms here!
 regions_firms = {'n': 0, 'ne': 3, 'se': 14, 's': 5, 'co': 2}
 
 # Vehicles characteristics ---------------------------------------------
