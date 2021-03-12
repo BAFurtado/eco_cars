@@ -55,6 +55,7 @@ def plot_details(ax):
 
 
 def plotting(results, n):
+    """ This function has been deprecated. None run is included above"""
     # Receives a dictionary of results for policies and inside Ts runs with DataFrame reports
     for pol in results:
         res = processing_averages(results[pol])
@@ -105,27 +106,32 @@ def plot_policies(results, levels, n):
 def policies(n=10, n_jobs=1):
     levels = [round(lev, 1) for lev in linspace(0, 1, 10)]
     pols = [None, 'tax', 'p_d', 'e_max']
+    # A dictionary of general results
     results = dict()
     for pol in pols:
+        # A dictionary for each policy results
         results[pol] = dict()
+        # Run for all levels specificed
         for level in levels:
             p = {'policy': pol, 'level': level}
             # For each run policy, when dictionary with all runs is saved.
             # Thus, result collected is a dictionary of dictionaries containing DataFrames
             results[pol][level] = dict()
 
+            # Run in parallel is the number of repetitions per level
             with Parallel(n_jobs=n_jobs) as parallel:
                 s = parallel(delayed(model.main)(p, verbose, seed) for i in range(n))
                 for i in range(n):
                     results[pol][level][i] = s[i].report.loc[39]
 
-            for i in range(n):
-                s = model.main(p, verbose, seed=seed)
-                results[pol][level][i] = s.report.loc[39]
+            # for i in range(n):
+            #     s = model.main(p, verbose, seed=seed)
+            #     results[pol][level][i] = s.report.loc[39]
     return results, levels, n
 
 
 def benchmark(n=10):
+    """ This function has been deprecated. None run is included above"""
     pol, level = None, None
     p = {'policy': pol, 'level': level}
     # For each run policy, when dictionary with all runs is saved.
@@ -139,10 +145,10 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 100
+    m = 8
     # Number of cpus that will run simultaneously
     cpus = 8
-    benchmark(m)
+    # benchmark(m)
     r, l, m = policies(m, cpus)
     plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')

@@ -274,7 +274,7 @@ if __name__ == '__main__':
     # 2. Cashback on P&D investment: 'p_d'
     # 3. Ruling on max emissions: 'e_max'
     pols = [None, 'tax', 'p_d', 'e_max']
-    pols = pols[2]
-    for pol in pols:
-        p = {'policy': pol, 'level': level}
-        s = main(p, verbose=True)
+    # pols = pols[0]
+    pol = pols[3]
+    p = {'policy': pol, 'level': level}
+    s = main(p, verbose=False)
