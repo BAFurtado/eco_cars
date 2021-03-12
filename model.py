@@ -138,7 +138,8 @@ class Simulation:
             self.green_stations[self.t] = 1
         else:
             green_cars = self.num_cars['green'][self.t - 1]
-            total_cars = self.num_cars['gas'][self.t - 1] + self.num_cars['green'][self.t - 1]
+            total_cars = self.num_cars['gas'][self.t - 1] + self.num_cars['green'][self.t - 1] \
+                                                          + self.num_cars['hybrid'][self.t - 1]
             # One more place in which sold cars are 0
             self.green_market_share[self.t] = green_cars / total_cars if total_cars > 0 else 0
             # Update green stations
@@ -275,6 +276,6 @@ if __name__ == '__main__':
     # 3. Ruling on max emissions: 'e_max'
     pols = [None, 'tax', 'p_d', 'e_max']
     # pols = pols[0]
-    pol = pols[3]
+    pol = pols[1]
     p = {'policy': pol, 'level': level}
     s = main(p, verbose=False)

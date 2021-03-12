@@ -111,7 +111,7 @@ def policies(n=10, n_jobs=1):
     for pol in pols:
         # A dictionary for each policy results
         results[pol] = dict()
-        # Run for all levels specificed
+        # Run for all levels specified
         for level in levels:
             p = {'policy': pol, 'level': level}
             # For each run policy, when dictionary with all runs is saved.
@@ -145,7 +145,7 @@ def benchmark(n=10):
 
 if __name__ == '__main__':
     t0 = time.time()
-    m = 8
+    m = 400
     # Number of cpus that will run simultaneously
     cpus = 8
     # benchmark(m)
