@@ -187,25 +187,25 @@ if __name__ == '__main__':
     # benchmark(m)
     t = datetime.datetime.utcnow().isoformat().replace(':', '_')
 
-    # paramaters_to_test = {'prob_adoption': {'min': .2, 'max': .3, 'interval': 3, '_type': 'f'},
-    #                       'mu_max': {'min': .05, 'max': .2, 'interval': 4, '_type': 'f'},
-    #                       'rd_min': {'min': 10000, 'max': 90000, 'interval': 5, '_type': 'i'},
-    #                       'epsilon': {'min': .05, 'max': .2, 'interval': 3, '_type': 'f'},
-    #                       'omega': {'min': .3, 'max': .7, 'interval': 3, '_type': 'f'},
-    #                       'time_adoption': {'min': 5, 'max': 15, 'interval': 3, '_type': 'i'},
-    #                       'lambda': {'min': .05, 'max': .35, 'interval': 3, '_type': 'f'},
-    #                       'number_characteristics': {'min': 2, 'max': 5, 'interval': 4, '_type': 'i'}
-    #                       }
-    #
-    # for param in paramaters_to_test:
-    #     sensitivity(param, paramaters_to_test[param]['min'],
-    #                 paramaters_to_test[param]['max'],
-    #                 paramaters_to_test[param]['interval'],
-    #                 paramaters_to_test[param]['_type'],
-    #                 p, t, m, cpus, save_data)
+    paramaters_to_test = {'prob_adoption': {'min': .2, 'max': .3, 'interval': 3, '_type': 'f'},
+                          'mu_max': {'min': .05, 'max': .2, 'interval': 4, '_type': 'f'},
+                          'rd_min': {'min': 10000, 'max': 90000, 'interval': 5, '_type': 'i'},
+                          'epsilon': {'min': .05, 'max': .2, 'interval': 3, '_type': 'f'},
+                          'omega': {'min': .3, 'max': .7, 'interval': 3, '_type': 'f'},
+                          'time_adoption': {'min': 5, 'max': 15, 'interval': 3, '_type': 'i'},
+                          'lambda': {'min': .05, 'max': .35, 'interval': 3, '_type': 'f'},
+                          'number_characteristics': {'min': 2, 'max': 5, 'interval': 4, '_type': 'i'}
+                          }
+
+    for param in paramaters_to_test:
+        sensitivity(param, paramaters_to_test[param]['min'],
+                    paramaters_to_test[param]['max'],
+                    paramaters_to_test[param]['interval'],
+                    paramaters_to_test[param]['_type'],
+                    p, t, m, cpus, save_data)
 
     # IF SENSITIVITY, UNCHECK THE NEXT LINE
-    sensitivity('number_characteristics', 2, 5, 4, 'i', p, t, m, cpus, save_data)
+    # sensitivity('number_characteristics', 2, 5, 4, 'i', p, t, m, cpus, save_data)
 
     # OTHERWISE, UNCHECK NEXT THREE LINES
     # r, l, m = policies(p, t, m, cpus, save_data)
