@@ -106,7 +106,7 @@ def plot_policies(results, levels, n):
     return results
 
 
-def policies(path, timestamp, n=10, n_jobs=1, save=None):
+def policies(path, timestamp, n=10, n_jobs=1, save=None, param=None, value=None):
     levels = [round(lev, 1) for lev in linspace(0, 1, 10)]
     pols = [None, 'tax', 'p_d', 'e_max']
 
@@ -129,7 +129,7 @@ def policies(path, timestamp, n=10, n_jobs=1, save=None):
             results[pol][level] = dict()
             # Run in parallel is the number of repetitions per level
             with Parallel(n_jobs=n_jobs) as parallel:
-                s = parallel(delayed(model.main)(p, verbose, seed) for i in range(n))
+                s = parallel(delayed(model.main)(p, verbose, seed, param, value) for i in range(n))
                 for i in range(n):
                     results[pol][level][i] = s[i].report.loc[39]
                     if save:
@@ -166,11 +166,10 @@ def sensitivity(parameter, min_value, max_value, n_intervals, path, timestamp, n
     values = linspace(min_value, max_value, n_intervals)
     for value in values:
         value = f'{value:.4f}'
-        setattr(model.params, parameter, float(value))
         new_path = os.path.join(path, f'{parameter}={value}')
         if not os.path.exists(new_path):
             os.makedirs(new_path)
-        policies(new_path, timestamp, n, n_jobs, save)
+        policies(new_path, timestamp, n, n_jobs, save, parameter, float(value))
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ from firms import Firm
 
 class Simulation:
 
-    def __init__(self, policy=None, verbose=False, seed=True):
+    def __init__(self, policy=None, verbose=False, seed=True, param=None, value=None):
         import params
         self.log = logging.getLogger('main')
         if verbose:
@@ -36,6 +36,8 @@ class Simulation:
             self.seed = random.Random(0)
         self.t = 0
         self.params = params
+        if param:
+            self.params.__dict__[param] = value
         # Benchmark e policy parameter: average emission sold vehicles
         self.e = 1
         # When e_max policy is not being tested, all cars will pass
@@ -265,8 +267,8 @@ class Simulation:
         self.emissions = 0
 
 
-def main(policy, verbose=False, seed=True):
-    my_sim = Simulation(policy, verbose, seed)
+def main(policy, verbose=False, seed=True, param=None, value=None):
+    my_sim = Simulation(policy, verbose, seed, param, value)
     my_sim.controller()
     return my_sim
 
