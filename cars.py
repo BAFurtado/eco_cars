@@ -68,8 +68,8 @@ class Vehicle:
         criteria = {'car_affordability': 1 / ((self.sales_price * (1 + params.icms[region])) +
                                               params.freight[self.firm.region][region]),
                     'use_affordability': 1 / params.price_energy[region][self.type],
-                    'stations': params.stations['gas'] if self.type == 'gas'
-                    else self.firm.sim.green_stations[self.firm.sim.t],
+                    'stations': self.firm.sim.green_stations[self.firm.sim.t] if self.type == 'green'
+                    else params.stations['gas'],
                     'market_share': max(ms1, params.epsilon),
                     'energy_capacity': self.EC,
                     'car_cleanness': 1 / self.emissions(),

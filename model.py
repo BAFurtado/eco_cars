@@ -276,6 +276,6 @@ if __name__ == '__main__':
     # 3. Ruling on max emissions: 'e_max'
     pols = [None, 'tax', 'p_d', 'e_max']
     # pols = pols[0]
-    pol = pols[1]
+    pol = pols[2]
     p = {'policy': pol, 'level': level}
     s = main(p, verbose=False)
