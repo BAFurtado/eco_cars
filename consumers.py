@@ -40,12 +40,15 @@ class Consumer:
         # Choose two criteria to evaluate among possible purchases
         criteria = ['car_affordability', 'use_affordability', 'stations', 'market_share',
                     'energy_capacity', 'car_cleanness', 'quality', 'emotion']
-        criteria1, criteria2 = sim.seed.sample(criteria, k=2)
+
         # Value that represents consumer emotion (brand). It can change at each t.
         emotion = sim.seed.random()
         # In case the criteria are identical
         sim.seed.shuffle(my_market)
-        my_market.sort(key=lambda c: c.criteria_selection(emotion, self.region, criteria1, criteria2), reverse=True)
+        my_market.sort(key=lambda c: c.criteria_selection(emotion, self.region,
+                                                          sim.seed.sample(criteria,
+                                                                          k=sim.params.number_characteristics)),
+                       reverse=True)
 
         self.my_car = my_market[0]
         self.my_car.firm.sales(self.my_car.type)

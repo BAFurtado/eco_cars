@@ -85,9 +85,12 @@ class Firm:
         if self.budget > self.sim.params.cost_adoption:
             epsilon = self.sim.params.epsilon if self.sim.green_market_share[self.sim.t] == 0 \
                 else self.sim.green_market_share[self.sim.t]
-            prob_adoption = (((self.cars['gas'].EE / self.sim.params.energy_economy['max'] + self.sim.params.production_cost['min'] /
-                               self.cars['gas'].production_cost) ** self.sim.params.omega) / 2) * epsilon ** (1 - self.sim.params.omega)
-            self.sim.log.info(self.sim.params.cor.Fore.LIGHTRED_EX + f'Prob. adoption of a new portfolio: {prob_adoption:.4f}')
+            prob_adoption = (((self.cars['gas'].EE / self.sim.params.energy_economy['max'] +
+                               self.sim.params.production_cost['min'] /
+                               self.cars['gas'].production_cost) ** self.sim.params.omega) / 2) * \
+                               epsilon ** (1 - self.sim.params.omega)
+            self.sim.log.info(self.sim.params.cor.Fore.LIGHTRED_EX +
+                              f'Prob. adoption of a new portfolio: {prob_adoption:.4f}')
             if prob_adoption > self.sim.seed.random():
                 # Choosing randomly between green or hybrid
                 new_tech = self.sim.seed.choice(['green', 'hybrid'])
@@ -134,8 +137,7 @@ class Firm:
         self.invest_into_vehicle(investments)
 
     def invest_into_vehicle(self, investments):
-        # eta = 1 if just one car, 1/2 if gas and green
-        to_invest_now = investments * 1 if len(self.cars) == 1 else investments * .5
+        to_invest_now = investments / len(self.cars)
         for tech in self.cars.keys():
             rdm = self.sim.seed.random()
             # May improve PC (production_cost), EE, EC, QL
@@ -152,25 +154,32 @@ class Firm:
                 # 'PC_min', 'EE_max', 'EC_max', 'QL_max'
                 if choice == 1:
                     if self.cars[tech].production_cost >= self.sim.params.production_cost['min']:
-                        delta = self.sim.params.alpha2 * rdm * (self.sim.params.production_cost['min'] - self.cars[tech].production_cost)
+                        delta = self.sim.params.alpha2 * rdm * (self.sim.params.production_cost['min']
+                                                                - self.cars[tech].production_cost)
                         self.cars[tech].production_cost += delta
-                        self.sim.log.info(self.sim.params.cor.Fore.GREEN + f'Production cost reduced by {delta:,.2f}')
+                        self.sim.log.info(self.sim.params.cor.Fore.GREEN
+                                          + f'Production cost reduced by {delta:,.2f}')
                 elif choice == 3:
                     if self.cars[tech].QL <= self.sim.params.quality_level['max']:
-                        delta = self.sim.params.alpha2 * rdm * (self.sim.params.quality_level['max'] - self.cars[tech].QL)
+                        delta = self.sim.params.alpha2 * rdm * \
+                                (self.sim.params.quality_level['max'] - self.cars[tech].QL)
                         self.cars[tech].QL += delta
                         self.sim.log.info(self.sim.params.cor.Fore.MAGENTA + f'Quality increased by {delta:,.4f}')
                 else:
                     if tech == 'gas':
                         if self.cars[tech].EE <= self.sim.params.energy_economy['max']:
-                            delta = self.sim.params.alpha2 * rdm * (self.sim.params.energy_economy['max'] - self.cars[tech].EE)
+                            delta = self.sim.params.alpha2 * rdm * \
+                                    (self.sim.params.energy_economy['max'] - self.cars[tech].EE)
                             self.cars[tech].EE += delta
-                            self.sim.log.info(self.sim.params.cor.Fore.LIGHTYELLOW_EX + f'Energy economy increased by {delta:,.4f}')
+                            self.sim.log.info(self.sim.params.cor.Fore.LIGHTYELLOW_EX +
+                                              f'Energy economy increased by {delta:,.4f}')
                     else:
                         if self.cars[tech].EC <= self.sim.params.energy_capacity['max']:
-                            delta = self.sim.params.alpha2 * rdm * (self.sim.params.energy_capacity['max'] - self.cars[tech].EC)
+                            delta = self.sim.params.alpha2 * rdm * \
+                                    (self.sim.params.energy_capacity['max'] - self.cars[tech].EC)
                             self.cars[tech].EC += delta
-                            self.sim.log.info(self.sim.params.cor.Fore.GREEN + f'Energy capacity increased by {delta:,.4f}')
+                            self.sim.log.info(self.sim.params.cor.Fore.GREEN +
+                                              f'Energy capacity increased by {delta:,.4f}')
 
     def sales(self, car_type):
         # Register number of sold_cars
@@ -179,7 +188,7 @@ class Firm:
     def abandon_portfolio(self):
         if len(self.cars) == 1:
             return
-        if self.sim.t - self.portfolio_marker < 10:
+        if self.sim.t - self.portfolio_marker < self.sim.params.time_adoption:
             return
         for car in self.cars.values():
             roi = self.calculate_roi(car)

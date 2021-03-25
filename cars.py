@@ -1,3 +1,4 @@
+from numpy import prod
 
 
 class Vehicle:
@@ -52,19 +53,21 @@ class Vehicle:
                            self.firm.sim.params.ipi[self.type]) * self.production_cost
         return self.owed_taxes
 
-    def criteria_selection(self, emotion, region, criteria1, criteria2):
+    def criteria_selection(self, emotion, region, *criteria):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]
         # Included FREIGHT from firm region to consumer region!
         # Included ICMS charged on DESTIN. That is, the region of the CONSUMER
-        criteria = {'car_affordability': 1 / ((self.sales_price * (1 + self.firm.sim.params.icms[region])) +
-                                              self.firm.sim.params.freight[self.firm.region][region]),
-                    'use_affordability': 1 / self.firm.sim.params.price_energy[region][self.type],
-                    'stations': self.firm.sim.green_stations[self.firm.sim.t] if self.type == 'green'
-                    else self.firm.sim.params.stations['gas'],
-                    'market_share': max(ms1, self.firm.sim.params.epsilon),
-                    'energy_capacity': self.EC,
-                    'car_cleanness': 1 / self.emissions(),
-                    'quality': self.QL,
-                    'emotion': emotion}
-
-        return criteria[criteria1] * criteria[criteria2]
+        criterion = {'car_affordability': 1 / ((self.sales_price * (1 + self.firm.sim.params.icms[region])) +
+                                               self.firm.sim.params.freight[self.firm.region][region]),
+                     'use_affordability': 1 / self.firm.sim.params.price_energy[region][self.type],
+                     'stations': self.firm.sim.green_stations[self.firm.sim.t] if self.type == 'green'
+                     else self.firm.sim.params.stations['gas'],
+                     'market_share': max(ms1, self.firm.sim.params.epsilon),
+                     'energy_capacity': self.EC,
+                     'car_cleanness': 1 / self.emissions(),
+                     'quality': self.QL,
+                     'emotion': emotion}
+        res = 1
+        for c in criteria[0]:
+            res *= criterion[c]
+        return res

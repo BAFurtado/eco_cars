@@ -8,6 +8,8 @@ from numpy import linspace
 T = 40
 num_firms = 8
 num_consumers = 2000
+# How many criteria to consider when buying a car
+number_characteristics = 2
 regions_consumers = {'n': .0832, 'ne': .2783, 'se': .4213, 's': .1436, 'co': 1 - .0832 - .2783 - .4213 - .1436}
 regions_firms = {'n': 0, 'ne': 3, 'se': 14, 's': 5, 'co': 2}
 
@@ -40,8 +42,12 @@ alpha2 = .5
 # epsilon is calculated when there is at least one firm that is green
 epsilon = .1
 omega = .5
+# Todo. No rationality for eta. Possible a different eta per type of car?
+# eta = .5
+
 # Costs of adoption of new technology
 cost_adoption = 10000
+time_adoption = 10
 # ROI
 p_lambda = .1
 
