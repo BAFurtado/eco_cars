@@ -1,4 +1,3 @@
-import params
 
 
 class Vehicle:
@@ -8,25 +7,17 @@ class Vehicle:
 
         CO2 emission reduction is the goal
         """
-    def __init__(self, _type='gas',
-                 production_cost=params.production_cost['gas'],
-                 # Distance (km) a car can travel per unit of energy consumed
-                 ee=params.energy_economy['gas'],
-                 # Storage size
-                 ec=params.energy_capacity['gas'],
-                 # Performance measure ~= quality characteristics
-                 ql=params.quality_level['gas'],
-                 firm=None):
+    def __init__(self, firm, _type='gas', production_cost=None, ee=None, ec=None, ql=None):
         # Type: 'combustion' or 'electric', 'gas' or 'green'
         self.type = _type
         # Price (production_cost)
-        self.production_cost = production_cost
+        self.production_cost = firm.sim.params.production_cost['gas'] if not production_cost else production_cost
         # Energy: distance per unit of energy (engine power per km)
-        self.EE = ee
+        self.EE = firm.sim.params.energy_economy['gas'] if not ee else ee
         # Energy capacity: quantity of units able to carry
-        self.EC = ec
+        self.EC = firm.sim.params.energy_capacity['gas'] if not ec else ec
         # Quality
-        self.QL = ql
+        self.QL = firm.sim.params.quality_level['gas'] if not ql else ql
         self.firm = firm
         self.sales_price = None
         self.calculate_price()
@@ -37,40 +28,40 @@ class Vehicle:
         return self.EE * self.EC
 
     def emissions(self):
-        return params.emission[self.type]/self.EE
+        return self.firm.sim.params.emission[self.type]/self.EE
 
     def calculate_price(self):
         # policy_value é DESCONTO. policy_tax é SOBRETAXA OU DESCONTO NA TAXA
         # Politica Brasileira: descontar do IPI  no minimo 3% quando a fabrica inicia desenvolvimento do carro eletrico
         policy_tax = 0
         if self.firm.sim.policy['policy'] == 'tax':
-            policy_tax = params.tax[self.firm.sim.policy['level']]
+            policy_tax = self.firm.sim.params.tax[self.firm.sim.policy['level']]
         elif self.firm.sim.policy['policy'] == 'e_max':
             # First part refers to intensity of policy. Second refers to Table 5 levels
-            e_parameter = params.discount_tax_table(self.firm.sim.e, self.emissions())
-            policy_tax = params.tax[self.firm.sim.policy['level']] * e_parameter
+            e_parameter = self.firm.sim.params.discount_tax_table(self.firm.sim.e, self.emissions())
+            policy_tax = self.firm.sim.params.tax[self.firm.sim.policy['level']] * e_parameter
         # P&D CASHBACK Policy should be applied at the firm level. Not the car level.
         # Sales Price does not include FREIGHT and ICMS.
         # They are added at the moment of evaluation and purchasing of the consumer
-        self.sales_price = (1 + params.pis[self.type]) * \
-                           (1 + params.cofins[self.type]) * \
-                           (1 + params.ipi[self.type]) * \
-                           (1 + params.p_lambda) * (1 + policy_tax) * self.production_cost
-        self.owed_taxes = (policy_tax + params.pis[self.type] +
-                           params.cofins[self.type] +
-                           params.ipi[self.type]) * self.production_cost
+        self.sales_price = (1 + self.firm.sim.params.pis[self.type]) * \
+                           (1 + self.firm.sim.params.cofins[self.type]) * \
+                           (1 + self.firm.sim.params.ipi[self.type]) * \
+                           (1 + self.firm.sim.params.p_lambda) * (1 + policy_tax) * self.production_cost
+        self.owed_taxes = (policy_tax + self.firm.sim.params.pis[self.type] +
+                           self.firm.sim.params.cofins[self.type] +
+                           self.firm.sim.params.ipi[self.type]) * self.production_cost
         return self.owed_taxes
 
     def criteria_selection(self, emotion, region, criteria1, criteria2):
         ms1 = self.firm.market_share[self.type][self.firm.sim.t]
         # Included FREIGHT from firm region to consumer region!
         # Included ICMS charged on DESTIN. That is, the region of the CONSUMER
-        criteria = {'car_affordability': 1 / ((self.sales_price * (1 + params.icms[region])) +
-                                              params.freight[self.firm.region][region]),
-                    'use_affordability': 1 / params.price_energy[region][self.type],
+        criteria = {'car_affordability': 1 / ((self.sales_price * (1 + self.firm.sim.params.icms[region])) +
+                                              self.firm.sim.params.freight[self.firm.region][region]),
+                    'use_affordability': 1 / self.firm.sim.params.price_energy[region][self.type],
                     'stations': self.firm.sim.green_stations[self.firm.sim.t] if self.type == 'green'
-                    else params.stations['gas'],
-                    'market_share': max(ms1, params.epsilon),
+                    else self.firm.sim.params.stations['gas'],
+                    'market_share': max(ms1, self.firm.sim.params.epsilon),
                     'energy_capacity': self.EC,
                     'car_cleanness': 1 / self.emissions(),
                     'quality': self.QL,

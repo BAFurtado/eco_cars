@@ -1,4 +1,3 @@
-import params
 
 
 class Consumer:
@@ -8,14 +7,15 @@ class Consumer:
     def __init__(self, _id, region, sim):
         self.id = _id
         self.region = region
-        self.price_max = sim.seed.normalvariate(params.p_max['mu'],
-                                                params.p_max['sigma'] * params.p_max_proportion[self.region])
+        self.params = sim.params
+        self.price_max = sim.seed.normalvariate(self.params.p_max['mu'],
+                                                self.params.p_max['sigma'] * self.params.p_max_proportion[self.region])
         self.my_car = None
-        self.distance = sim.seed.normalvariate(params.distance['mu'], params.distance['sigma'])
+        self.distance = sim.seed.normalvariate(self.params.distance['mu'], self.params.distance['sigma'])
 
     def purchase(self, sim):
-        # Probability to buy a new car: params.prob_adoption
-        if not sim.seed.random() < params.prob_adoption:
+        # Probability to buy a new car: self.params.prob_adoption
+        if not sim.seed.random() < self.params.prob_adoption:
             return
         # Conditions to enter the market
         # 1. Condition, car price less than my reserve price and can go the distance
@@ -23,11 +23,11 @@ class Consumer:
         choice = sim.seed.random()
         # Calculate needed range
         if choice < .23:
-            dk = sim.seed.uniform(params.dk['23']['min'], params.dk['23']['max'])
+            dk = sim.seed.uniform(self.params.dk['23']['min'], self.params.dk['23']['max'])
         elif choice < .45:
-            dk = sim.seed.uniform(params.dk['22']['min'], params.dk['22']['max'])
+            dk = sim.seed.uniform(self.params.dk['22']['min'], self.params.dk['22']['max'])
         else:
-            dk = sim.seed.uniform(params.dk['55']['min'], params.dk['55']['max'])
+            dk = sim.seed.uniform(self.params.dk['55']['min'], self.params.dk['55']['max'])
         # Policy introduced here. When testing policy e_max will be endogenously set
         # My market includes affordable cars, within needed range and within regulation, if applicable.
         my_market = [car for firm in sim.firms.values() for car in firm.cars.values()

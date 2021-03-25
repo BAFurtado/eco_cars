@@ -1,11 +1,11 @@
+import logging
 import random
+import time
 from collections import defaultdict
 
-import pandas as pd
 import numpy as np
-import logging
-import time
-import params
+import pandas as pd
+
 from cars import Vehicle
 from consumers import Consumer
 from firms import Firm
@@ -20,7 +20,9 @@ from firms import Firm
 
 
 class Simulation:
+
     def __init__(self, policy=None, verbose=False, seed=True):
+        import params
         self.log = logging.getLogger('main')
         if verbose:
             logging.basicConfig(level=logging.INFO)
@@ -33,6 +35,7 @@ class Simulation:
         else:
             self.seed = random.Random(0)
         self.t = 0
+        self.params = params
         # Benchmark e policy parameter: average emission sold vehicles
         self.e = 1
         # When e_max policy is not being tested, all cars will pass
@@ -46,6 +49,7 @@ class Simulation:
         self.create_agents()
         self.green_market_share = dict()
         self.green_stations = dict()
+
         self.num_cars = {'green': defaultdict(int),
                          'hybrid': defaultdict(int),
                          'gas': defaultdict(int)}
@@ -57,16 +61,16 @@ class Simulation:
                                             'public', 'public_index', 'public_cumulative'])
 
     def create_agents(self):
-        for key in params.regions_firms:
-            for i in range(params.regions_firms[key]):
+        for key in self.params.regions_firms:
+            for i in range(self.params.regions_firms[key]):
                 self.firms[self.ids] = Firm(self.ids, key, self)
                 self.ids += 1
-        regions = self.seed.choices(population=list(params.regions_consumers.keys()),
-                                    k=params.num_consumers, weights=params.regions_consumers.values())
-        for j in range(params.num_consumers):
+        regions = self.seed.choices(population=list(self.params.regions_consumers.keys()),
+                                    k=self.params.num_consumers, weights=self.params.regions_consumers.values())
+        for j in range(self.params.num_consumers):
             self.consumers[self.ids] = Consumer(self.ids, regions[j], self)
             self.ids += 1
-        self.log.info(params.cor.Fore.MAGENTA + f"We have created {len(self.firms)} firms "
+        self.log.info(self.params.cor.Fore.MAGENTA + f"We have created {len(self.firms)} firms "
                                                 f"and {len(self.consumers)} agents, being "
                                                 f"{len([c for c in self.consumers.values() if c.region == 'se'])} "
                                                 f"of them from SE")
@@ -75,14 +79,14 @@ class Simulation:
         while self.running:
             self.run()
             self.t += 1
-            if self.t == params.T:
+            if self.t == self.params.T:
                 self.running = False
                 break
             if self.sleep:
                 sleep = 1
                 time.sleep(sleep)
-                self.log.info(params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for {sleep} seconds')
-        print(params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
+                self.log.info(self.params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for {sleep} seconds')
+        print(self.params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
 
     def update_car_info(self, car_type):
         self.num_cars[car_type][self.t] += 1
@@ -125,9 +129,9 @@ class Simulation:
         # Add portfolio
         for i in techs:
             # Choose random values between initial values and current values of the company to imitate
-            pc, ec, ee = (self.seed.uniform(params.production_cost[i], firm_to_imitate.cars[i].production_cost),
-                          self.seed.uniform(params.energy_capacity[i], firm_to_imitate.cars[i].EC),
-                          self.seed.uniform(params.energy_economy[i], firm_to_imitate.cars[i].EE))
+            pc, ec, ee = (self.seed.uniform(self.params.production_cost[i], firm_to_imitate.cars[i].production_cost),
+                          self.seed.uniform(self.params.energy_capacity[i], firm_to_imitate.cars[i].EC),
+                          self.seed.uniform(self.params.energy_economy[i], firm_to_imitate.cars[i].EE))
             new_firm.cars[i] = Vehicle(firm=new_firm, _type=i, production_cost=pc, ec=ec, ee=ee)
             new_firm.portfolio_marker = self.t
 
@@ -158,7 +162,7 @@ class Simulation:
             self.report.loc[self.t, 'e'] = self.e
             self.log.info(f'Parameter e -- sold cars emission average -- is {sold_cars_emissions:.4f}')
             if self.policy['policy'] == 'e_max':
-                self.e_max = self.e * (1 + self.seed.uniform(0, params.e_max[self.policy['level']]))
+                self.e_max = self.e * (1 + self.seed.uniform(0, self.params.e_max[self.policy['level']]))
                 self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
             # When updating car prices, if policy is in effect, DISCOUNTS AND TAXES are summed and returned
             public_expenditure = defaultdict(float)
@@ -186,7 +190,7 @@ class Simulation:
                 self.report.loc[self.t, 'public_index'] = 0
             else:
                 self.report.loc[self.t, 'public_index'] = sum(public_expenditure.values()) / base[0]
-            self.log.info(params.cor.Fore.RED + f"Government has paid/received total at this t {self.t} "
+            self.log.info(self.params.cor.Fore.RED + f"Government has paid/received total at this t {self.t} "
                                                 f"a net total of $ {sum(public_expenditure.values()):,.2f}")
 
     def run(self):
@@ -237,7 +241,7 @@ class Simulation:
                                                           if f.id in self.new_firms])
 
         if landfill:
-            print(params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '
+            print(self.params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '
                                                     f'has(ve) gone bankrupt at time {self.t}')
         for i in landfill:
             self.new_firm(landfill)
@@ -256,7 +260,7 @@ class Simulation:
         self.report.loc[self.t, 'emissions'] = self.emissions
         if self.t > 2:
             self.report.loc[self.t, 'emissions_index'] = self.emissions / self.report.loc[3, 'emissions']
-        self.log.info(params.cor.Fore.RED + f"Emissions at t {self.t} was {self.emissions:,.2f}. "
+        self.log.info(self.params.cor.Fore.RED + f"Emissions at t {self.t} was {self.emissions:,.2f}. "
                                             f"Emissions index: {self.report.loc[self.t, 'emissions_index']:.4f}")
         self.emissions = 0
 

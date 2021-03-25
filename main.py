@@ -106,15 +106,16 @@ def plot_policies(results, levels, n):
     return results
 
 
-def policies(path, n=10, n_jobs=1, save=None):
+def policies(path, timestamp, n=10, n_jobs=1, save=None):
     levels = [round(lev, 1) for lev in linspace(0, 1, 10)]
     pols = [None, 'tax', 'p_d', 'e_max']
-    timestamp = datetime.datetime.utcnow().isoformat().replace(':', '_')
+
     if not os.path.exists(path):
         os.mkdir(path)
     fullpath = os.path.join(path, timestamp)
     if save:
         os.mkdir(fullpath)
+
     # A dictionary of general results
     results = dict()
     for pol in pols:
@@ -126,7 +127,6 @@ def policies(path, n=10, n_jobs=1, save=None):
             # For each run policy, when dictionary with all runs is saved.
             # Thus, result collected is a dictionary of dictionaries containing DataFrames
             results[pol][level] = dict()
-
             # Run in parallel is the number of repetitions per level
             with Parallel(n_jobs=n_jobs) as parallel:
                 s = parallel(delayed(model.main)(p, verbose, seed) for i in range(n))
@@ -162,17 +162,35 @@ def save_results_as_json(path, results):
         json.dump(results, f, default=str)
 
 
+def sensitivity(parameter, min_value, max_value, n_intervals, path, timestamp, n=10, n_jobs=1, save=None):
+    values = linspace(min_value, max_value, n_intervals)
+    for value in values:
+        value = f'{value:.4f}'
+        setattr(model.params, parameter, float(value))
+        new_path = os.path.join(path, f'{parameter}={value}')
+        if not os.path.exists(new_path):
+            os.makedirs(new_path)
+        policies(new_path, timestamp, n, n_jobs, save)
+
+
 if __name__ == '__main__':
     save_summary = True
     save_data = True
     p = r'output'
     t0 = time.time()
-    m = 4
+    m = 3
     # Number of cpus that will run simultaneously
     cpus = 8
     # benchmark(m)
-    r, l, m = policies(p, m, cpus, save_data)
-    if save_summary:
-        save_results_as_json(p, r)
+    t = datetime.datetime.utcnow().isoformat().replace(':', '_')
+
+    # IF SENSITIVITY, UNCHECK THE NEXT LINE
+    sensitivity('prob_adoption', .20, .3, 3, p, t, m, cpus, save_data)
+
+    # OTHERWISE, UNCHECK NEXT THREE LINES
+    # r, l, m = policies(p, t, m, cpus, save_data)
+    # if save_summary:
+    #     save_results_as_json(p, r)
+
     # plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')
