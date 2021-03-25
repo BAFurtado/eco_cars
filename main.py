@@ -1,3 +1,6 @@
+import datetime
+import json
+import os
 import time
 
 import matplotlib.pyplot as plt
@@ -103,9 +106,15 @@ def plot_policies(results, levels, n):
     return results
 
 
-def policies(n=10, n_jobs=1):
+def policies(path, n=10, n_jobs=1, save=None):
     levels = [round(lev, 1) for lev in linspace(0, 1, 10)]
     pols = [None, 'tax', 'p_d', 'e_max']
+    timestamp = datetime.datetime.utcnow().isoformat().replace(':', '_')
+    if not os.path.exists(path):
+        os.mkdir(path)
+    fullpath = os.path.join(path, timestamp)
+    if save:
+        os.mkdir(fullpath)
     # A dictionary of general results
     results = dict()
     for pol in pols:
@@ -123,6 +132,8 @@ def policies(n=10, n_jobs=1):
                 s = parallel(delayed(model.main)(p, verbose, seed) for i in range(n))
                 for i in range(n):
                     results[pol][level][i] = s[i].report.loc[39]
+                    if save:
+                        s[i].report.to_csv(f'{fullpath}/{pol}_{level}_{i}.csv', sep=';', index=False)
 
             # for i in range(n):
             #     s = model.main(p, verbose, seed=seed)
@@ -143,12 +154,25 @@ def benchmark(n=10):
     plotting(results, n)
 
 
+def save_results_as_json(path, results):
+    if not os.path.exists(path):
+        os.mkdir(path)
+    timestamp = datetime.datetime.utcnow().isoformat().replace(':', '_')
+    with open(os.path.join(path, f'{timestamp}.json'), 'w') as f:
+        json.dump(results, f, default=str)
+
+
 if __name__ == '__main__':
+    save_summary = True
+    save_data = True
+    p = r'output'
     t0 = time.time()
-    m = 400
+    m = 4
     # Number of cpus that will run simultaneously
     cpus = 8
     # benchmark(m)
-    r, l, m = policies(m, cpus)
-    plot_policies(r, l, m)
+    r, l, m = policies(p, m, cpus, save_data)
+    if save_summary:
+        save_results_as_json(p, r)
+    # plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')
