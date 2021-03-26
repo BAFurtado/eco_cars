@@ -20,6 +20,13 @@ Van der Vooren, A. and E. Brouillat (2015): “Evaluating co2 reduction policy m
 in the automotive sector,” Environmental Innovation and Societal Transitions, 14,
 60–83.
 
+### Changes.
+
+1. We have included a hybrid car.
+2. We have made tax adaptations to serve better as a Brazilian proxy
+3. We included regions for consumers and firms (empirically based sizes)
+4. We have also included sensitivity analysis 
+
 #### To run:
 Go `python main.py`
 
