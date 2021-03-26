@@ -170,6 +170,7 @@ def sensitivity(parameter, min_value, max_value, n_intervals, _type, path, times
             value = int(value)
         else:
             value = f'{value:.4f}'
+            value = float(value)
         new_path = os.path.join(path, f'{parameter}={value}')
         if not os.path.exists(new_path):
             os.makedirs(new_path)
