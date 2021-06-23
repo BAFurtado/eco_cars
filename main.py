@@ -180,9 +180,9 @@ def sensitivity(parameter, min_value, max_value, n_intervals, _type, path, times
 if __name__ == '__main__':
     save_summary = True
     save_data = True
-    p = r'output'
+    p = r'\\storage1\carga\modelo dinamico de simulacao\eco_cars'
     t0 = time.time()
-    m = 100
+    m = 200
     # Number of cpus that will run simultaneously
     cpus = 8
     # benchmark(m)

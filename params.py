@@ -1,7 +1,8 @@
 """ Exogenous inputs
 """
-import colorama as cor
 import bisect
+
+import colorama as cor
 from numpy import linspace
 
 # Initiating time parameter
@@ -71,7 +72,7 @@ br = {'min': 0, 'max': 1}
 # Fixed e_max
 levels = linspace(0, 1, 10)
 
-e_max = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(1, .25, 10))}
+e_max = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(1, .2, 10))}
 # IPI. Limited to 3%
 tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .03, 10))}
 # Cash back P&D for companies' investments. Limited to 12.5%
