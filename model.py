@@ -164,7 +164,7 @@ class Simulation:
             self.report.loc[self.t, 'e'] = self.e
             self.log.info(f'Parameter e -- sold cars emission average -- is {sold_cars_emissions:.4f}')
             if self.policy['policy'] == 'e_max':
-                self.e_max = self.e * (1 + self.seed.uniform(0, self.params.e_max[self.policy['level']]))
+                self.e_max = self.e * (1 + self.params.e_max[self.policy['level']])
                 self.log.info(f'Max emission for time {self.t} is {self.e_max:.2f}')
             # When updating car prices, if policy is in effect, DISCOUNTS AND TAXES are summed and returned
             public_expenditure = defaultdict(float)

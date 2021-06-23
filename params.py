@@ -6,7 +6,7 @@ from numpy import linspace
 
 # Initiating time parameter
 T = 40
-num_firms = 8
+
 num_consumers = 2000
 # How many criteria to consider when buying a car
 number_characteristics = 2
@@ -71,7 +71,7 @@ br = {'min': 0, 'max': 1}
 # Fixed e_max
 levels = linspace(0, 1, 10)
 
-e_max = {round(levels[i], 1): round(v, 1) for i, v in enumerate(reversed(linspace(.1, .9, 10)))}
+e_max = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(1, .25, 10))}
 # IPI. Limited to 3%
 tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .03, 10))}
 # Cash back P&D for companies' investments. Limited to 12.5%
@@ -85,7 +85,7 @@ freight = {'co': {'co': 143, 'ne': 440, 'n': 441, 'se': 232, 's': 273},
 
 
 def discount_tax_table(e_bench, my_e):
-    # e_bench é o valor geral no periodo anterior, my_e é o da firma
+    # e_bench é o valor geral no período anterior, my_e é o da firma
     # Also notice that given that no cars are sold (given market restrictions, emissions are 0)
     e = my_e/e_bench if e_bench > 0 else 0
     # Parameter support table to get discount or tax increase values
