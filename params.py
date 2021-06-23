@@ -72,7 +72,10 @@ br = {'min': 0, 'max': 1}
 # Fixed e_max
 levels = linspace(0, 1, 10)
 
-e_max = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(1, .2, 10))}
+# First value refers to max percentage above average emission. Second, minimum
+e_max_max = 2  # 200%
+e_max_min = .5  # 50%
+e_max = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(e_max_max, e_max_min, 10))}
 # IPI. Limited to 3%
 tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .03, 10))}
 # Cash back P&D for companies' investments. Limited to 12.5%
@@ -91,6 +94,8 @@ def discount_tax_table(e_bench, my_e):
     e = my_e/e_bench if e_bench > 0 else 0
     # Parameter support table to get discount or tax increase values
     intervals = [.7, .85, .95, 1, 1.05, 1.15, 1.3, 1.5]
-    values = [-1, -.75, -.5, -.25, 0, .25, .5, .75, 1]
+
+    # Discounts and over taxes applied. From -10% to 10%
+    values = [-.1, -.075, -.05, -.025, 0, .025, .05, .075, .1]
     index = bisect.bisect_left(intervals, e)
     return values[index]
