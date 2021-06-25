@@ -182,9 +182,9 @@ if __name__ == '__main__':
     save_data = True
     p = r'output'
     t0 = time.time()
-    m = 1
+    m = 400
     # Number of cpus that will run simultaneously
-    cpus = 1
+    cpus = 10
     # benchmark(m)
     t = datetime.datetime.utcnow().isoformat().replace(':', '_')
 
