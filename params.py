@@ -73,9 +73,11 @@ br = {'min': 0, 'max': 1}
 levels = linspace(0, 1, 10)
 
 # First value refers to max percentage above average emission. Second, minimum
-e_max_max = 5  # 500%
-e_max_min = 1  # 100%
+e_max_max = 2  # 200%
+e_max_min = .2  # 20%
 e_max = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(e_max_max, e_max_min, 10))}
+# Tax applied to e_max até 10%
+e_max_tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .1, 10))}
 # IPI. Limited to 3%
 tax = {round(levels[i], 1): round(v, 4) for i, v in enumerate(linspace(0, .03, 10))}
 # Cash back P&D for companies' investments. Limited to 12.5%

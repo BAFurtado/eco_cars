@@ -41,7 +41,7 @@ class Vehicle:
             # First part refers to intensity of policy. Second refers to Table 5 levels
             e_parameter = self.firm.sim.params.discount_tax_table(self.firm.sim.e, self.emissions())
             # tax parameter
-            policy_tax = self.firm.sim.params.tax[self.firm.sim.policy['level']] * e_parameter
+            policy_tax = self.firm.sim.params.e_max_tax[self.firm.sim.policy['level']] * e_parameter
         # P&D CASHBACK Policy should be applied at the firm level. Not the car level.
         # Sales Price does not include FREIGHT and ICMS.
         # They are added at the moment of evaluation and purchasing of the consumer
