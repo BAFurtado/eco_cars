@@ -34,8 +34,7 @@ notes = {'green_market_share': ['Percentual mercado verde (%)', 'yellowgreen'],
 
 policies_titles = {None: ['Base de comparação', 'black'],
                    'tax': ['Esquema de impostos', 'firebrick'],
-                   'p_d': ['Retorno de investimentos em P&D', 'green'],
-                   'e_max': ["Restriction on cars' emissions", 'dimgrey']}
+                   'p_d': ['Retorno de investimentos em P&D', 'green']}
 verbose = False
 seed = False
 
@@ -96,7 +95,9 @@ def plot_policies(results, levels, n):
         ax.legend(frameon=False)
         ax = plot_details(ax)
         ax.set(xlabel='Policy strength', ylabel='value', title=f'Results for {notes[graph][0]} after {n} runs')
-        plt.savefig(f'policy_stringent_figures/{graph}.png', bbox_inches='tight')
+        if not os.path.exists('policy_stringent_figures'):
+            os.mkdir('policy_stringent_figures')
+        plt.savefig(f'policy_stringent_figures/{t}_{graph}.png', bbox_inches='tight')
         # plt.show()
     return results
 
@@ -125,6 +126,7 @@ def policies(path, timestamp, n=10, n_jobs=1, save=None, param=None, value=None)
             results[pol][level] = dict()
             # Run in parallel is the number of repetitions per level
             with Parallel(n_jobs=n_jobs) as parallel:
+                print(f'Running {pol}: {level}')
                 s = parallel(delayed(model.main)(p, verbose, seed, param, value) for i in range(n))
                 for i in range(n):
                     results[pol][level][i] = s[i].report.loc[39]
@@ -135,9 +137,6 @@ def policies(path, timestamp, n=10, n_jobs=1, save=None, param=None, value=None)
             #     s = model.main(p, verbose, seed=seed)
             #     results[pol][level][i] = s.report.loc[39]
     return results, levels, n
-
-
-
 
 
 def save_results_as_json(path, results):
@@ -195,12 +194,12 @@ def sensitivity(parameter, min_value, max_value, n_intervals, _type, path, times
 
 if __name__ == '__main__':
     save_summary = True
-    save_data = True
+    save_data = False
     p = r'output'
     t0 = time.time()
-    m = 10
+    m = 2000
     # Number of cpus that will run simultaneously
-    cpus = 10
+    cpus = 14
     # benchmark(m)
     t = datetime.datetime.utcnow().isoformat().replace(':', '_')
 

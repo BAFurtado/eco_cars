@@ -113,7 +113,7 @@ class Firm:
                                   self.sim.seed.uniform(self.sim.params.energy_capacity[new_tech], car.EC),
                                   self.sim.seed.uniform(self.sim.params.quality_level[new_tech], car.QL))
                 # Adopt Green
-                print(self.sim.params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted '
+                self.sim.log.info(self.sim.params.cor.Fore.LIGHTYELLOW_EX + f'Great news. Firm {self.id} has adopted '
                                                        f'a new {new_tech} portfolio '
                                                        f'at time {self.sim.t}')
                 self.budget -= self.sim.params.cost_adoption
@@ -194,7 +194,7 @@ class Firm:
             roi = self.calculate_roi(car)
             self.sim.log.info(f'ROI for firm {self.id} is {roi:.2f}')
             if roi < 1:
-                print(self.sim.params.cor.Fore.LIGHTRED_EX + f'Abandoning portfolio {car.type}: firm {self.id} '
+                self.sim.log.info(self.sim.params.cor.Fore.LIGHTRED_EX + f'Abandoning portfolio {car.type}: firm {self.id} '
                                                     f'at time {self.sim.t}')
                 # Also, restrict new change, setting marker
                 self.portfolio_marker = self.sim.t

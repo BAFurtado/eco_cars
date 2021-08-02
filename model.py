@@ -88,7 +88,7 @@ class Simulation:
                 sleep = 1
                 time.sleep(sleep)
                 self.log.info(self.params.cor.Fore.MAGENTA + f'Time: {self.t} -- deliberate pausing for {sleep} seconds')
-        print(self.params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
+        self.log.info(self.params.cor.Fore.RED + f"Total emissions for this run was {sum(self.report['emissions']):,.2f}")
 
     def update_car_info(self, car_type):
         self.num_cars[car_type][self.t] += 1
@@ -243,7 +243,7 @@ class Simulation:
                                                           if f.id in self.new_firms])
 
         if landfill:
-            print(self.params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '
+            self.log.info(self.params.cor.Fore.LIGHTMAGENTA_EX + f'Firms {[i for i in landfill]} '
                                                     f'has(ve) gone bankrupt at time {self.t}')
         for i in landfill:
             self.new_firm(landfill)
