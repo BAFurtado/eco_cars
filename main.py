@@ -16,13 +16,25 @@ import model
 # 4. New firms market-share
 
 # Generalization guidelines
-notes = {'green_market_share': ['Green market percentage (%)', 'yellowgreen'],
-         'new_firms_share': ['Share of new firms (%)', 'dimgrey'],
-         'emissions_index': ['Emissions index', 'darkblue'],
-         'public': ['Annual public expenditure', 'firebrick']}
-policies_titles = {None: ['Baseline', 'black'],
-                   'tax': ['Tax scheme', 'firebrick'],
-                   'p_d': ['P&D cashback', 'green'],
+notes = {'green_market_share': ['Percentual mercado verde (%)', 'yellowgreen'],
+         'new_firms_share': ['Percentual de novas firmas (%)', 'dimgrey'],
+         'emissions_index': ['Índice de emissões', 'darkblue'],
+         'public': ['Gastos públicos anuais', 'firebrick'],
+         'hybrid_market_share': ['Percentual mercado carros híbridos'],
+         'emissions': ['Emissões em termos absolutos'],
+         'public_index': ['Índice de gastos públicos'],
+         'public_cumulative': ['Gastos públicos cumulativos'],
+         'public_se': ['Gastos públicos Sudeste'],
+         'public_s': ['Gastos públicos Sul'],
+         'public_ne': ['Gastos públicos Nordeste'],
+         'public_n': ['Gastos públicos Norte'],
+         'public_co': ['Gastos públicos Centro-Oeste'],
+         'e': ['Emissões dos carros vendidos período anterior']}
+
+
+policies_titles = {None: ['Base de comparação', 'black'],
+                   'tax': ['Esquema de impostos', 'firebrick'],
+                   'p_d': ['Retorno de investimentos em P&D', 'green'],
                    'e_max': ["Restriction on cars' emissions", 'dimgrey']}
 verbose = False
 seed = False
@@ -55,23 +67,6 @@ def plot_details(ax):
     plt.tick_params(axis='both', which='both', bottom=False, top=False,
                     labelbottom=True, left=False, right=False, labelleft=True)
     return ax
-
-
-def plotting(results, n):
-    """ This function has been deprecated. None run is included above"""
-    # Receives a dictionary of results for policies and inside Ts runs with DataFrame reports
-    for pol in results:
-        res = processing_averages(results[pol])
-        fig, ax = plt.subplots()
-        for key in res:
-            ax.plot(res[key].index, res[key], label=notes[key][0], color=notes[key][1])
-        ax.legend(frameon=False)
-        ax = plot_details(ax)
-        ax.set(xlabel='T periods', ylabel='value',
-               title=f'Results after {n} runs using policy: {policies_titles[pol][0]}')
-        plt.savefig(f'results/{pol}.png', bbox_inches='tight')
-        # plt.show()
-    return res
 
 
 def plot_policies(results, levels, n):
@@ -108,7 +103,8 @@ def plot_policies(results, levels, n):
 
 def policies(path, timestamp, n=10, n_jobs=1, save=None, param=None, value=None):
     levels = [round(lev, 1) for lev in linspace(0, 1, 10)]
-    pols = [None, 'tax', 'p_d', 'e_max']
+    # pols = [None, 'tax', 'p_d', 'e_max']
+    pols = [None, 'tax', 'p_d']
 
     if not os.path.exists(path):
         os.mkdir(path)
@@ -141,17 +137,7 @@ def policies(path, timestamp, n=10, n_jobs=1, save=None, param=None, value=None)
     return results, levels, n
 
 
-def benchmark(n=10):
-    """ This function has been deprecated. None run is included above"""
-    pol, level = None, None
-    p = {'policy': pol, 'level': level}
-    # For each run policy, when dictionary with all runs is saved.
-    # Thus, result collected is a dictionary of dictionaries containing DataFrames
-    results = {pol: dict()}
-    for i in range(n):
-        s = model.main(p, verbose, seed=False)
-        results[pol][i] = s.report
-    plotting(results, n)
+
 
 
 def save_results_as_json(path, results):
@@ -177,12 +163,42 @@ def sensitivity(parameter, min_value, max_value, n_intervals, _type, path, times
         policies(new_path, timestamp, n, n_jobs, save, parameter, value)
 
 
+# def plotting(results, n):
+#     """ This function has been deprecated. None run is included above"""
+#     # Receives a dictionary of results for policies and inside Ts runs with DataFrame reports
+#     for pol in results:
+#         res = processing_averages(results[pol])
+#         fig, ax = plt.subplots()
+#         for key in res:
+#             ax.plot(res[key].index, res[key], label=notes[key][0], color=notes[key][1], lw=.7)
+#         ax.legend(frameon=False)
+#         ax = plot_details(ax)
+#         ax.set(xlabel='T periods', ylabel='value',
+#                title=f'Results after {n} runs using policy: {policies_titles[pol][0]}')
+#         plt.savefig(f'results/{pol}.png', bbox_inches='tight')
+#         # plt.show()
+#     return res
+
+
+# def benchmark(n=10):
+#     """ This function has been deprecated. None run is included above"""
+#     pol, level = None, None
+#     p = {'policy': pol, 'level': level}
+#     # For each run policy, when dictionary with all runs is saved.
+#     # Thus, result collected is a dictionary of dictionaries containing DataFrames
+#     results = {pol: dict()}
+#     for i in range(n):
+#         s = model.main(p, verbose, seed=False)
+#         results[pol][i] = s.report
+#     # plotting(results, n)
+
+
 if __name__ == '__main__':
     save_summary = True
     save_data = True
     p = r'output'
     t0 = time.time()
-    m = 400
+    m = 10
     # Number of cpus that will run simultaneously
     cpus = 10
     # benchmark(m)
@@ -213,5 +229,6 @@ if __name__ == '__main__':
     if save_summary:
         save_results_as_json(p, r)
     #
+    print(l, m)
     plot_policies(r, l, m)
     print(f'This run took {time.time() - t0:.2f} seconds!')
